@@ -1,0 +1,25 @@
+{
+  "all": {
+    "properties": {
+      "id": {
+        "type": "long"
+      },
+      "name": {
+        "type": "text",
+        "analyzer": "autocomplete"
+      },
+      "title": {
+        "type": "object"
+      },
+      "technicalName": {
+        "type": "text"
+      },
+      "attachAllowed": {
+        "type": "boolean"
+      },
+      "parentId": {
+        "type": "long"
+      }
+    }
+  }
+}

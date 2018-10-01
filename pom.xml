@@ -38,9 +38,11 @@
     <scala.binary.version>2.12</scala.binary.version>
     <dokka.version>0.9.17</dokka.version>
     <kotlin.version>1.2.71</kotlin.version>
+    <kotlin.jackson.version>2.9.7</kotlin.jackson.version>
     <lagom.version>[1.4.0,)</lagom.version>
     <ktlint.version>0.28.0</ktlint.version>
-    <kotlintest.version>3.1.10</kotlintest.version>
+    <embedded.elasticsearch.version>2.7.0</embedded.elasticsearch.version>
+    <assertj.core.version>3.11.1</assertj.core.version>
     <antrun.plugin.version>1.8</antrun.plugin.version>
     <source.plugin.version>3.0.1</source.plugin.version>
     <jar.plugin.version>3.1.0</jar.plugin.version>
@@ -56,6 +58,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
   <dependencies>
+    <!-- provided dependencies -->
     <dependency>
       <groupId>org.jetbrains.kotlin</groupId>
       <artifactId>kotlin-stdlib-jdk8</artifactId>
@@ -66,18 +69,28 @@
       <artifactId>kotlin-reflect</artifactId>
       <version>${kotlin.version}</version>
     </dependency>
-    <!-- provided dependencies -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.module</groupId>
+      <artifactId>jackson-module-kotlin</artifactId>
+      <version>${kotlin.jackson.version}</version>
+    </dependency>
+
     <dependency>
       <groupId>com.lightbend.lagom</groupId>
       <artifactId>lagom-javadsl-api_${scala.binary.version}</artifactId>
       <version>${lagom.version}</version>
-      <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.taymyr</groupId>
+      <artifactId>lagom-extensions</artifactId>
+      <version>0.0.2</version>
+    </dependency>
+
     <!-- test dependencies -->
     <dependency>
-      <groupId>io.kotlintest</groupId>
-      <artifactId>kotlintest-runner-junit5</artifactId>
-      <version>${kotlintest.version}</version>
+      <groupId>com.lightbend.lagom</groupId>
+      <artifactId>lagom-javadsl-testkit_${scala.binary.version}</artifactId>
+      <version>${lagom.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -86,16 +99,42 @@
       <version>${lagom.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>pl.allegro.tech</groupId>
+      <artifactId>embedded-elasticsearch</artifactId>
+      <version>${embedded.elasticsearch.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>${assertj.core.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
     <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
+    <testResources>
+      <testResource>
+        <directory>${project.basedir}/src/test/resources</directory>
+      </testResource>
+    </testResources>
     <plugins>
       <plugin>
         <groupId>org.jetbrains.kotlin</groupId>
         <artifactId>kotlin-maven-plugin</artifactId>
         <version>${kotlin.version}</version>
         <configuration>
+          <compilerPlugins>
+            <plugin>all-open</plugin>
+            <plugin>no-arg</plugin>
+          </compilerPlugins>
+          <jvmTarget>1.8</jvmTarget>
+          <pluginOptions>
+            <option>no-arg:annotation=org.taymyr.lagom.elasticsearch.DTOAnnotation</option>
+            <option>all-open:annotation=org.taymyr.lagom.elasticsearch.DTOAnnotation</option>
+          </pluginOptions>
           <args>
             <arg>-Xjsr305=strict</arg>
             <arg>-Xjvm-default=enable</arg>
@@ -115,6 +154,18 @@
             </goals>
           </execution>
         </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-maven-allopen</artifactId>
+            <version>${kotlin.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-maven-noarg</artifactId>
+            <version>${kotlin.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -270,39 +321,6 @@
           <nexusUrl>https://oss.sonatype.org/</nexusUrl>
           <autoReleaseAfterClose>true</autoReleaseAfterClose>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>com.github.alexcojocaru</groupId>
-        <artifactId>elasticsearch-maven-plugin</artifactId>
-        <!-- REPLACE THE FOLLOWING WITH THE PLUGIN VERSION YOU NEED -->
-        <version>6.0</version>
-        <configuration>
-          <!-- REPLACE THE FOLLOWING WITH THE ELASTICSEARCH VERSION YOU NEED -->
-          <version>6.0.0</version>
-          <clusterName>test</clusterName>
-          <transportPort>9300</transportPort>
-          <httpPort>9200</httpPort>
-        </configuration>
-        <executions>
-          <!--
-              The elasticsearch maven plugin goals are by default bound to the
-              pre-integration-test and post-integration-test phases
-          -->
-          <execution>
-            <id>start-elasticsearch</id>
-            <phase>pre-integration-test</phase>
-            <goals>
-              <goal>runforked</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>stop-elasticsearch</id>
-            <phase>post-integration-test</phase>
-            <goals>
-              <goal>stop</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
