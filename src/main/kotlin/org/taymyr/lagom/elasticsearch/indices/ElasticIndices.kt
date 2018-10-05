@@ -11,8 +11,8 @@ import com.lightbend.lagom.javadsl.api.transport.Method.DELETE
 import com.lightbend.lagom.javadsl.api.transport.Method.GET
 import com.lightbend.lagom.javadsl.api.transport.Method.HEAD
 import com.lightbend.lagom.javadsl.api.transport.Method.PUT
-import org.taymyr.lagom.elasticsearch.deser.ElasticJacksonSerializerFactory
-import org.taymyr.lagom.elasticsearch.deser.ListStringPathParamSerializer
+import org.taymyr.lagom.elasticsearch.deser.ElasticSerializerFactory
+import org.taymyr.lagom.elasticsearch.deser.LIST
 import org.taymyr.lagom.elasticsearch.indices.dsl.CreateIndex
 import org.taymyr.lagom.elasticsearch.indices.dsl.CreateIndexResult
 import org.taymyr.lagom.elasticsearch.indices.dsl.DeleteIndicesResult
@@ -59,7 +59,7 @@ interface ElasticIndices : Service {
             restCall<NotUsed, Done>(HEAD, "/:indices", ElasticIndices::exists.javaMethod),
             restCall<NotUsed, Map<String, IndexInfo>>(GET, "/:indices", ElasticIndices::get.javaMethod)
         )
-            .withSerializerFactory(ElasticJacksonSerializerFactory)
-            .withPathParamSerializer(List::class.java, ListStringPathParamSerializer)
+            .withSerializerFactory(ElasticSerializerFactory)
+            .withPathParamSerializer(List::class.java, LIST)
     }
 }
