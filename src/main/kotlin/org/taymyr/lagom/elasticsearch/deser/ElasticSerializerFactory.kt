@@ -11,7 +11,7 @@ import com.lightbend.lagom.javadsl.jackson.JacksonSerializerFactory
  * Serializers factory, adopted to ElasticSearch APIs.
  * @author Sergey Morgunov
  */
-object ElasticJacksonSerializerFactory : JacksonSerializerFactory(
+object ElasticSerializerFactory : JacksonSerializerFactory(
     ObjectMapper()
         .registerModule(KotlinModule())
         .setPropertyNamingStrategy(SNAKE_CASE)
