@@ -1,18 +1,32 @@
 package org.taymyr.lagom.elasticsearch.search
 
 import io.kotlintest.extensions.TestListener
+import io.kotlintest.matchers.beInstanceOf
 import io.kotlintest.matchers.collections.shouldHaveSize
 import io.kotlintest.shouldBe
+import io.kotlintest.shouldNotBe
 import io.kotlintest.specs.WordSpec
 import io.kotlintest.whenReady
+import org.taymyr.lagom.elasticsearch.AutocompleteFilter
+import org.taymyr.lagom.elasticsearch.IndexedSampleCategory
 import org.taymyr.lagom.elasticsearch.LagomClientAndEmbeddedElastic
+import org.taymyr.lagom.elasticsearch.SampleCategory
+import org.taymyr.lagom.elasticsearch.SampleCategoryResult
 import org.taymyr.lagom.elasticsearch.SampleDocument
 import org.taymyr.lagom.elasticsearch.SampleDocumentResult
 import org.taymyr.lagom.elasticsearch.deser.invoke
 import org.taymyr.lagom.elasticsearch.deser.invokeT
+import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkRequestFabric
+import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkResult
+import org.taymyr.lagom.elasticsearch.indices.dsl.Analyzer
+import org.taymyr.lagom.elasticsearch.indices.dsl.CreateIndex
+import org.taymyr.lagom.elasticsearch.indices.dsl.MappingProperties
+import org.taymyr.lagom.elasticsearch.indices.dsl.MappingProperty
+import org.taymyr.lagom.elasticsearch.indices.dsl.MappingTypes
 import org.taymyr.lagom.elasticsearch.search.dsl.SearchRequest
 import org.taymyr.lagom.elasticsearch.search.dsl.query.Ids
 import org.taymyr.lagom.elasticsearch.search.dsl.query.IdsQuery
+import org.taymyr.lagom.elasticsearch.search.dsl.query.MatchQuery
 import java.lang.Thread.sleep
 
 class ElasticSearchIT : WordSpec() {
@@ -41,6 +55,89 @@ class ElasticSearchIT : WordSpec() {
                         hits[0].score shouldBe 1.0
                         hits[0].source.user shouldBe "user-2"
                         hits[0].source.message shouldBe "message-2"
+                    }
+                }
+            }
+        }
+        "Advanced ElasticSearch" should {
+            "create index with analyzer" {
+                val request = CreateIndex(
+                    CreateIndex.Settings(1, 1, CreateIndex.Analysis(
+                        mapOf(
+                            "autocomplete_filter" to AutocompleteFilter(
+                                "edge_ngram",
+                                1,
+                                20
+                            )
+                        ),
+                        mapOf(
+                            "autocomplete" to Analyzer(
+                                "custom",
+                                "standard",
+                                listOf(
+                                    "lowercase",
+                                    "autocomplete_filter"
+                                )
+                            )
+                        )
+                    )),
+                    mapOf(
+                        "some_type" to CreateIndex.Mapping(mapOf(
+                            "id" to MappingProperties.LONG,
+                            "name" to MappingProperty(MappingTypes.TEXT, "autocomplete"),
+                            "title" to MappingProperties.OBJECT,
+                            "technicalName" to MappingProperties.TEXT,
+                            "attachAllowed" to MappingProperties.BOOLEAN
+                        ))
+                    )
+                )
+                whenReady(elasticIndices.create("category").invoke(request).toCompletableFuture()) { result ->
+                    result.acknowledged shouldBe true
+                    result.shardsAcknowledged shouldBe true
+                    result.index shouldBe "category"
+                }
+            }
+            "successful add test category" {
+                val request = BulkRequestFabric()
+                    .newCommand().forId("1").withElement(IndexedSampleCategory(
+                        SampleCategory(
+                            1,
+                            listOf("test"),
+                            null,
+                            null,
+                            true
+                        )
+                    )).create()
+                    .complete()
+                whenReady(elasticDocument.bulk("category", "some_type").invoke(request).toCompletableFuture()) { result ->
+                    result shouldBe beInstanceOf(BulkResult::class)
+                    result.errors shouldBe false
+                    result.items shouldHaveSize 1
+                    val item = result.items[0]
+                    item.status shouldBe 201
+                    item.command shouldBe "create"
+                    item.result shouldBe "created"
+                    item.error shouldBe null
+                    item.index shouldBe "category"
+                    item.type shouldBe "some_type"
+                    item.id shouldBe "1"
+                }
+            }
+            "successful search document using autocomplete filter" {
+                sleep(1000)
+                val searchRequest = SearchRequest(
+                    MatchQuery(object : MatchQuery.Match {
+                        val name = "te"
+                    })
+                )
+                whenReady(elasticSearch.search(listOf("category"), listOf("some_type"))
+                    .invokeT<SearchRequest, SampleCategoryResult>(searchRequest).toCompletableFuture()) { result ->
+                    result.tamedOut shouldBe false
+                    result.hits.run {
+                        total shouldBe 1
+                        hits shouldHaveSize 1
+                        hits[0].source.name shouldNotBe null
+                        hits[0].source.name!![0] shouldBe "test"
                     }
                 }
             }

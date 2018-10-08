@@ -10,10 +10,14 @@ import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import io.kotlintest.specs.WordSpec
 import io.kotlintest.whenReady
+import org.taymyr.lagom.elasticsearch.AutocompleteFilter
 import org.taymyr.lagom.elasticsearch.LagomClientAndEmbeddedElastic
+import org.taymyr.lagom.elasticsearch.indices.dsl.Analyzer
 import org.taymyr.lagom.elasticsearch.indices.dsl.CreateIndex
-import org.taymyr.lagom.elasticsearch.indices.dsl.CreateIndex.Index
 import org.taymyr.lagom.elasticsearch.indices.dsl.CreateIndex.Settings
+import org.taymyr.lagom.elasticsearch.indices.dsl.MappingProperties
+import org.taymyr.lagom.elasticsearch.indices.dsl.MappingProperty
+import org.taymyr.lagom.elasticsearch.indices.dsl.MappingTypes
 import java.util.concurrent.ExecutionException
 
 class ElasticIndicesIT : WordSpec() {
@@ -22,7 +26,7 @@ class ElasticIndicesIT : WordSpec() {
 
     init {
         val def = Pair("def", CreateIndex())
-        val custom = Pair("custom", CreateIndex(Settings(Index(3, 3))))
+        val custom = Pair("custom", CreateIndex(Settings(3, 3)))
 
         "Index" should {
             "created without settings" {
@@ -66,8 +70,8 @@ class ElasticIndicesIT : WordSpec() {
                     }
                     result[custom.first].let { index -> index!!
                         index.settings.index.run {
-                            numberOfReplicas shouldBe custom.second.settings?.index?.numberOfReplicas
-                            numberOfShards shouldBe custom.second.settings?.index?.numberOfShards
+                            numberOfReplicas shouldBe custom.second.settings?.numberOfReplicas
+                            numberOfShards shouldBe custom.second.settings?.numberOfShards
                         }
                     }
                 }
@@ -75,6 +79,43 @@ class ElasticIndicesIT : WordSpec() {
             "deleted" {
                 whenReady(elasticIndices.delete(listOf(def.first, custom.first)).invoke().toCompletableFuture()) { result ->
                     result.acknowledged shouldBe true
+                }
+            }
+            "created with filter" {
+                val request = CreateIndex(
+                    Settings(1, 1, CreateIndex.Analysis(
+                        mapOf(
+                            "autocomplete_filter" to AutocompleteFilter(
+                                "edge_ngram",
+                                1,
+                                20
+                            )
+                        ),
+                        mapOf(
+                            "autocomplete" to Analyzer(
+                                "custom",
+                                "standard",
+                                listOf(
+                                    "lowercase",
+                                    "autocomplete_filter"
+                                )
+                            )
+                        )
+                    )),
+                    mapOf(
+                        "some_type" to CreateIndex.Mapping(mapOf(
+                            "id" to MappingProperties.LONG,
+                            "name" to MappingProperty(MappingTypes.TEXT, "autocomplete"),
+                            "title" to MappingProperties.OBJECT,
+                            "technicalName" to MappingProperties.TEXT,
+                            "attachAllowed" to MappingProperties.BOOLEAN
+                        ))
+                    )
+                )
+                whenReady(elasticIndices.create("test").invoke(request).toCompletableFuture()) { result ->
+                    result.acknowledged shouldBe true
+                    result.shardsAcknowledged shouldBe true
+                    result.index shouldBe "test"
                 }
             }
         }
