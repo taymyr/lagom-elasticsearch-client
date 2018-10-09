@@ -32,3 +32,12 @@ deploy:
   skip_cleanup: true
   on:
     branch: develop
+
+notifications:
+  webhooks:
+    urls:
+      - "https://webhooks.gitter.im/e/9e04688b0ae124f5a047"
+      - "https://webhooks.gitter.im/e/869b1a645dc46645e619"
+    on_success: change
+    on_failure: always
+    on_start: never
