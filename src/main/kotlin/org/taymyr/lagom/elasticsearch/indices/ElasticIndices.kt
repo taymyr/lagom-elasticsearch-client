@@ -21,7 +21,6 @@ import kotlin.reflect.jvm.javaMethod
 
 /**
  * Lagom service wrapper for [Elasticsearch Indices APIs](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices.html)
- * @author Sergey Morgunov
  */
 interface ElasticIndices : Service {
 
@@ -59,7 +58,7 @@ interface ElasticIndices : Service {
             restCall<NotUsed, Done>(HEAD, "/:indices", ElasticIndices::exists.javaMethod),
             restCall<NotUsed, Map<String, IndexInfo>>(GET, "/:indices", ElasticIndices::get.javaMethod)
         )
-            .withSerializerFactory(ElasticSerializerFactory)
+            .withSerializerFactory(ElasticSerializerFactory())
             .withPathParamSerializer(List::class.java, LIST)
     }
 }

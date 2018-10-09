@@ -10,15 +10,16 @@ import com.lightbend.lagom.javadsl.api.Service.restCall
 import com.lightbend.lagom.javadsl.api.ServiceCall
 import com.lightbend.lagom.javadsl.api.transport.Method.GET
 import com.lightbend.lagom.javadsl.api.transport.Method.HEAD
+import com.lightbend.lagom.javadsl.api.transport.Method.POST
 import com.lightbend.lagom.javadsl.api.transport.Method.PUT
-import org.taymyr.lagom.elasticsearch.deser.ByteStringMessageSerializer
 import org.taymyr.lagom.elasticsearch.deser.ElasticSerializerFactory
 import org.taymyr.lagom.elasticsearch.document.dsl.IndexDocumentResult
+import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkRequest
+import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkResult
 import kotlin.reflect.jvm.javaMethod
 
 /**
  * Lagom service wrapper for [Elasticsearch Document APIs](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs.html)
- * @author Sergey Morgunov
  */
 interface ElasticDocument : Service {
 
@@ -52,6 +53,12 @@ interface ElasticDocument : Service {
      */
     fun existsSource(index: String, type: String, id: String): ServiceCall<NotUsed, Done>
 
+    /**
+     * Executing bulk requests.
+     * See also [Elasticsearch Docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html)
+     */
+    fun bulk(index: String, type: String): ServiceCall<BulkRequest, BulkResult>
+
     @JvmDefault
     override fun descriptor(): Descriptor {
         return named("elastic-document").withCalls(
@@ -59,9 +66,9 @@ interface ElasticDocument : Service {
             restCall<NotUsed, ByteString>(GET, "/:index/:type/:id", ElasticDocument::get.javaMethod),
             restCall<NotUsed, Done>(HEAD, "/:index/:type/:id", ElasticDocument::exists.javaMethod),
             restCall<NotUsed, ByteString>(GET, "/:index/:type/:id/_source", ElasticDocument::getSource.javaMethod),
-            restCall<NotUsed, Done>(HEAD, "/:index/:type/:id/_source", ElasticDocument::existsSource.javaMethod)
+            restCall<NotUsed, Done>(HEAD, "/:index/:type/:id/_source", ElasticDocument::existsSource.javaMethod),
+            restCall<BulkRequest, BulkResult>(POST, "/:index/:type/_bulk", ElasticDocument::bulk.javaMethod)
         )
-            .withMessageSerializer(ByteString::class.java, ByteStringMessageSerializer())
-            .withSerializerFactory(ElasticSerializerFactory)
+            .withSerializerFactory(ElasticSerializerFactory())
     }
 }
