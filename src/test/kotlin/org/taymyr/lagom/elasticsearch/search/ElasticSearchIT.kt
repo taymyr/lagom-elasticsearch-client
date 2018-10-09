@@ -24,8 +24,9 @@ import org.taymyr.lagom.elasticsearch.indices.dsl.CustomAnalyzer
 import org.taymyr.lagom.elasticsearch.indices.dsl.DataType
 import org.taymyr.lagom.elasticsearch.indices.dsl.MappingProperty
 import org.taymyr.lagom.elasticsearch.search.dsl.SearchRequest
-import org.taymyr.lagom.elasticsearch.search.dsl.query.Ids
-import org.taymyr.lagom.elasticsearch.search.dsl.query.MatchQuery
+import org.taymyr.lagom.elasticsearch.search.dsl.query.fulltext.Match
+import org.taymyr.lagom.elasticsearch.search.dsl.query.fulltext.MatchQuery
+import org.taymyr.lagom.elasticsearch.search.dsl.query.term.Ids
 import org.taymyr.lagom.elasticsearch.search.dsl.query.term.IdsQuery
 import java.lang.Thread.sleep
 
@@ -72,7 +73,6 @@ class ElasticSearchIT : WordSpec() {
                         ),
                         mapOf(
                             "autocomplete" to CustomAnalyzer(
-                                "custom",
                                 "standard",
                                 listOf(
                                     "lowercase",
@@ -121,7 +121,7 @@ class ElasticSearchIT : WordSpec() {
             "successful search document using autocomplete filter" {
                 sleep(1000)
                 val searchRequest = SearchRequest(
-                    MatchQuery(object : MatchQuery.Match {
+                    MatchQuery(object : Match {
                         val name = "te"
                     })
                 )

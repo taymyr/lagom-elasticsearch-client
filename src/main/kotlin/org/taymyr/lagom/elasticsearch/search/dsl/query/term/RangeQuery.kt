@@ -1,14 +1,12 @@
 package org.taymyr.lagom.elasticsearch.search.dsl.query.term
 
-import java.util.OptionalInt
-
+/**
+ * See [Elasticsearch Docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-range-query.html)
+ */
 data class RangeQuery(val range: Range) : TermLevelQuery {
-    interface Range
     companion object {
         @JvmStatic fun ofRange(range: Range) = RangeQuery(range)
+
+        @JvmStatic fun numericRange() = NumericRange.Builder()
     }
-    data class LteGte(
-        val lte: OptionalInt,
-        val gte: OptionalInt
-    )
 }

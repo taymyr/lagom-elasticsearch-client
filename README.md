@@ -1,3 +1,7 @@
+[![codebeat badge](https://codebeat.co/badges/86fbe835-7f06-43b1-95da-ecddc0a0ebe1)](https://codebeat.co/projects/github-com-taymyr-lagom-elasticsearch-client-java-develop)
+[![Build Status](https://travis-ci.org/taymyr/lagom-elasticsearch-client-java.svg?branch=develop)](https://travis-ci.org/taymyr/lagom-elasticsearch-client-java)
+[![codecov](https://codecov.io/gh/taymyr/lagom-elasticsearch-client-java/branch/develop/graph/badge.svg)](https://codecov.io/gh/taymyr/lagom-elasticsearch-client-java)
+
 # Lagom client for [Elasticsearch](https://www.elastic.co/products/elasticsearch)
 
 TODO

@@ -14,16 +14,17 @@ import java.lang.reflect.Type
 /**
  * Serializers factory, adopted to ElasticSearch APIs.
  */
-class ElasticSerializerFactory(val objectMapper: ObjectMapper) : JacksonSerializerFactory(objectMapper) {
+class ElasticSerializerFactory(internal val mapper: ObjectMapper) : JacksonSerializerFactory(mapper) {
     constructor() : this(ObjectMapper()
         .registerModule(KotlinModule())
         .setPropertyNamingStrategy(SNAKE_CASE)
         .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
         .setSerializationInclusion(NON_NULL)
     )
+    @Suppress("UNCHECKED_CAST")
     override fun <MessageEntity : Any?> messageSerializerFor(type: Type?): StrictMessageSerializer<MessageEntity> {
         return when (type) {
-            BulkRequest::class.javaObjectType -> BulkRequestSerializer()
+            BulkRequest::class.javaObjectType -> BulkRequestSerializer(mapper)
             ByteString::class.javaObjectType -> ByteStringMessageSerializer()
             else -> super.messageSerializerFor(type)
         } as StrictMessageSerializer<MessageEntity>

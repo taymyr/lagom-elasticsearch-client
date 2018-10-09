@@ -92,7 +92,6 @@ class ElasticIndicesIT : WordSpec() {
                         ),
                         mapOf(
                             "autocomplete" to CustomAnalyzer(
-                                "custom",
                                 "standard",
                                 listOf(
                                     "lowercase",
