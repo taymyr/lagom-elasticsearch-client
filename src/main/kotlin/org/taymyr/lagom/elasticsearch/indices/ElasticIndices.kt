@@ -58,7 +58,7 @@ interface ElasticIndices : Service {
             restCall<NotUsed, Done>(HEAD, "/:indices", ElasticIndices::exists.javaMethod),
             restCall<NotUsed, Map<String, IndexInfo>>(GET, "/:indices", ElasticIndices::get.javaMethod)
         )
-            .withSerializerFactory(ElasticSerializerFactory)
+            .withSerializerFactory(ElasticSerializerFactory())
             .withPathParamSerializer(List::class.java, LIST)
     }
 }

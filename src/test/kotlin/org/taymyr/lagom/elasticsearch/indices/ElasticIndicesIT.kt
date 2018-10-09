@@ -12,12 +12,11 @@ import io.kotlintest.specs.WordSpec
 import io.kotlintest.whenReady
 import org.taymyr.lagom.elasticsearch.AutocompleteFilter
 import org.taymyr.lagom.elasticsearch.LagomClientAndEmbeddedElastic
-import org.taymyr.lagom.elasticsearch.indices.dsl.Analyzer
 import org.taymyr.lagom.elasticsearch.indices.dsl.CreateIndex
 import org.taymyr.lagom.elasticsearch.indices.dsl.CreateIndex.Settings
-import org.taymyr.lagom.elasticsearch.indices.dsl.MappingProperties
+import org.taymyr.lagom.elasticsearch.indices.dsl.CustomAnalyzer
+import org.taymyr.lagom.elasticsearch.indices.dsl.DataType
 import org.taymyr.lagom.elasticsearch.indices.dsl.MappingProperty
-import org.taymyr.lagom.elasticsearch.indices.dsl.MappingTypes
 import java.util.concurrent.ExecutionException
 
 class ElasticIndicesIT : WordSpec() {
@@ -92,7 +91,7 @@ class ElasticIndicesIT : WordSpec() {
                             )
                         ),
                         mapOf(
-                            "autocomplete" to Analyzer(
+                            "autocomplete" to CustomAnalyzer(
                                 "custom",
                                 "standard",
                                 listOf(
@@ -104,11 +103,11 @@ class ElasticIndicesIT : WordSpec() {
                     )),
                     mapOf(
                         "some_type" to CreateIndex.Mapping(mapOf(
-                            "id" to MappingProperties.LONG,
-                            "name" to MappingProperty(MappingTypes.TEXT, "autocomplete"),
-                            "title" to MappingProperties.OBJECT,
-                            "technicalName" to MappingProperties.TEXT,
-                            "attachAllowed" to MappingProperties.BOOLEAN
+                            "id" to MappingProperty.LONG,
+                            "name" to MappingProperty(DataType.TEXT, "autocomplete"),
+                            "title" to MappingProperty.OBJECT,
+                            "technicalName" to MappingProperty.TEXT,
+                            "attachAllowed" to MappingProperty.BOOLEAN
                         ))
                     )
                 )

@@ -29,6 +29,6 @@ interface ElasticSearch : Service {
             restCall<SearchRequest, ByteString>(GET, "/:indices/:types/_search", ElasticSearch::search.javaMethod)
         )
             .withPathParamSerializer(List::class.java, LIST)
-            .withSerializerFactory(ElasticSerializerFactory)
+            .withSerializerFactory(ElasticSerializerFactory())
     }
 }

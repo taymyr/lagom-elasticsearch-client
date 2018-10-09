@@ -16,17 +16,17 @@ import org.taymyr.lagom.elasticsearch.SampleDocument
 import org.taymyr.lagom.elasticsearch.SampleDocumentResult
 import org.taymyr.lagom.elasticsearch.deser.invoke
 import org.taymyr.lagom.elasticsearch.deser.invokeT
-import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkRequestFabric
+import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkCreate
+import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkRequest
 import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkResult
-import org.taymyr.lagom.elasticsearch.indices.dsl.Analyzer
 import org.taymyr.lagom.elasticsearch.indices.dsl.CreateIndex
-import org.taymyr.lagom.elasticsearch.indices.dsl.MappingProperties
+import org.taymyr.lagom.elasticsearch.indices.dsl.CustomAnalyzer
+import org.taymyr.lagom.elasticsearch.indices.dsl.DataType
 import org.taymyr.lagom.elasticsearch.indices.dsl.MappingProperty
-import org.taymyr.lagom.elasticsearch.indices.dsl.MappingTypes
 import org.taymyr.lagom.elasticsearch.search.dsl.SearchRequest
 import org.taymyr.lagom.elasticsearch.search.dsl.query.Ids
-import org.taymyr.lagom.elasticsearch.search.dsl.query.IdsQuery
 import org.taymyr.lagom.elasticsearch.search.dsl.query.MatchQuery
+import org.taymyr.lagom.elasticsearch.search.dsl.query.term.IdsQuery
 import java.lang.Thread.sleep
 
 class ElasticSearchIT : WordSpec() {
@@ -71,7 +71,7 @@ class ElasticSearchIT : WordSpec() {
                             )
                         ),
                         mapOf(
-                            "autocomplete" to Analyzer(
+                            "autocomplete" to CustomAnalyzer(
                                 "custom",
                                 "standard",
                                 listOf(
@@ -83,11 +83,11 @@ class ElasticSearchIT : WordSpec() {
                     )),
                     mapOf(
                         "some_type" to CreateIndex.Mapping(mapOf(
-                            "id" to MappingProperties.LONG,
-                            "name" to MappingProperty(MappingTypes.TEXT, "autocomplete"),
-                            "title" to MappingProperties.OBJECT,
-                            "technicalName" to MappingProperties.TEXT,
-                            "attachAllowed" to MappingProperties.BOOLEAN
+                            "id" to MappingProperty.LONG,
+                            "name" to MappingProperty(DataType.TEXT, "autocomplete"),
+                            "title" to MappingProperty.OBJECT,
+                            "technicalName" to MappingProperty.TEXT,
+                            "attachAllowed" to MappingProperty.BOOLEAN
                         ))
                     )
                 )
@@ -98,24 +98,19 @@ class ElasticSearchIT : WordSpec() {
                 }
             }
             "successful add test category" {
-                val request = BulkRequestFabric()
-                    .newCommand().forId("1").withElement(IndexedSampleCategory(
-                        SampleCategory(
-                            1,
-                            listOf("test"),
-                            null,
-                            null,
-                            true
-                        )
-                    )).create()
-                    .complete()
+                val request = BulkRequest.ofCommands(BulkCreate("1", IndexedSampleCategory(SampleCategory(
+                    1,
+                    listOf("test"),
+                    null,
+                    null,
+                    true
+                ))))
                 whenReady(elasticDocument.bulk("category", "some_type").invoke(request).toCompletableFuture()) { result ->
                     result shouldBe beInstanceOf(BulkResult::class)
                     result.errors shouldBe false
                     result.items shouldHaveSize 1
                     val item = result.items[0]
                     item.status shouldBe 201
-                    item.command shouldBe "create"
                     item.result shouldBe "created"
                     item.error shouldBe null
                     item.index shouldBe "category"

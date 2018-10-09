@@ -1,7 +1,7 @@
 package org.taymyr.lagom.elasticsearch.indices.dsl
 
-data class Analyzer(
-    val type: String,
-    val tokenizer: String?,
-    val filter: List<String>?
-)
+abstract class Analyzer {
+    abstract val type: String
+    open val tokenizer: String? = null
+    open val filter: List<String>? = null
+}

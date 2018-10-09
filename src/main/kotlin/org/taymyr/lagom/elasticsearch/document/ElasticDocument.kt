@@ -69,6 +69,6 @@ interface ElasticDocument : Service {
             restCall<NotUsed, Done>(HEAD, "/:index/:type/:id/_source", ElasticDocument::existsSource.javaMethod),
             restCall<BulkRequest, BulkResult>(POST, "/:index/:type/_bulk", ElasticDocument::bulk.javaMethod)
         )
-            .withSerializerFactory(ElasticSerializerFactory)
+            .withSerializerFactory(ElasticSerializerFactory())
     }
 }

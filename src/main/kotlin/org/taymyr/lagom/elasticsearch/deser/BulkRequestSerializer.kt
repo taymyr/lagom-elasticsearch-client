@@ -1,14 +1,16 @@
-package org.taymyr.lagom.elasticsearch.document.dsl.bulk
+package org.taymyr.lagom.elasticsearch.deser
 
 import akka.util.ByteString
 import akka.util.ByteStringBuilder
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.annotation.JsonInclude.Include.ALWAYS
 import com.lightbend.lagom.javadsl.api.deser.MessageSerializer
 import com.lightbend.lagom.javadsl.api.deser.StrictMessageSerializer
 import com.lightbend.lagom.javadsl.api.transport.MessageProtocol
+import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkCreate
+import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkIndex
+import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkRequest
+import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkUpdate
+import java.io.OutputStream
 import java.util.Optional
 
 class BulkRequestSerializer : StrictMessageSerializer<BulkRequest> {
@@ -16,10 +18,8 @@ class BulkRequestSerializer : StrictMessageSerializer<BulkRequest> {
     internal inner class Serializer(
         private val protocol: MessageProtocol
     ) : MessageSerializer.NegotiatedSerializer<BulkRequest, ByteString> {
-        private val mapper = ObjectMapper()
-            .registerModule(KotlinModule())
-            .registerModule(Jdk8Module())
-            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+        private val mapper = ElasticSerializerFactory().objectMapper
+        private val mapperAlwaysNull = mapper.copy().setSerializationInclusion(ALWAYS)
         override fun protocol() = protocol
         override fun serialize(entity: BulkRequest): ByteString {
             val builder = ByteStringBuilder()
@@ -28,33 +28,27 @@ class BulkRequestSerializer : StrictMessageSerializer<BulkRequest> {
                 run {
                     mapper.writeValue(os, command)
                     when (command) {
-                        is CreateBulkCommand -> run {
-                            builder.addEmptyLine()
+                        is BulkCreate -> run {
+                            os.writeNextLine()
                             mapper.writeValue(os, command.element.source)
                         }
-                        is IndexBulkCommand -> run {
-                            builder.addEmptyLine()
+                        is BulkIndex -> run {
+                            os.writeNextLine()
                             mapper.writeValue(os, command.element.source)
                         }
-                        is UpdateBulkCommand -> run {
-                            builder.addEmptyLine()
+                        is BulkUpdate -> run {
+                            os.writeNextLine()
                             val valueToSerialize = mapOf("doc" to command.element.source)
-                            if (command.ignoreNull) {
-                                mapper.writeValue(os, valueToSerialize)
-                            } else {
-                                mapper.copy().setSerializationInclusion(JsonInclude.Include.ALWAYS)
-                                    .writeValue(os, valueToSerialize)
-                            }
+                            mapperAlwaysNull.writeValue(os, valueToSerialize)
                         }
                         else -> {} // Ignore
                     }
-                    builder.addEmptyLine()
+                    os.writeNextLine()
                 }
             }
             return builder.result()
         }
-        private val el = ByteString.fromString("\n")
-        private fun ByteStringBuilder.addEmptyLine() = this.append(el)
+        private fun OutputStream.writeNextLine() = this.write('\n'.toInt())
     }
     override fun serializerForResponse(acceptedMessageProtocols: MutableList<MessageProtocol>) = serializerForRequest()
     override fun serializerForRequest(): MessageSerializer.NegotiatedSerializer<BulkRequest, ByteString> = Serializer(defaultProtocol)

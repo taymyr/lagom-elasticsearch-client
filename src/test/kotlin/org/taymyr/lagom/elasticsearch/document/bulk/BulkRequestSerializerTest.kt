@@ -7,8 +7,12 @@ import io.kotlintest.shouldThrow
 import io.kotlintest.specs.WordSpec
 import org.taymyr.lagom.elasticsearch.IndexedSampleDocument
 import org.taymyr.lagom.elasticsearch.SampleDocument
-import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkRequestFabric
-import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkRequestSerializer
+import org.taymyr.lagom.elasticsearch.deser.BulkRequestSerializer
+import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkCreate
+import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkDelete
+import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkIndex
+import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkRequest
+import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkUpdate
 import java.nio.charset.Charset
 import java.util.Optional
 
@@ -31,7 +35,7 @@ class BulkRequestSerializerTest : WordSpec({
     }
     "Delete" should {
         "serialize to json successfully" {
-            val request = BulkRequestFabric().newCommand().forId("1").delete().complete()
+            val request = BulkRequest.ofCommands(BulkDelete("1"))
             val serializer = BulkRequestSerializer().serializerForRequest()
             val result = serializer.serialize(request).decodeString(Charset.defaultCharset())
             result.trimEnd() shouldBe """{"delete":{"_id":"1"}}"""
@@ -39,7 +43,7 @@ class BulkRequestSerializerTest : WordSpec({
     }
     "Create" should {
         "serialize to json successfully" {
-            val request = BulkRequestFabric().newCommand().forId("1").withElement(testEntity).create().complete()
+            val request = BulkRequest.ofCommands(BulkCreate("1", testEntity))
             val serializer = BulkRequestSerializer().serializerForRequest()
             val result = serializer.serialize(request).decodeString(Charset.defaultCharset())
             val need = """{"create":{"_id":"1"}}
@@ -50,7 +54,7 @@ class BulkRequestSerializerTest : WordSpec({
     }
     "Index" should {
         "serialize to json successfully" {
-            val request = BulkRequestFabric().newCommand().forId("1").withElement(testEntity).index().complete()
+            val request = BulkRequest.ofCommands(BulkIndex("1", testEntity))
             val serializer = BulkRequestSerializer().serializerForRequest()
             val result = serializer.serialize(request).decodeString(Charset.defaultCharset())
             val need = """{"index":{"_id":"1"}}
@@ -59,20 +63,15 @@ class BulkRequestSerializerTest : WordSpec({
             result.trimEnd() shouldBe need
         }
     }
+    // TODO(Ilya Korshunov) rewrite tests
     "Update" should {
         "serialize to json successfully" {
             val testEntityWithNull = IndexedSampleDocument(SampleDocument("test", null))
-            val request = BulkRequestFabric()
-                .newCommand().forId("1").withElement(testEntityWithNull).update()
-                .newCommand().forId("2").withElement(testEntityWithNull).update(false)
-                .complete()
+            val request = BulkRequest.ofCommands(BulkUpdate("1", testEntityWithNull))
             val serializer = BulkRequestSerializer().serializerForRequest()
             val result = serializer.serialize(request).decodeString(Charset.defaultCharset())
             val need = """{"update":{"_id":"1"}}
-                |{"doc":{"user":"test"}}
-                |{"update":{"_id":"2"}}
-                |{"doc":{"user":"test","message":null}}
-            """.trimMargin()
+                |{"doc":{"user":"test","message":null}}""".trimMargin()
             result.trimEnd() shouldBe need
         }
     }

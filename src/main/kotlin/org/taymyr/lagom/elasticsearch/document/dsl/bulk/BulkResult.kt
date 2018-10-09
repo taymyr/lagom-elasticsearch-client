@@ -2,44 +2,43 @@ package org.taymyr.lagom.elasticsearch.document.dsl.bulk
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonSetter
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As.WRAPPER_OBJECT
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME
 
 data class BulkResult @JsonCreator constructor(
     @JsonProperty("errors")
-    val errors: Boolean
+    val errors: Boolean,
+    @JsonProperty("items")
+    val items: List<BulkCommandResult>
 ) {
 
-    lateinit var items: List<ResultItem>
-
-    @Suppress("unused")
-    @JsonSetter("items")
-    fun itemsSetter(value: List<Map<String, ResultItem>>) {
-        this.items = value.map { i ->
-            i.map { v -> v.value.apply { command = v.key } }[0]
-        }
-    }
-    data class ResultItem(
-        val index: String,
-        val type: String,
-        val id: String,
-        val status: Long,
-        val result: String?,
-        val error: ResultItemError?,
-        var command: String = ""
-    ) {
-        @JsonCreator constructor(
-            @JsonProperty("_index") index: String,
-            @JsonProperty("_type") type: String,
-            @JsonProperty("_id") id: String,
-            @JsonProperty("status") status: Long,
-            @JsonProperty("result") result: String?,
-            @JsonProperty("error") error: ResultItemError?
-        ) : this(index, type, id, status, result, error, "")
-    }
-    data class ResultItemError @JsonCreator constructor(
-        @JsonProperty("type")
-        val type: String,
-        @JsonProperty("reason")
-        val reason: String
+    @JsonTypeInfo(include = WRAPPER_OBJECT, use = NAME)
+    @JsonSubTypes(
+        Type(BulkCreateResult::class, name = "create"),
+        Type(BulkIndexResult::class, name = "index"),
+        Type(BulkUpdateResult::class, name = "update"),
+        Type(BulkDeleteResult::class, name = "delete")
     )
+    abstract class BulkCommandResult {
+        @JsonProperty("_index") lateinit var index: String
+        @JsonProperty("_type") lateinit var type: String
+        @JsonProperty("_id") lateinit var id: String
+        val status: Long = -1
+        val result: String? = null
+        val error: ResultItemError? = null
+        data class ResultItemError @JsonCreator constructor(
+            @JsonProperty("type")
+            val type: String,
+            @JsonProperty("reason")
+            val reason: String
+        )
+    }
+
+    class BulkCreateResult : BulkCommandResult()
+    class BulkIndexResult : BulkCommandResult()
+    class BulkUpdateResult : BulkCommandResult()
+    class BulkDeleteResult : BulkCommandResult()
 }

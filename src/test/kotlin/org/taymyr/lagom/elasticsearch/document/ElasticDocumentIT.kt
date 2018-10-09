@@ -15,7 +15,10 @@ import org.taymyr.lagom.elasticsearch.LagomClientAndEmbeddedElastic
 import org.taymyr.lagom.elasticsearch.SampleDocument
 import org.taymyr.lagom.elasticsearch.deser.invoke
 import org.taymyr.lagom.elasticsearch.deser.invokeT
-import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkRequestFabric
+import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkCreate
+import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkDelete
+import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkIndex
+import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkRequest
 import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkResult
 
 class ElasticDocumentIT : WordSpec() {
@@ -63,16 +66,13 @@ class ElasticDocumentIT : WordSpec() {
             }
             val testEntity = IndexedSampleDocument(SampleDocument("tt", "mm"))
             "successfully add a document via bulk" {
-                val request = BulkRequestFabric()
-                    .newCommand().forId("12").withElement(testEntity).create()
-                    .complete()
+                val request = BulkRequest.ofCommands(BulkCreate("12", testEntity))
                 whenReady(elasticDocument.bulk("test", "sample").invoke(request).toCompletableFuture()) { result ->
                     result shouldBe beInstanceOf(BulkResult::class)
                     result.errors shouldBe false
                     result.items shouldHaveSize 1
                     val item = result.items[0]
                     item.status shouldBe 201
-                    item.command shouldBe "create"
                     item.result shouldBe "created"
                     item.error shouldBe null
                     item.index shouldBe "test"
@@ -81,46 +81,37 @@ class ElasticDocumentIT : WordSpec() {
                 }
             }
             "error on creating exists document" {
-                val request = BulkRequestFabric()
-                    .newCommand().forId("12").withElement(testEntity).create()
-                    .complete()
+                val request = BulkRequest.ofCommands(BulkCreate("12", testEntity))
                 whenReady(elasticDocument.bulk("test", "sample").invoke(request).toCompletableFuture()) { result ->
                     result shouldBe beInstanceOf(BulkResult::class)
                     result.errors shouldBe true
                     result.items shouldHaveSize 1
                     val item = result.items[0]
                     item.status shouldBe 409
-                    item.command shouldBe "create"
-                    item.error shouldBe beInstanceOf(BulkResult.ResultItemError::class)
+                    item.error shouldBe beInstanceOf(BulkResult.BulkCommandResult.ResultItemError::class)
                     item.error shouldNotBe null
                     item.error!!.reason shouldHave containIgnoringCase("document already exists")
                     item.error!!.type shouldBe "version_conflict_engine_exception"
                 }
             }
             "successful index exists document" {
-                val request = BulkRequestFabric()
-                    .newCommand().forId("12").withElement(testEntity).index()
-                    .complete()
+                val request = BulkRequest.ofCommands(BulkIndex("12", testEntity))
                 whenReady(elasticDocument.bulk("test", "sample").invoke(request).toCompletableFuture()) { result ->
                     result shouldBe beInstanceOf(BulkResult::class)
                     result.errors shouldBe false
                     result.items shouldHaveSize 1
                     val item = result.items[0]
-                    item.command shouldBe "index"
                     item.status shouldBe 200
                     item.result shouldBe "updated"
                 }
             }
             "successful delete document" {
-                val request = BulkRequestFabric()
-                    .newCommand().forId("12").delete()
-                    .complete()
+                val request = BulkRequest.ofCommands(BulkDelete("12"))
                 whenReady(elasticDocument.bulk("test", "sample").invoke(request).toCompletableFuture()) { result ->
                     result shouldBe beInstanceOf(BulkResult::class)
                     result.errors shouldBe false
                     result.items shouldHaveSize 1
                     val item = result.items[0]
-                    item.command shouldBe "delete"
                     item.status shouldBe 200
                     item.result shouldBe "deleted"
                 }
