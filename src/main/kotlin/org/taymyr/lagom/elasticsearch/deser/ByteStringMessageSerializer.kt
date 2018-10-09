@@ -14,8 +14,6 @@ import java.util.Optional.of
 
 /**
  * NOP message serializer for [ByteString].
- *
- * @author Sergey Morgunov
  */
 class ByteStringMessageSerializer : StrictMessageSerializer<ByteString> {
 

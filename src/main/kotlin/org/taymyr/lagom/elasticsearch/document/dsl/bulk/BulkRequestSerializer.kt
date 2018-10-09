@@ -11,9 +11,6 @@ import com.lightbend.lagom.javadsl.api.deser.StrictMessageSerializer
 import com.lightbend.lagom.javadsl.api.transport.MessageProtocol
 import java.util.Optional
 
-/**
- * @author Ilya Korshunov
- */
 class BulkRequestSerializer : StrictMessageSerializer<BulkRequest> {
     private val defaultProtocol = MessageProtocol(Optional.of("application/json"), Optional.of("utf-8"), Optional.empty())
     internal inner class Serializer(

@@ -4,9 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonTypeName
 import org.taymyr.lagom.elasticsearch.document.dsl.Document
 
-/**
- * @author Ilya Korshunov
- */
 @JsonTypeName("create")
 data class CreateBulkCommand(
     override val id: String,

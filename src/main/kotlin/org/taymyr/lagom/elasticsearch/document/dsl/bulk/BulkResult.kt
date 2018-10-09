@@ -4,9 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSetter
 
-/**
- * @author Ilya Korshunov
- */
 data class BulkResult @JsonCreator constructor(
     @JsonProperty("errors")
     val errors: Boolean

@@ -1,8 +1,5 @@
 package org.taymyr.lagom.elasticsearch.indices.dsl
 
-/**
- * @author Ilya Korshunov
- */
 class MappingProperties {
     companion object {
         @JvmStatic val LONG = MappingProperty(MappingTypes.LONG)

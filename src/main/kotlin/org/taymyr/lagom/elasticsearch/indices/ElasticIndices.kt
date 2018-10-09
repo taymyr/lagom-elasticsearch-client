@@ -21,7 +21,6 @@ import kotlin.reflect.jvm.javaMethod
 
 /**
  * Lagom service wrapper for [Elasticsearch Indices APIs](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices.html)
- * @author Sergey Morgunov
  */
 interface ElasticIndices : Service {
 

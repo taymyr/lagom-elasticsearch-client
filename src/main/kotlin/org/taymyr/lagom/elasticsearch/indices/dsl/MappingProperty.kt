@@ -1,8 +1,5 @@
 package org.taymyr.lagom.elasticsearch.indices.dsl
 
-/**
- * @author Ilya Korshunov
- */
 data class MappingProperty(
     val type: String,
     val analyzer: String? = null

@@ -2,9 +2,6 @@ package org.taymyr.lagom.elasticsearch.document.dsl.bulk
 
 import org.taymyr.lagom.elasticsearch.document.dsl.Document
 
-/**
- * @author Ilya Korshunov
- */
 class BulkRequestFabric {
 
     private val commands: MutableList<BulkCommand> = mutableListOf()
