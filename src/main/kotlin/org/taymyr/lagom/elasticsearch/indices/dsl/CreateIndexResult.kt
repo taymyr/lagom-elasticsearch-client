@@ -1,6 +1,11 @@
 package org.taymyr.lagom.elasticsearch.indices.dsl
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import javax.annotation.concurrent.Immutable
 
 @Immutable
-data class CreateIndexResult(val acknowledged: Boolean, val shardsAcknowledged: Boolean, val index: String)
+data class CreateIndexResult(
+    @JsonProperty("shards_acknowledged") val shardsAcknowledged: Boolean,
+    val acknowledged: Boolean,
+    val index: String
+)

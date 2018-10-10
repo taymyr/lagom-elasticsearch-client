@@ -1,5 +1,6 @@
 package org.taymyr.lagom.elasticsearch.indices.dsl
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import javax.annotation.concurrent.Immutable
 
 @Immutable
@@ -10,8 +11,8 @@ class CreateIndex(
 
     @Immutable
     data class Settings(
-        val numberOfShards: Int?,
-        val numberOfReplicas: Int?,
+        @JsonProperty("number_of_shards") val numberOfShards: Int?,
+        @JsonProperty("number_of_replicas") val numberOfReplicas: Int?,
         val analysis: Analysis? = null
     )
 

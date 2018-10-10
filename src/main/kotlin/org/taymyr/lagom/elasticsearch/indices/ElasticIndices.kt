@@ -3,7 +3,6 @@ package org.taymyr.lagom.elasticsearch.indices
 import akka.Done
 import akka.NotUsed
 import com.lightbend.lagom.javadsl.api.Descriptor
-import com.lightbend.lagom.javadsl.api.Service
 import com.lightbend.lagom.javadsl.api.Service.named
 import com.lightbend.lagom.javadsl.api.Service.restCall
 import com.lightbend.lagom.javadsl.api.ServiceCall
@@ -11,6 +10,7 @@ import com.lightbend.lagom.javadsl.api.transport.Method.DELETE
 import com.lightbend.lagom.javadsl.api.transport.Method.GET
 import com.lightbend.lagom.javadsl.api.transport.Method.HEAD
 import com.lightbend.lagom.javadsl.api.transport.Method.PUT
+import org.taymyr.lagom.elasticsearch.ElasticService
 import org.taymyr.lagom.elasticsearch.deser.ElasticSerializerFactory
 import org.taymyr.lagom.elasticsearch.deser.LIST
 import org.taymyr.lagom.elasticsearch.indices.dsl.CreateIndex
@@ -22,7 +22,7 @@ import kotlin.reflect.jvm.javaMethod
 /**
  * Lagom service wrapper for [Elasticsearch Indices APIs](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices.html)
  */
-interface ElasticIndices : Service {
+interface ElasticIndices : ElasticService {
 
     /**
      * Create index with name and settings.
@@ -58,7 +58,7 @@ interface ElasticIndices : Service {
             restCall<NotUsed, Done>(HEAD, "/:indices", ElasticIndices::exists.javaMethod),
             restCall<NotUsed, Map<String, IndexInfo>>(GET, "/:indices", ElasticIndices::get.javaMethod)
         )
-            .withSerializerFactory(ElasticSerializerFactory())
+            .withSerializerFactory(ElasticSerializerFactory(objectMapper()))
             .withPathParamSerializer(List::class.java, LIST)
     }
 }
