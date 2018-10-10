@@ -4,7 +4,6 @@ import akka.Done
 import akka.NotUsed
 import akka.util.ByteString
 import com.lightbend.lagom.javadsl.api.Descriptor
-import com.lightbend.lagom.javadsl.api.Service
 import com.lightbend.lagom.javadsl.api.Service.named
 import com.lightbend.lagom.javadsl.api.Service.restCall
 import com.lightbend.lagom.javadsl.api.ServiceCall
@@ -12,6 +11,7 @@ import com.lightbend.lagom.javadsl.api.transport.Method.GET
 import com.lightbend.lagom.javadsl.api.transport.Method.HEAD
 import com.lightbend.lagom.javadsl.api.transport.Method.POST
 import com.lightbend.lagom.javadsl.api.transport.Method.PUT
+import org.taymyr.lagom.elasticsearch.ElasticService
 import org.taymyr.lagom.elasticsearch.deser.ElasticSerializerFactory
 import org.taymyr.lagom.elasticsearch.document.dsl.IndexDocumentResult
 import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkRequest
@@ -21,7 +21,7 @@ import kotlin.reflect.jvm.javaMethod
 /**
  * Lagom service wrapper for [Elasticsearch Document APIs](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs.html)
  */
-interface ElasticDocument : Service {
+interface ElasticDocument : ElasticService {
 
     /**
      * Add document to index.
@@ -69,6 +69,6 @@ interface ElasticDocument : Service {
             restCall<NotUsed, Done>(HEAD, "/:index/:type/:id/_source", ElasticDocument::existsSource.javaMethod),
             restCall<BulkRequest, BulkResult>(POST, "/:index/:type/_bulk", ElasticDocument::bulk.javaMethod)
         )
-            .withSerializerFactory(ElasticSerializerFactory())
+            .withSerializerFactory(ElasticSerializerFactory(objectMapper()))
     }
 }
