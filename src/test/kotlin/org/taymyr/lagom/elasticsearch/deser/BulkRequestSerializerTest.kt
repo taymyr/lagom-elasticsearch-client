@@ -71,7 +71,7 @@ class BulkRequestSerializerTest : WordSpec({
             val serializer = BulkRequestSerializer(mapper).serializerForRequest()
             val result = serializer.serialize(request).decodeString(Charset.defaultCharset())
             val need = """{"update":{"_id":"1"}}
-                |{"doc":{"user":"test","message":null}}""".trimMargin()
+                |{"doc":{"user":"test","message":null,"age":null,"balance":null}}""".trimMargin()
             result.trimEnd() shouldBe need
         }
     }

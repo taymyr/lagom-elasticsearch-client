@@ -7,6 +7,7 @@ import com.lightbend.lagom.javadsl.api.Descriptor
 import com.lightbend.lagom.javadsl.api.Service.named
 import com.lightbend.lagom.javadsl.api.Service.restCall
 import com.lightbend.lagom.javadsl.api.ServiceCall
+import com.lightbend.lagom.javadsl.api.transport.Method.DELETE
 import com.lightbend.lagom.javadsl.api.transport.Method.GET
 import com.lightbend.lagom.javadsl.api.transport.Method.HEAD
 import com.lightbend.lagom.javadsl.api.transport.Method.POST
@@ -16,6 +17,8 @@ import org.taymyr.lagom.elasticsearch.deser.ElasticSerializerFactory
 import org.taymyr.lagom.elasticsearch.document.dsl.IndexDocumentResult
 import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkRequest
 import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkResult
+import org.taymyr.lagom.elasticsearch.document.dsl.delete.DeleteResult
+import org.taymyr.lagom.elasticsearch.document.dsl.update.UpdateResult
 import kotlin.reflect.jvm.javaMethod
 
 /**
@@ -59,6 +62,18 @@ interface ElasticDocument : ElasticService {
      */
     fun bulk(index: String, type: String): ServiceCall<BulkRequest, BulkResult>
 
+    /**
+     * Executes update document requests.
+     * See also [Elasticsearch Docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html)
+     */
+    fun update(index: String, type: String, id: String): ServiceCall<ByteString, UpdateResult>
+
+    /**
+     * Executes delete document requests.
+     * See also [Elasticsearch Docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-delete.html)
+     */
+    fun delete(index: String, type: String, id: String): ServiceCall<NotUsed, DeleteResult>
+
     @JvmDefault
     override fun descriptor(): Descriptor {
         return named("elastic-document").withCalls(
@@ -67,7 +82,9 @@ interface ElasticDocument : ElasticService {
             restCall<NotUsed, Done>(HEAD, "/:index/:type/:id", ElasticDocument::exists.javaMethod),
             restCall<NotUsed, ByteString>(GET, "/:index/:type/:id/_source", ElasticDocument::getSource.javaMethod),
             restCall<NotUsed, Done>(HEAD, "/:index/:type/:id/_source", ElasticDocument::existsSource.javaMethod),
-            restCall<BulkRequest, BulkResult>(POST, "/:index/:type/_bulk", ElasticDocument::bulk.javaMethod)
+            restCall<BulkRequest, BulkResult>(POST, "/:index/:type/_bulk", ElasticDocument::bulk.javaMethod),
+            restCall<ByteString, UpdateResult>(POST, "/:index/:type/:id/_update", ElasticDocument::update.javaMethod),
+            restCall<NotUsed, DeleteResult>(DELETE, "/:index/:type/:id", ElasticDocument::delete.javaMethod)
         )
             .withSerializerFactory(ElasticSerializerFactory(objectMapper()))
     }
