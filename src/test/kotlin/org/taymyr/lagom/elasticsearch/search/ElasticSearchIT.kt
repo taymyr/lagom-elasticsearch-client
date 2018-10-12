@@ -10,10 +10,12 @@ import io.kotlintest.whenReady
 import org.taymyr.lagom.elasticsearch.AutocompleteFilter
 import org.taymyr.lagom.elasticsearch.IndexedSampleCategory
 import org.taymyr.lagom.elasticsearch.LagomClientAndEmbeddedElastic
+import org.taymyr.lagom.elasticsearch.MessageKeywordTerm
 import org.taymyr.lagom.elasticsearch.SampleCategory
 import org.taymyr.lagom.elasticsearch.SampleCategoryResult
 import org.taymyr.lagom.elasticsearch.SampleDocument
 import org.taymyr.lagom.elasticsearch.SampleDocumentResult
+import org.taymyr.lagom.elasticsearch.UserKeywordTerm
 import org.taymyr.lagom.elasticsearch.deser.invoke
 import org.taymyr.lagom.elasticsearch.deser.invokeT
 import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkCreate
@@ -24,10 +26,12 @@ import org.taymyr.lagom.elasticsearch.indices.dsl.CustomAnalyzer
 import org.taymyr.lagom.elasticsearch.indices.dsl.DataType
 import org.taymyr.lagom.elasticsearch.indices.dsl.MappingProperty
 import org.taymyr.lagom.elasticsearch.search.dsl.SearchRequest
+import org.taymyr.lagom.elasticsearch.search.dsl.query.compound.BoolQuery
 import org.taymyr.lagom.elasticsearch.search.dsl.query.fulltext.Match
 import org.taymyr.lagom.elasticsearch.search.dsl.query.fulltext.MatchQuery
 import org.taymyr.lagom.elasticsearch.search.dsl.query.term.Ids
 import org.taymyr.lagom.elasticsearch.search.dsl.query.term.IdsQuery
+import org.taymyr.lagom.elasticsearch.search.dsl.query.term.TermQuery
 import java.lang.Thread.sleep
 
 class ElasticSearchIT : WordSpec() {
@@ -139,6 +143,25 @@ class ElasticSearchIT : WordSpec() {
                         hits[0].source.name shouldNotBe null
                         hits[0].source.name!![0] shouldBe "test"
                     }
+                }
+            }
+        }
+        "Request Body Search with Query DSL" should {
+            "successfully perform BoolQuery search" {
+                val userTerm = UserKeywordTerm("user-9")
+                val messageTerm = MessageKeywordTerm("message-9")
+                val request = SearchRequest(
+                    BoolQuery.boolQuery()
+                        .must(listOf(TermQuery.ofTerm(userTerm), TermQuery.ofTerm(messageTerm)))
+                        .build(),
+                    0, 100
+                )
+                whenReady(elasticSearch.search(listOf("test"), listOf("sample")).invokeT<SearchRequest, SampleDocumentResult>(request)
+                    .toCompletableFuture()) {
+                    val found = it.hits.hits.filter {
+                        h -> h.source.user == userTerm.user && h.source.message == messageTerm.message
+                    }
+                    found shouldHaveSize 1
                 }
             }
         }

@@ -8,7 +8,7 @@ import org.taymyr.lagom.elasticsearch.search.dsl.query.aggregation.Aggregation
  *
  * @param aggs See [Elasticsearch Docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html)
  */
-data class SearchRequest(
+data class SearchRequest @JvmOverloads constructor(
     val query: Query,
     val from: Int? = null,
     val size: Int? = null,
