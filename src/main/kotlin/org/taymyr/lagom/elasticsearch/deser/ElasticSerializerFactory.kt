@@ -8,6 +8,7 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.lightbend.lagom.javadsl.api.deser.StrictMessageSerializer
 import com.lightbend.lagom.javadsl.jackson.JacksonSerializerFactory
 import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkRequest
+import org.taymyr.lagom.elasticsearch.search.dsl.SearchResult
 import java.lang.reflect.Type
 
 /**
@@ -19,7 +20,13 @@ class ElasticSerializerFactory(val mapper: ObjectMapper = MAPPER) : JacksonSeria
         return when (type) {
             BulkRequest::class.javaObjectType -> BulkRequestSerializer(mapper)
             ByteString::class.javaObjectType -> ByteStringMessageSerializer()
-            else -> super.messageSerializerFor(type)
+            else -> {
+                if (type is Class<*> && SearchResult::class.java.isAssignableFrom(type)) {
+                    SearchResultSerializer(mapper, type)
+                } else {
+                    super.messageSerializerFor(type)
+                }
+            }
         } as StrictMessageSerializer<MessageEntity>
     }
 
