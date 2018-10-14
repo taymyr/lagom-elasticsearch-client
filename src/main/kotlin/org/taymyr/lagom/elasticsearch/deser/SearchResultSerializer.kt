@@ -9,17 +9,18 @@ import com.lightbend.lagom.javadsl.api.transport.MessageProtocol
 import org.pcollections.PSequence
 import org.pcollections.TreePVector
 import org.taymyr.lagom.elasticsearch.search.dsl.SearchResult
+import java.lang.reflect.Type
 import java.util.Optional
 
-class SearchResultSerializer(private val mapper: ObjectMapper, private val clazz: Class<*>) : StrictMessageSerializer<SearchResult<*>> {
+class SearchResultSerializer(private val mapper: ObjectMapper, private val type: Type) : StrictMessageSerializer<SearchResult<*>> {
 
     private val defaultProtocol = MessageProtocol(Optional.of("application/json"), Optional.of("utf-8"), Optional.empty())
 
     internal inner class Deserializer : NegotiatedDeserializer<SearchResult<*>, ByteString> {
         override fun deserialize(wire: ByteString): SearchResult<*> {
-            val inputStream = wire.iterator().asInputStream()
-            val jsonNode = mapper.readTree(inputStream)
-            val reader = mapper.reader().forType(clazz)
+            val javaType = mapper.constructType(type)
+            val jsonNode = mapper.readTree(wire.iterator().asInputStream())
+            val reader = mapper.reader().forType(javaType)
             val result: SearchResult<*> = reader.readValue(jsonNode)
             result.initialize(jsonNode, reader)
             return result

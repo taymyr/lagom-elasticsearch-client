@@ -20,13 +20,10 @@ class ElasticSerializerFactory(val mapper: ObjectMapper = MAPPER) : JacksonSeria
         return when (type) {
             BulkRequest::class.javaObjectType -> BulkRequestSerializer(mapper)
             ByteString::class.javaObjectType -> ByteStringMessageSerializer()
-            else -> {
-                if (type is Class<*> && SearchResult::class.java.isAssignableFrom(type)) {
-                    SearchResultSerializer(mapper, type)
-                } else {
-                    super.messageSerializerFor(type)
-                }
-            }
+            is Class<*> ->
+                if (SearchResult::class.java.isAssignableFrom(type)) SearchResultSerializer(mapper, type)
+                else super.messageSerializerFor(type)
+            else -> super.messageSerializerFor(type)
         } as StrictMessageSerializer<MessageEntity>
     }
 

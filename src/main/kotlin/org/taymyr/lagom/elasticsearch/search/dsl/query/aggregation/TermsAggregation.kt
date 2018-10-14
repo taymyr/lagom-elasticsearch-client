@@ -2,6 +2,9 @@ package org.taymyr.lagom.elasticsearch.search.dsl.query.aggregation
 
 import org.taymyr.lagom.elasticsearch.search.dsl.query.Order
 
+/**
+ * See [Elasticsearch Docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-terms-aggregation.html)
+ */
 data class TermsAggregation(
     val terms: FieldSpec,
     val aggs: Map<String, Aggregation>? = null

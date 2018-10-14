@@ -1,5 +1,8 @@
 package org.taymyr.lagom.elasticsearch.search.dsl.query.aggregation
 
+/**
+ * See [Elasticsearch Docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-nested-aggregation.html)
+ */
 data class NestedAggregation(
     val nested: NestedPath,
     val aggs: Map<String, Aggregation>
