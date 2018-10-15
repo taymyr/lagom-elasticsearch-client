@@ -9,6 +9,7 @@ import com.lightbend.lagom.javadsl.api.transport.Method.GET
 import org.taymyr.lagom.elasticsearch.ElasticService
 import org.taymyr.lagom.elasticsearch.deser.ElasticSerializerFactory
 import org.taymyr.lagom.elasticsearch.deser.LIST
+import org.taymyr.lagom.elasticsearch.forceKF
 import org.taymyr.lagom.elasticsearch.search.dsl.SearchRequest
 import kotlin.reflect.jvm.javaMethod
 
@@ -23,10 +24,43 @@ interface ElasticSearch : ElasticService {
      */
     fun search(indices: List<String>, types: List<String>): ServiceCall<SearchRequest, ByteString>
 
+    /**
+     * Search documents an index with the specified type.
+     * See also [Elasticsearch Docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-search.html#search-multi-index-type)
+     */
+    fun search(index: String, type: String): ServiceCall<SearchRequest, ByteString>
+
+    /**
+     * Search documents across all types within an index.
+     * See also [Elasticsearch Docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-search.html#search-multi-index-type)
+     */
+    fun search(index: String): ServiceCall<SearchRequest, ByteString>
+
+    /**
+     * Search documents across all types within an index.
+     * See also [Elasticsearch Docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-search.html#search-multi-index-type)
+     */
+    fun search(indices: List<String>): ServiceCall<SearchRequest, ByteString>
+
+    /**
+     * Search documents across all types within an index, and across all indices.
+     * See also [Elasticsearch Docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-search.html#search-multi-index-type)
+     */
+    fun search(): ServiceCall<SearchRequest, ByteString>
+
     @JvmDefault
     override fun descriptor(): Descriptor {
         return named("elastic-search").withCalls(
-            restCall<SearchRequest, ByteString>(GET, "/:indices/:types/_search", ElasticSearch::search.javaMethod)
+            restCall<SearchRequest, ByteString>(GET, "/:indices/:types/_search",
+                forceKF<ElasticSearch.(List<String>, List<String>) -> ServiceCall<*, *>>(ElasticSearch::search).javaMethod),
+            restCall<SearchRequest, ByteString>(GET, "/:indices/_search",
+                forceKF<ElasticSearch.(List<String>) -> ServiceCall<*, *>>(ElasticSearch::search).javaMethod),
+            restCall<SearchRequest, ByteString>(GET, "/:index/:type/_search",
+                forceKF<ElasticSearch.(String, String) -> ServiceCall<*, *>>(ElasticSearch::search).javaMethod),
+            restCall<SearchRequest, ByteString>(GET, "/:index/_search",
+                forceKF<ElasticSearch.(String) -> ServiceCall<*, *>>(ElasticSearch::search).javaMethod),
+            restCall<SearchRequest, ByteString>(GET, "/_search",
+                forceKF<ElasticSearch.() -> ServiceCall<*, *>>(ElasticSearch::search).javaMethod)
         )
             .withPathParamSerializer(List::class.java, LIST)
             .withSerializerFactory(ElasticSerializerFactory(objectMapper()))

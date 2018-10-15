@@ -36,7 +36,7 @@ class ElasticSearchIT : WordSpec() {
 
     init {
         "ElasticSearch" should {
-            "successfully put documents" {
+            "put documents" {
                 repeat(10) {
                     whenReady(elasticDocument.indexWithId("test", "sample", it.toString())
                         .invoke(SampleDocument("user-$it", "message-$it")).toCompletableFuture()) { result ->
@@ -45,12 +45,12 @@ class ElasticSearchIT : WordSpec() {
                     }
                 }
             }
-            "successfully search a document by id" {
+            "search a document by id" {
                 sleep(1000)
                 val searchRequest = SearchRequest(IdsQuery(Ids(values = listOf("2"))))
-                whenReady(elasticSearch.search(listOf("test"), listOf("sample")).invokeT<SearchRequest, SampleDocumentResult>(searchRequest).toCompletableFuture()) {
-                    it.tamedOut shouldBe false
-                    it.hits.run {
+                val check = { result: SampleDocumentResult ->
+                    result.tamedOut shouldBe false
+                    result.hits.run {
                         total shouldBe 1
                         hits shouldHaveSize 1
                         hits[0].score shouldBe 1.0
@@ -58,6 +58,11 @@ class ElasticSearchIT : WordSpec() {
                         hits[0].source.message shouldBe "message-2"
                     }
                 }
+                whenReady(elasticSearch.search(listOf("test"), listOf("sample")).invokeT<SearchRequest, SampleDocumentResult>(searchRequest).toCompletableFuture(), check)
+                whenReady(elasticSearch.search(listOf("test")).invokeT<SearchRequest, SampleDocumentResult>(searchRequest).toCompletableFuture(), check)
+                whenReady(elasticSearch.search("test", "sample").invokeT<SearchRequest, SampleDocumentResult>(searchRequest).toCompletableFuture(), check)
+                whenReady(elasticSearch.search("test").invokeT<SearchRequest, SampleDocumentResult>(searchRequest).toCompletableFuture(), check)
+                whenReady(elasticSearch.search().invokeT<SearchRequest, SampleDocumentResult>(searchRequest).toCompletableFuture(), check)
             }
         }
         "Advanced ElasticSearch" should {
