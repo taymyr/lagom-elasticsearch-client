@@ -29,6 +29,8 @@ import org.taymyr.lagom.elasticsearch.search.dsl.SearchRequest
 import org.taymyr.lagom.elasticsearch.search.dsl.query.compound.BoolQuery
 import org.taymyr.lagom.elasticsearch.search.dsl.query.fulltext.Match
 import org.taymyr.lagom.elasticsearch.search.dsl.query.fulltext.MatchQuery
+import org.taymyr.lagom.elasticsearch.search.dsl.query.fulltext.MultiMatch
+import org.taymyr.lagom.elasticsearch.search.dsl.query.fulltext.MultiMatchQuery
 import org.taymyr.lagom.elasticsearch.search.dsl.query.term.Ids
 import org.taymyr.lagom.elasticsearch.search.dsl.query.term.IdsQuery
 import org.taymyr.lagom.elasticsearch.search.dsl.query.term.TermQuery
@@ -96,6 +98,8 @@ class ElasticSearchIT : WordSpec() {
                             "name" to MappingProperty(DataType.TEXT, "autocomplete"),
                             "title" to MappingProperty.OBJECT,
                             "technicalName" to MappingProperty.TEXT,
+                            "fullText" to MappingProperty.TEXT,
+                            "fullTextBoosted" to MappingProperty.TEXT,
                             "attachAllowed" to MappingProperty.BOOLEAN
                         ))
                     )
@@ -107,41 +111,85 @@ class ElasticSearchIT : WordSpec() {
                 }
             }
             "successful add test category" {
-                val request = BulkRequest.ofCommands(BulkCreate("1", IndexedSampleCategory(SampleCategory(
-                    1,
-                    listOf("test"),
-                    null,
-                    null,
-                    true
-                ))))
+                val request = BulkRequest.ofCommands(
+                    BulkCreate("1",
+                        IndexedSampleCategory(
+                            SampleCategory(
+                                1,
+                                listOf("test1"),
+                                null,
+                                null,
+                                true,
+                                "Овощи",
+                                "Огурцы"
+                            )
+                        )
+                    ),
+                    BulkCreate("2",
+                        IndexedSampleCategory(
+                            SampleCategory(
+                                1,
+                                listOf("test1"),
+                                null,
+                                null,
+                                true,
+                                "Овощи",
+                                "Капуста"
+                            )
+                        )
+                    )
+                )
                 whenReady(elasticDocument.bulk("category", "some_type").invoke(request).toCompletableFuture()) { result ->
                     result shouldBe beInstanceOf(BulkResult::class)
                     result.errors shouldBe false
-                    result.items shouldHaveSize 1
-                    val item = result.items[0]
-                    item.status shouldBe 201
-                    item.result shouldBe "created"
-                    item.error shouldBe null
-                    item.index shouldBe "category"
-                    item.type shouldBe "some_type"
-                    item.id shouldBe "1"
+                    result.items shouldHaveSize 2
+                    result.items[0].run {
+                        this.status shouldBe 201
+                        this.result shouldBe "created"
+                        this.error shouldBe null
+                        this.index shouldBe "category"
+                        this.type shouldBe "some_type"
+                        this.id shouldBe "1"
+                    }
                 }
             }
             "successful search document using autocomplete filter" {
                 sleep(1000)
                 val searchRequest = SearchRequest(
                     MatchQuery(object : Match {
-                        val name = "te"
+                        val name = "test1"
                     })
                 )
                 whenReady(elasticSearch.search(listOf("category"), listOf("some_type"))
                     .invokeT<SearchRequest, SampleCategoryResult>(searchRequest).toCompletableFuture()) { result ->
                     result.tamedOut shouldBe false
                     result.hits.run {
-                        total shouldBe 1
-                        hits shouldHaveSize 1
+                        total shouldBe 2
+                        hits shouldHaveSize 2
                         hits[0].source.name shouldNotBe null
-                        hits[0].source.name!![0] shouldBe "test"
+                        hits[0].source.name!![0] shouldBe "test1"
+                    }
+                }
+            }
+            "successful search document using multi-match" {
+                sleep(1000)
+                val searchRequest = SearchRequest(
+                    MultiMatchQuery(
+                        MultiMatch.of(
+                            "Огурцовые овощи",
+                            Pair("fullTextBoosted", 10),
+                            Pair("fullText", 3)
+                        )
+                    )
+                )
+                whenReady(elasticSearch.search(listOf("category"), listOf("some_type"))
+                    .invokeT<SearchRequest, SampleCategoryResult>(searchRequest).toCompletableFuture()) { result ->
+                    result.tamedOut shouldBe false
+                    result.hits.run {
+                        total shouldBe 2
+                        hits shouldHaveSize 2
+                        hits[0].source.name shouldNotBe null
+                        hits[0].source.name!![0] shouldBe "test1"
                     }
                 }
             }

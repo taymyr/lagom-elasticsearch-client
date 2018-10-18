@@ -83,6 +83,7 @@ class AggregationsIT : WordSpec() {
                         SampleProduct.StaticFacets("saleregion", "Ленинградская область"),
                         SampleProduct.StaticFacets("saleregion", "Мурманская область")
                     ),
+                    null,
                     SampleProduct.Payload("")
                 ))
                 val testEntity2 = IndexedSampleProduct(SampleProduct(
@@ -100,6 +101,7 @@ class AggregationsIT : WordSpec() {
                         SampleProduct.StaticFacets("saleregion", "Ленинградская область"),
                         SampleProduct.StaticFacets("saleregion", "Московская область")
                     ),
+                    null,
                     SampleProduct.Payload("")
                 ))
                 val request = BulkRequest.ofCommands(

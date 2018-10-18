@@ -9,7 +9,9 @@ data class SampleCategory(
     val name: List<String>?,
     val title: Map<String, String>?,
     val technicalName: String?,
-    val attachAllowed: Boolean?
+    val attachAllowed: Boolean?,
+    val fullText: String?,
+    val fullTextBoosted: String?
 )
 
 data class IndexedSampleCategory(override val source: SampleCategory) : Document<SampleCategory>()

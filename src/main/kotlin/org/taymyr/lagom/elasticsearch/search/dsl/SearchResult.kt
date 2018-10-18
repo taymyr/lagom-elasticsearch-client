@@ -9,6 +9,7 @@ abstract class SearchResult<T> {
     val took: Int = -1
     @JsonProperty("timed_out")
     val tamedOut: Boolean = false
+    val suggest: Map<String, List<SuggestResult<T>>>? = null
 
     /**
      * JSON root node of result for search query.
