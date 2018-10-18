@@ -1,8 +1,8 @@
 package org.taymyr.lagom.elasticsearch
 
 import org.taymyr.lagom.elasticsearch.document.dsl.Document
-import org.taymyr.lagom.elasticsearch.search.dsl.AggregatedSearchResult
 import org.taymyr.lagom.elasticsearch.search.dsl.Hits
+import org.taymyr.lagom.elasticsearch.search.dsl.SearchResult
 import java.util.Date
 
 data class SampleProduct(
@@ -15,6 +15,7 @@ data class SampleProduct(
     val updateDate: Date,
     val basePrice: Int,
     val staticFacets: List<StaticFacets>,
+    val suggest: List<String>?,
     val payload: Payload
 ) {
 
@@ -35,6 +36,6 @@ data class SampleProduct(
 
 data class IndexedSampleProduct(override val source: SampleProduct) : Document<SampleProduct>()
 
-data class SampleProductResult(override val hits: Hits<SampleProduct>, override val aggregations: Any) : AggregatedSearchResult<SampleProduct, Any>()
+data class SampleProductResult(override val hits: Hits<SampleProduct>) : SearchResult<SampleProduct>()
 
 data class SampleCategoryForProduct(val categoryId: Long, val categoryTitle: String)
