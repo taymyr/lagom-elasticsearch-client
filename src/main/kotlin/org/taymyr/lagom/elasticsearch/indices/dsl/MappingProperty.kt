@@ -23,14 +23,14 @@ data class MappingProperty(
     }
 
     companion object {
-        @JvmStatic val LONG = MappingProperty(DataType.LONG)
-        @JvmStatic val TEXT = MappingProperty(DataType.TEXT)
-        @JvmStatic val DATE = MappingProperty(DataType.DATE)
-        @JvmStatic val NESTED = MappingProperty(DataType.NESTED)
-        @JvmStatic val OBJECT = MappingProperty(DataType.OBJECT)
-        @JvmStatic val INTEGER = MappingProperty(DataType.INTEGER)
-        @JvmStatic val KEYWORD = MappingProperty(DataType.KEYWORD)
-        @JvmStatic val BOOLEAN = MappingProperty(DataType.BOOLEAN)
+        @JvmField val LONG = MappingProperty(DataType.LONG)
+        @JvmField val TEXT = MappingProperty(DataType.TEXT)
+        @JvmField val DATE = MappingProperty(DataType.DATE)
+        @JvmField val NESTED = MappingProperty(DataType.NESTED)
+        @JvmField val OBJECT = MappingProperty(DataType.OBJECT)
+        @JvmField val INTEGER = MappingProperty(DataType.INTEGER)
+        @JvmField val KEYWORD = MappingProperty(DataType.KEYWORD)
+        @JvmField val BOOLEAN = MappingProperty(DataType.BOOLEAN)
 
         @JvmStatic fun mapping() = MappingProperty.Builder()
     }
