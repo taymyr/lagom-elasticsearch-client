@@ -2,6 +2,7 @@ package org.taymyr.lagom.elasticsearch.search.dsl
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.taymyr.lagom.elasticsearch.search.dsl.query.Query
+import org.taymyr.lagom.elasticsearch.search.dsl.query.Sort
 import org.taymyr.lagom.elasticsearch.search.dsl.query.aggregation.Aggregation
 import org.taymyr.lagom.elasticsearch.search.dsl.query.suggest.Suggest
 
@@ -17,5 +18,6 @@ data class SearchRequest @JvmOverloads constructor(
     val aggs: Map<String, Aggregation>? = null,
     @JsonProperty("post_filter")
     val postFilter: Query? = null,
-    val suggest: Map<String, Suggest>? = null
+    val suggest: Map<String, Suggest>? = null,
+    val sort: List<Sort>? = null
 )
