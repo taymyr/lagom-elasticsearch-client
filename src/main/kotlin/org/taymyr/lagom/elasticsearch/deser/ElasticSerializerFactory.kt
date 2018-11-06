@@ -4,6 +4,8 @@ import akka.util.ByteString
 import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL
 import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.lightbend.lagom.javadsl.api.deser.StrictMessageSerializer
 import com.lightbend.lagom.javadsl.jackson.JacksonSerializerFactory
@@ -30,7 +32,9 @@ class ElasticSerializerFactory(val mapper: ObjectMapper = MAPPER) : JacksonSeria
     companion object {
         @JvmStatic val MAPPER: ObjectMapper = ObjectMapper()
             .registerModule(KotlinModule())
-            .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .registerModule(JavaTimeModule())
+            .disable(WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS)
+            .disable(FAIL_ON_UNKNOWN_PROPERTIES)
             .setSerializationInclusion(NON_NULL)
     }
 }
