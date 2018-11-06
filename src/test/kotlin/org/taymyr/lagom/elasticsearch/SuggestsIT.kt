@@ -39,13 +39,13 @@ class SuggestsIT : WordSpec() {
                             "id" to MappingProperty.LONG,
                             "category.id" to MappingProperty.LONG,
                             "category.title" to MappingProperty.KEYWORD,
-                            "fullTextBoosted" to MappingProperty(DataType.TEXT, "russian"),
-                            "fullText" to MappingProperty(DataType.TEXT, "russian"),
+                            "fullTextBoosted" to MappingProperty(type = DataType.TEXT, analyzer = "russian"),
+                            "fullText" to MappingProperty(type = DataType.TEXT, analyzer = "russian"),
                             "sellerId" to MappingProperty.LONG,
                             "categoryIds" to MappingProperty.LONG,
                             "updateDate" to MappingProperty.DATE,
                             "basePrice" to MappingProperty.INTEGER,
-                            "suggest" to MappingProperty("completion", null, null),
+                            "suggest" to MappingProperty(type = "completion"),
                             "payload" to MappingProperty.OBJECT
                         ))
                     )

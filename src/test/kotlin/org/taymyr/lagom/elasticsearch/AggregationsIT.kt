@@ -47,13 +47,13 @@ class AggregationsIT : WordSpec() {
                             "id" to MappingProperty.LONG,
                             "category.id" to MappingProperty.LONG,
                             "category.title" to MappingProperty.KEYWORD,
-                            "fullTextBoosted" to MappingProperty(DataType.TEXT, "russian"),
-                            "fullText" to MappingProperty(DataType.TEXT, "russian"),
+                            "fullTextBoosted" to MappingProperty(type = DataType.TEXT, analyzer = "russian"),
+                            "fullText" to MappingProperty(type = DataType.TEXT, analyzer = "russian"),
                             "sellerId" to MappingProperty.LONG,
                             "categoryIds" to MappingProperty.LONG,
                             "updateDate" to MappingProperty.DATE,
                             "basePrice" to MappingProperty.INTEGER,
-                            "staticFacets" to MappingProperty(DataType.NESTED, null, mapOf(
+                            "staticFacets" to MappingProperty(type = DataType.NESTED, properties = mapOf(
                                 "name" to MappingProperty.KEYWORD,
                                 "value" to MappingProperty.KEYWORD
                             )),

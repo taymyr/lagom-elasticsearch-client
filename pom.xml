@@ -39,6 +39,7 @@
     <dokka.version>0.9.17</dokka.version>
     <kotlin.version>1.2.71</kotlin.version>
     <kotlin.jackson.version>2.9.7</kotlin.jackson.version>
+    <jackson.java8.module.version>2.9.7</jackson.java8.module.version>
     <lagom.version>1.4.2</lagom.version>
     <ktlint.version>0.28.0</ktlint.version>
     <kotlintest.version>3.1.10</kotlintest.version>
@@ -73,6 +74,11 @@
       <groupId>com.fasterxml.jackson.module</groupId>
       <artifactId>jackson-module-kotlin</artifactId>
       <version>${kotlin.jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <version>${jackson.java8.module.version}</version>
     </dependency>
     <!-- provided dependencies -->
     <dependency>

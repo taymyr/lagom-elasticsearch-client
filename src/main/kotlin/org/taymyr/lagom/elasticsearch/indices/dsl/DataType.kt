@@ -11,5 +11,6 @@ enum class DataType(val title: String) {
     OBJECT("object"),
     KEYWORD("keyword"),
     INTEGER("integer"),
-    BOOLEAN("boolean")
+    BOOLEAN("boolean"),
+    DOUBLE("double")
 }

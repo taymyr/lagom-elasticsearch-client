@@ -103,7 +103,7 @@ class ElasticIndicesIT : WordSpec() {
                     mapOf(
                         "some_type" to CreateIndex.Mapping(mapOf(
                             "id" to MappingProperty.LONG,
-                            "name" to MappingProperty(DataType.TEXT, "autocomplete"),
+                            "name" to MappingProperty(type = DataType.TEXT, analyzer = "autocomplete"),
                             "title" to MappingProperty.OBJECT,
                             "technicalName" to MappingProperty.TEXT,
                             "attachAllowed" to MappingProperty.BOOLEAN
