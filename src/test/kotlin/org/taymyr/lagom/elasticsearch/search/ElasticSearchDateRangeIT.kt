@@ -76,8 +76,8 @@ class ElasticSearchDateRangeIT : WordSpec() {
                     }
                 }
             }
-            "successfully serialize all date range term fields from LocalDateTime values" {
-                val formatter = DateTimeFormatter.ofPattern(DateRange.DEFAULT_FORMAT)
+            "successfully serialize all date range term fields using the LocalDateTime builder variant" {
+                val formatter = DateTimeFormatter.ofPattern(DateRange.LOCAL_DATE_TIME_FORMAT)
                 val gt = LocalDateTime.now()
                 val gte = LocalDateTime.now().plusDays(1)
                 val lt = LocalDateTime.now().plusDays(2)
@@ -97,9 +97,9 @@ class ElasticSearchDateRangeIT : WordSpec() {
                 } else {
                     range.timeZone shouldBe null
                 }
-                range.format shouldBe DateRange.DEFAULT_FORMAT
+                range.format shouldBe DateRange.LOCAL_DATE_TIME_FORMAT
             }
-            "successfully find all documents with date '2018-01-01'" {
+            "successfully find all documents with date '2018-01-01' using the LocalDateTime builder variant" {
                 val from = LocalDateTime.now().truncatedTo(DAYS)
                     .withYear(2018).withMonth(1).withDayOfMonth(1)
                 val to = LocalDateTime.now().truncatedTo(DAYS)
@@ -118,7 +118,44 @@ class ElasticSearchDateRangeIT : WordSpec() {
                     }
                 }
             }
-            "successfully serialize all date range term fields from DateRangeExpression values" {
+            "successfully serialize all date range term fields using the ZonedDateTime builder variant" {
+                val formatter = DateTimeFormatter.ofPattern(DateRange.ZONED_DATE_TIME_FORMAT)
+                val gt = ZonedDateTime.now()
+                val gte = ZonedDateTime.now().plusDays(1)
+                val lt = ZonedDateTime.now().plusDays(2)
+                val lte = ZonedDateTime.now().plusDays(3)
+                val range = DateRange.zonedDateTimeRange()
+                    .boost(0.1)
+                    .gt(gt).gte(gte).lt(lt).lte(lte)
+                    .build()
+                range.gt shouldBe gt.format(formatter)
+                range.gte shouldBe gte.format(formatter)
+                range.lt shouldBe lt.format(formatter)
+                range.lte shouldBe lte.format(formatter)
+                range.boost shouldBe 0.1
+                range.timeZone shouldBe null
+                range.format shouldBe DateRange.ZONED_DATE_TIME_FORMAT
+            }
+            "successfully find all documents with date '2018-01-01' using the ZonedDateTime builder variant" {
+                val zoneOffset = ZoneOffset.ofHours(3)
+                val from = ZonedDateTime.now().withZoneSameLocal(zoneOffset).truncatedTo(DAYS)
+                    .withYear(2018).withMonth(1).withDayOfMonth(1).withHour(3)
+                val to = ZonedDateTime.now().withZoneSameLocal(zoneOffset).truncatedTo(DAYS)
+                    .withYear(2018).withMonth(1).withDayOfMonth(2).withHour(3)
+                val dateRange = DateRange.zonedDateTimeRange().gte(from).lt(to)
+                    .build()
+                val request = SearchRequest(
+                    query = BoolQuery.boolQuery().must(RangeQuery(CreationDateRange(dateRange))).build(),
+                    size = 9999
+                )
+                eventually(5.seconds, AssertionError::class.java) {
+                    whenReady(elasticSearch.search(listOf(indexName), listOf(typeName)).invokeT<SearchRequest, SampleDocumentResult>(request)
+                        .toCompletableFuture()) { result ->
+                        result.hits.hits shouldHaveSize 24
+                    }
+                }
+            }
+            "successfully serialize all date range term fields using the DateRangeExpression builder variant" {
                 val gt = DateRangeExpression.of("2018-01-01").trunc(DAYS)
                 val gte = DateRangeExpression.of("2017-01-01").trunc(DAYS)
                 val lt = DateRangeExpression.of("2018/01/01").add(1, DAYS).trunc(DAYS)
