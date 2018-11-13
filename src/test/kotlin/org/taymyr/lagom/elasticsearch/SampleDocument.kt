@@ -6,9 +6,14 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import org.taymyr.lagom.elasticsearch.document.dsl.Document
 import org.taymyr.lagom.elasticsearch.search.dsl.Hits
 import org.taymyr.lagom.elasticsearch.search.dsl.SearchResult
+import org.taymyr.lagom.elasticsearch.search.dsl.query.fulltext.MatchPhrase
+import org.taymyr.lagom.elasticsearch.search.dsl.query.fulltext.MatchPhrasePrefix
 import org.taymyr.lagom.elasticsearch.search.dsl.query.term.DateRange
+import org.taymyr.lagom.elasticsearch.search.dsl.query.term.Prefix
 import org.taymyr.lagom.elasticsearch.search.dsl.query.term.Range
+import org.taymyr.lagom.elasticsearch.search.dsl.query.term.Regexp
 import org.taymyr.lagom.elasticsearch.search.dsl.query.term.Term
+import org.taymyr.lagom.elasticsearch.search.dsl.query.term.Wildcard
 import java.time.LocalDateTime
 
 abstract class AbstractSampleDocument {
@@ -42,4 +47,14 @@ data class SampleDocumentResult(override val hits: Hits<SampleDocument>) : Searc
 
 data class UserKeywordTerm(@get:JsonProperty("user.keyword") val user: String) : Term
 data class MessageKeywordTerm(@get:JsonProperty("message.keyword") val message: String) : Term
+// Full text searching test:
+data class UserMatchPhrase(val user: String) : MatchPhrase
+data class UserMatchPhrasePrefix(val user: String) : MatchPhrasePrefix
+data class UserPrefix(val user: String) : Prefix
+data class MessageMatchPhrase(val message: String) : MatchPhrase
+data class MessageMatchPhrasePrefix(val message: String) : MatchPhrasePrefix
+data class MessagePrefix(val message: String) : Prefix
+data class MessageWildcard(val message: String) : Wildcard
+data class MessageRegexp(val message: String) : Regexp
+// Date range searching test:
 data class CreationDateRange(val creationDate: DateRange) : Range
