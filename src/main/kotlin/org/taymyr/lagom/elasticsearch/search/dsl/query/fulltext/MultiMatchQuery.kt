@@ -10,6 +10,7 @@ data class MultiMatchQuery(
 
     companion object {
 
-        @JvmStatic fun of(match: MultiMatch) = MultiMatchQuery(match)
+        @JvmStatic fun ofMultiMatch(multiMatch: MultiMatch) = MultiMatchQuery(multiMatch)
+        @JvmStatic fun multiMatchSimpleBuilder() = MultiMatchSimple.MultiMatchSimpleBuilder()
     }
 }

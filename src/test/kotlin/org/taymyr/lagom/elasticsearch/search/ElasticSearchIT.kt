@@ -29,7 +29,6 @@ import org.taymyr.lagom.elasticsearch.search.dsl.SearchRequest
 import org.taymyr.lagom.elasticsearch.search.dsl.query.compound.BoolQuery
 import org.taymyr.lagom.elasticsearch.search.dsl.query.fulltext.Match
 import org.taymyr.lagom.elasticsearch.search.dsl.query.fulltext.MatchQuery
-import org.taymyr.lagom.elasticsearch.search.dsl.query.fulltext.MultiMatch
 import org.taymyr.lagom.elasticsearch.search.dsl.query.fulltext.MultiMatchQuery
 import org.taymyr.lagom.elasticsearch.search.dsl.query.term.Ids
 import org.taymyr.lagom.elasticsearch.search.dsl.query.term.IdsQuery
@@ -175,11 +174,12 @@ class ElasticSearchIT : WordSpec() {
                 sleep(1000)
                 val searchRequest = SearchRequest(
                     MultiMatchQuery(
-                        MultiMatch.of(
-                            "Огурцовые овощи",
-                            Pair("fullTextBoosted", 10),
-                            Pair("fullText", 3)
-                        )
+                        MultiMatchQuery.multiMatchSimpleBuilder()
+                            .query("Огурцовые овощи")
+                            .fieldsMap(mapOf(
+                                Pair("fullTextBoosted", 10),
+                                Pair("fullText", 3)))
+                            .build()
                     )
                 )
                 whenReady(elasticSearch.search(listOf("category"), listOf("some_type"))
