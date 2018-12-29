@@ -25,7 +25,7 @@ data class MappingProperty(
         fun properties(properties: Map<String, MappingProperty>) = apply { this.properties = properties }
         fun fields(fields: Map<String, MappingProperty>) = apply { this.fields = fields }
 
-        fun build() = MappingProperty(type ?: error("Type can't be null"), format, analyzer, properties)
+        fun build() = MappingProperty(type ?: error("Type can't be null"), format, analyzer, properties, fields)
     }
 
     companion object {
