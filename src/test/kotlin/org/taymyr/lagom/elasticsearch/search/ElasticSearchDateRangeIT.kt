@@ -19,6 +19,7 @@ import org.taymyr.lagom.elasticsearch.search.dsl.SearchRequest
 import org.taymyr.lagom.elasticsearch.search.dsl.query.compound.BoolQuery
 import org.taymyr.lagom.elasticsearch.search.dsl.query.term.DateRange
 import org.taymyr.lagom.elasticsearch.search.dsl.query.term.DateRangeExpression
+import org.taymyr.lagom.elasticsearch.search.dsl.query.term.ExistsQuery
 import org.taymyr.lagom.elasticsearch.search.dsl.query.term.RangeQuery
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -195,6 +196,27 @@ class ElasticSearchDateRangeIT : WordSpec() {
                     whenReady(elasticSearch.search(listOf(indexName), listOf(typeName)).invokeT<SearchRequest, SampleDocumentResult>(request)
                         .toCompletableFuture()) { result ->
                         result.hits.hits shouldHaveSize 24
+                    }
+                }
+            }
+            "successfully find documents with field 'user'" {
+                val request = SearchRequest(
+                    query = ExistsQuery.of("user"),
+                    size = 9999
+                )
+                eventually(5.seconds, AssertionError::class.java) {
+                    whenReady(elasticSearch.search().invokeT<SearchRequest, SampleDocumentResult>(request).toCompletableFuture()) { result ->
+                        result.hits.hits shouldHaveSize 24
+                    }
+                }
+            }
+            "successfully not found documents with field 'useruser'" {
+                val request = SearchRequest(
+                    query = ExistsQuery.of("useruser")
+                )
+                eventually(5.seconds, AssertionError::class.java) {
+                    whenReady(elasticSearch.search().invokeT<SearchRequest, SampleDocumentResult>(request).toCompletableFuture()) { result ->
+                        result.hits.hits shouldHaveSize 0
                     }
                 }
             }
