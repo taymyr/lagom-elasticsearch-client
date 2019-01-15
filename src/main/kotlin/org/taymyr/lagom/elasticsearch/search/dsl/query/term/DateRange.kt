@@ -57,7 +57,7 @@ data class DateRange(
                 lte = format(lte, format),
                 boost = boost,
                 format = format,
-                timeZone = if (ZoneOffset.UTC == timeZone) null else timeZone.toString()
+                timeZone = if (ZoneOffset.UTC == timeZone) null else timeZone?.toString()
             )
         }
     }
