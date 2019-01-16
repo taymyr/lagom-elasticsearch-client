@@ -7,7 +7,6 @@ import io.kotlintest.seconds
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.WordSpec
 import io.kotlintest.whenReady
-import org.taymyr.lagom.elasticsearch.CreationDateRange
 import org.taymyr.lagom.elasticsearch.LagomClientAndEmbeddedElastic
 import org.taymyr.lagom.elasticsearch.SampleDocument
 import org.taymyr.lagom.elasticsearch.SampleDocumentResult
@@ -109,7 +108,7 @@ class ElasticSearchDateRangeIT : WordSpec() {
                     .timeZone(ZoneOffset.UTC)
                     .build()
                 val request = SearchRequest(
-                    query = BoolQuery.boolQuery().must(RangeQuery(CreationDateRange(dateRange))).build(),
+                    query = BoolQuery.boolQuery().must(RangeQuery("creationDate", dateRange)).build(),
                     size = 9999
                 )
                 eventually(5.seconds, AssertionError::class.java) {
@@ -146,7 +145,7 @@ class ElasticSearchDateRangeIT : WordSpec() {
                 val dateRange = DateRange.zonedDateTimeRange().gte(from).lt(to)
                     .build()
                 val request = SearchRequest(
-                    query = BoolQuery.boolQuery().must(RangeQuery(CreationDateRange(dateRange))).build(),
+                    query = BoolQuery.boolQuery().must(RangeQuery("creationDate", dateRange)).build(),
                     size = 9999
                 )
                 eventually(5.seconds, AssertionError::class.java) {
@@ -189,7 +188,7 @@ class ElasticSearchDateRangeIT : WordSpec() {
                     .format(setOf("yyyy-MM-dd", "yyyy/MM/dd"))
                     .build()
                 val request = SearchRequest(
-                    query = BoolQuery.boolQuery().must(RangeQuery(CreationDateRange(dateRange))).build(),
+                    query = BoolQuery.boolQuery().must(RangeQuery("creationDate", dateRange)).build(),
                     size = 9999
                 )
                 eventually(5.seconds, AssertionError::class.java) {
