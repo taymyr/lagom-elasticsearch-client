@@ -18,7 +18,7 @@ data class DateRange(
     val format: String?,
     @JsonProperty("time_zone")
     val timeZone: String?
-) {
+) : Range {
     abstract class AbstractBuilder<DateTimeType : Any, TimeZoneType : Any> {
         protected var gte: DateTimeType? = null
         protected var gt: DateTimeType? = null

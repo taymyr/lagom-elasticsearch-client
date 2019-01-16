@@ -8,9 +8,7 @@ import org.taymyr.lagom.elasticsearch.search.dsl.Hits
 import org.taymyr.lagom.elasticsearch.search.dsl.SearchResult
 import org.taymyr.lagom.elasticsearch.search.dsl.query.fulltext.MatchPhrase
 import org.taymyr.lagom.elasticsearch.search.dsl.query.fulltext.MatchPhrasePrefix
-import org.taymyr.lagom.elasticsearch.search.dsl.query.term.DateRange
 import org.taymyr.lagom.elasticsearch.search.dsl.query.term.Prefix
-import org.taymyr.lagom.elasticsearch.search.dsl.query.term.Range
 import org.taymyr.lagom.elasticsearch.search.dsl.query.term.Regexp
 import org.taymyr.lagom.elasticsearch.search.dsl.query.term.Term
 import org.taymyr.lagom.elasticsearch.search.dsl.query.term.Wildcard
@@ -56,5 +54,3 @@ data class MessageMatchPhrasePrefix(val message: String) : MatchPhrasePrefix
 data class MessagePrefix(val message: String) : Prefix
 data class MessageWildcard(val message: String) : Wildcard
 data class MessageRegexp(val message: String) : Regexp
-// Date range searching test:
-data class CreationDateRange(val creationDate: DateRange) : Range
