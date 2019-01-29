@@ -24,6 +24,7 @@ import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkResult
 import org.taymyr.lagom.elasticsearch.indices.dsl.CreateIndex
 import org.taymyr.lagom.elasticsearch.indices.dsl.CustomAnalyzer
 import org.taymyr.lagom.elasticsearch.indices.dsl.DataType
+import org.taymyr.lagom.elasticsearch.indices.dsl.Mapping
 import org.taymyr.lagom.elasticsearch.indices.dsl.MappingProperty
 import org.taymyr.lagom.elasticsearch.search.dsl.SearchRequest
 import org.taymyr.lagom.elasticsearch.search.dsl.query.compound.BoolQuery
@@ -92,7 +93,7 @@ class ElasticSearchIT : WordSpec() {
                         )
                     )),
                     mapOf(
-                        "some_type" to CreateIndex.Mapping(mapOf(
+                        "some_type" to Mapping(mapOf(
                             "id" to MappingProperty.LONG,
                             "name" to MappingProperty(type = DataType.TEXT, analyzer = "autocomplete"),
                             "title" to MappingProperty.OBJECT,

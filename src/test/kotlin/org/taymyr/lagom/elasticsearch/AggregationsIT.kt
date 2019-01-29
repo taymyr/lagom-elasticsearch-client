@@ -12,7 +12,7 @@ import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkCreate
 import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkRequest
 import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkResult
 import org.taymyr.lagom.elasticsearch.indices.dsl.CreateIndex
-import org.taymyr.lagom.elasticsearch.indices.dsl.CreateIndex.Mapping
+import org.taymyr.lagom.elasticsearch.indices.dsl.Mapping
 import org.taymyr.lagom.elasticsearch.indices.dsl.CreateIndex.Settings
 import org.taymyr.lagom.elasticsearch.indices.dsl.DataType
 import org.taymyr.lagom.elasticsearch.indices.dsl.MappingProperty

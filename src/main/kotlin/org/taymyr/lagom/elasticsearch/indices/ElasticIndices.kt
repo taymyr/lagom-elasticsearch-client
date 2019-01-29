@@ -13,6 +13,7 @@ import com.lightbend.lagom.javadsl.api.transport.Method.PUT
 import org.taymyr.lagom.elasticsearch.ElasticService
 import org.taymyr.lagom.elasticsearch.deser.ElasticSerializerFactory
 import org.taymyr.lagom.elasticsearch.deser.LIST
+import org.taymyr.lagom.elasticsearch.forceKF
 import org.taymyr.lagom.elasticsearch.indices.dsl.CreateIndex
 import org.taymyr.lagom.elasticsearch.indices.dsl.CreateIndexResult
 import org.taymyr.lagom.elasticsearch.indices.dsl.DeleteIndicesResult
@@ -45,6 +46,12 @@ interface ElasticIndices : ElasticService {
     fun exists(indices: List<String>): ServiceCall<NotUsed, Done>
 
     /**
+     * Retrieve information about index.
+     * See also [Elasticsearch Docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-index.html)
+     */
+    fun get(index: String): ServiceCall<NotUsed, Map<String, IndexInfo>>
+
+    /**
      * Retrieve information about one or more indices.
      * See also [Elasticsearch Docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-index.html)
      */
@@ -56,7 +63,10 @@ interface ElasticIndices : ElasticService {
             restCall<CreateIndex, CreateIndexResult>(PUT, "/:indexName", ElasticIndices::create.javaMethod),
             restCall<NotUsed, DeleteIndicesResult>(DELETE, "/:indices", ElasticIndices::delete.javaMethod),
             restCall<NotUsed, Done>(HEAD, "/:indices", ElasticIndices::exists.javaMethod),
-            restCall<NotUsed, Map<String, IndexInfo>>(GET, "/:indices", ElasticIndices::get.javaMethod)
+            restCall<NotUsed, Map<String, IndexInfo>>(GET, "/:indices",
+                forceKF<ElasticIndices.(String) -> ServiceCall<*, *>>(ElasticIndices::get).javaMethod),
+            restCall<NotUsed, Map<String, IndexInfo>>(GET, "/:indices",
+                forceKF<ElasticIndices.(List<String>) -> ServiceCall<*, *>>(ElasticIndices::get).javaMethod)
         )
             .withSerializerFactory(ElasticSerializerFactory(objectMapper()))
             .withPathParamSerializer(List::class.java, LIST)

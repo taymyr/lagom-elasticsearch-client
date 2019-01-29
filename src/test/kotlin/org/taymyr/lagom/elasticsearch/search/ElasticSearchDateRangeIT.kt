@@ -13,6 +13,7 @@ import org.taymyr.lagom.elasticsearch.SampleDocumentResult
 import org.taymyr.lagom.elasticsearch.deser.invoke
 import org.taymyr.lagom.elasticsearch.deser.invokeT
 import org.taymyr.lagom.elasticsearch.indices.dsl.CreateIndex
+import org.taymyr.lagom.elasticsearch.indices.dsl.Mapping
 import org.taymyr.lagom.elasticsearch.indices.dsl.MappingProperty
 import org.taymyr.lagom.elasticsearch.search.dsl.SearchRequest
 import org.taymyr.lagom.elasticsearch.search.dsl.query.compound.BoolQuery
@@ -43,7 +44,7 @@ class ElasticSearchDateRangeIT : WordSpec() {
                 val request = CreateIndex(
                     CreateIndex.Settings(1, 1),
                     mapOf(
-                        typeName to CreateIndex.Mapping(mapOf(
+                        typeName to Mapping(mapOf(
                             "id" to MappingProperty.TEXT,
                             "user" to MappingProperty.KEYWORD,
                             "message" to MappingProperty.KEYWORD,
