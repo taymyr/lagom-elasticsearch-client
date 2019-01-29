@@ -20,7 +20,7 @@ import org.taymyr.lagom.elasticsearch.UserPrefix
 import org.taymyr.lagom.elasticsearch.deser.invoke
 import org.taymyr.lagom.elasticsearch.deser.invokeT
 import org.taymyr.lagom.elasticsearch.indices.dsl.CreateIndex
-import org.taymyr.lagom.elasticsearch.indices.dsl.CreateIndex.Mapping
+import org.taymyr.lagom.elasticsearch.indices.dsl.Mapping
 import org.taymyr.lagom.elasticsearch.indices.dsl.MappingProperty.Companion.KEYWORD
 import org.taymyr.lagom.elasticsearch.indices.dsl.MappingProperty.Companion.TEXT
 import org.taymyr.lagom.elasticsearch.search.dsl.SearchRequest

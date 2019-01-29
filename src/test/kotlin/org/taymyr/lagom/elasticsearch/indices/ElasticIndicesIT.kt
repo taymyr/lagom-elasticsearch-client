@@ -5,6 +5,7 @@ import com.lightbend.lagom.javadsl.api.transport.TransportErrorCode.NotFound
 import com.lightbend.lagom.javadsl.api.transport.TransportException
 import io.kotlintest.extensions.TestListener
 import io.kotlintest.matchers.beInstanceOf
+import io.kotlintest.matchers.maps.shouldContainKey
 import io.kotlintest.matchers.maps.shouldContainKeys
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
@@ -16,6 +17,8 @@ import org.taymyr.lagom.elasticsearch.indices.dsl.CreateIndex
 import org.taymyr.lagom.elasticsearch.indices.dsl.CreateIndex.Settings
 import org.taymyr.lagom.elasticsearch.indices.dsl.CustomAnalyzer
 import org.taymyr.lagom.elasticsearch.indices.dsl.DataType
+import org.taymyr.lagom.elasticsearch.indices.dsl.DynamicType
+import org.taymyr.lagom.elasticsearch.indices.dsl.Mapping
 import org.taymyr.lagom.elasticsearch.indices.dsl.MappingProperty
 import java.util.concurrent.ExecutionException
 
@@ -101,19 +104,141 @@ class ElasticIndicesIT : WordSpec() {
                         )
                     )),
                     mapOf(
-                        "some_type" to CreateIndex.Mapping(mapOf(
-                            "id" to MappingProperty.LONG,
-                            "name" to MappingProperty(type = DataType.TEXT, analyzer = "autocomplete"),
-                            "title" to MappingProperty.OBJECT,
-                            "technicalName" to MappingProperty.TEXT,
-                            "attachAllowed" to MappingProperty.BOOLEAN
-                        ))
+                        "some_type" to Mapping(
+                            mapOf(
+                                "id" to MappingProperty.LONG,
+                                "name" to MappingProperty(type = DataType.TEXT, analyzer = "autocomplete"),
+                                "title" to MappingProperty.OBJECT,
+                                "technicalName" to MappingProperty.TEXT,
+                                "attachAllowed" to MappingProperty.BOOLEAN
+                            )
+                        )
                     )
                 )
                 whenReady(elasticIndices.create("test").invoke(request).toCompletableFuture()) { result ->
                     result.acknowledged shouldBe true
                     result.shardsAcknowledged shouldBe true
                     result.index shouldBe "test"
+                }
+            }
+        }
+
+        "Index with dynamic mappings" should {
+            "successfully created" {
+                val createDynamicDefault = CreateIndex(
+                    Settings(1, 1),
+                    mapOf("_doc" to Mapping(
+                        mapOf("id" to MappingProperty.LONG)
+                    ))
+                )
+                whenReady(elasticIndices.create("dynamic_default").invoke(createDynamicDefault).toCompletableFuture()) { result ->
+                    result.acknowledged shouldBe true
+                    result.shardsAcknowledged shouldBe true
+                    result.index shouldBe "dynamic_default"
+                }
+                val createDynamicTrue = CreateIndex(
+                    Settings(1, 1),
+                    mapOf("_doc" to Mapping(
+                        mapOf("id" to MappingProperty.LONG),
+                        DynamicType.TRUE
+                    ))
+                )
+                whenReady(elasticIndices.create("dynamic_true").invoke(createDynamicTrue).toCompletableFuture()) { result ->
+                    result.acknowledged shouldBe true
+                    result.shardsAcknowledged shouldBe true
+                    result.index shouldBe "dynamic_true"
+                }
+                val createDynamicFalse = CreateIndex(
+                    Settings(1, 1),
+                    mapOf("_doc" to Mapping(
+                        mapOf("id" to MappingProperty.LONG),
+                        DynamicType.FALSE
+                    ))
+                )
+                whenReady(elasticIndices.create("dynamic_false").invoke(createDynamicFalse).toCompletableFuture()) { result ->
+                    result.acknowledged shouldBe true
+                    result.shardsAcknowledged shouldBe true
+                    result.index shouldBe "dynamic_false"
+                }
+                val createDynamicStrict = CreateIndex(
+                    Settings(1, 1),
+                    mapOf("_doc" to Mapping(
+                        mapOf("id" to MappingProperty.LONG),
+                        DynamicType.STRICT
+                    ))
+                )
+                whenReady(elasticIndices.create("dynamic_strict").invoke(createDynamicStrict).toCompletableFuture()) { result ->
+                    result.acknowledged shouldBe true
+                    result.shardsAcknowledged shouldBe true
+                    result.index shouldBe "dynamic_strict"
+                }
+                val createDynamicProperties = CreateIndex(
+                    Settings(1, 1),
+                    mapOf("_doc" to Mapping(
+                        mapOf(
+                            "name" to MappingProperty.TEXT,
+                            "social_networks" to MappingProperty(
+                                DataType.OBJECT,
+                                dynamic = DynamicType.TRUE,
+                                properties = mapOf()
+                            )
+                        ),
+                        DynamicType.FALSE
+                    ))
+                )
+                whenReady(elasticIndices.create("dynamic_props").invoke(createDynamicProperties).toCompletableFuture()) { result ->
+                    result.acknowledged shouldBe true
+                    result.shardsAcknowledged shouldBe true
+                    result.index shouldBe "dynamic_props"
+                }
+            }
+            "has correct mapping settings" {
+                whenReady(elasticIndices.get("dynamic_default").invoke().toCompletableFuture()) { result ->
+                    result.shouldContainKey("dynamic_default")
+                    result["dynamic_default"].let { index -> index!!
+                        index.mappings.shouldContainKey("_doc")
+                        index.mappings["_doc"]?.run {
+                            dynamic shouldBe null
+                        }
+                    }
+                }
+                whenReady(elasticIndices.get("dynamic_true").invoke().toCompletableFuture()) { result ->
+                    result.shouldContainKey("dynamic_true")
+                    result["dynamic_true"].let { index -> index!!
+                        index.mappings.shouldContainKey("_doc")
+                        index.mappings["_doc"]?.run {
+                            dynamic shouldBe DynamicType.TRUE
+                        }
+                    }
+                }
+                whenReady(elasticIndices.get("dynamic_false").invoke().toCompletableFuture()) { result ->
+                    result.shouldContainKey("dynamic_false")
+                    result["dynamic_false"].let { index -> index!!
+                        index.mappings.shouldContainKey("_doc")
+                        index.mappings["_doc"]?.run {
+                            dynamic shouldBe DynamicType.FALSE
+                        }
+                    }
+                }
+                whenReady(elasticIndices.get("dynamic_strict").invoke().toCompletableFuture()) { result ->
+                    result.shouldContainKey("dynamic_strict")
+                    result["dynamic_strict"]?.run {
+                        mappings.shouldContainKey("_doc")
+                        mappings["_doc"]?.run {
+                            dynamic shouldBe DynamicType.STRICT
+                        }
+                    }
+                }
+                whenReady(elasticIndices.get("dynamic_props").invoke().toCompletableFuture()) { result ->
+                    result.shouldContainKey("dynamic_props")
+                    result["dynamic_props"]?.run {
+                        mappings.shouldContainKey("_doc")
+                        mappings["_doc"]?.run {
+                            dynamic shouldBe DynamicType.FALSE
+                            properties.shouldContainKey("social_networks")
+                            properties["social_networks"]?.dynamic shouldBe DynamicType.TRUE
+                        }
+                    }
                 }
             }
         }

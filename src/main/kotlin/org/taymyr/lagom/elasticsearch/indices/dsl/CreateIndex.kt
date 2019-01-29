@@ -17,9 +17,6 @@ class CreateIndex(
     )
 
     @Immutable
-    data class Mapping(val properties: Map<String, MappingProperty>)
-
-    @Immutable
     data class Analysis(
         val filter: Map<String, Filter>?,
         val analyzer: Map<String, Analyzer>?

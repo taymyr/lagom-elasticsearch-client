@@ -3,14 +3,22 @@ package org.taymyr.lagom.elasticsearch.indices.dsl
 /**
  * See [Elasticsearch Docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-params.html)
  */
-data class MappingProperty(
+data class MappingProperty @JvmOverloads constructor(
     val type: String,
     val format: String? = null,
     val analyzer: String? = null,
     val properties: Map<String, MappingProperty>? = null,
-    val fields: Map<String, MappingProperty>? = null
+    val fields: Map<String, MappingProperty>? = null,
+    val dynamic: DynamicType? = null
 ) {
-    constructor(type: DataType, format: String? = null, analyzer: String? = null, properties: Map<String, MappingProperty>? = null) : this(type.title, format, analyzer, properties)
+    @JvmOverloads
+    constructor(
+        type: DataType,
+        format: String? = null,
+        analyzer: String? = null,
+        properties: Map<String, MappingProperty>? = null,
+        dynamic: DynamicType? = null
+    ) : this(type.title, format, analyzer, properties, dynamic = dynamic)
 
     class Builder {
         private var type: String? = null
@@ -18,12 +26,14 @@ data class MappingProperty(
         private var analyzer: String? = null
         private var properties: Map<String, MappingProperty>? = null
         private var fields: Map<String, MappingProperty>? = null
+        private var dynamic: DynamicType? = null
 
         fun type(type: String) = apply { this.type = type }
         fun format(format: String) = apply { this.format = format }
         fun analyzer(analyzer: String) = apply { this.analyzer = analyzer }
         fun properties(properties: Map<String, MappingProperty>) = apply { this.properties = properties }
         fun fields(fields: Map<String, MappingProperty>) = apply { this.fields = fields }
+        fun dynamic(dynamic: DynamicType) = apply { this.dynamic = dynamic }
 
         fun build() = MappingProperty(type ?: error("Type can't be null"), format, analyzer, properties, fields)
     }
