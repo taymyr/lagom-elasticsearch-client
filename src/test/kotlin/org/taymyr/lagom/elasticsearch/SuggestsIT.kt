@@ -45,7 +45,7 @@ class SuggestsIT : WordSpec() {
                             "categoryIds" to MappingProperty.LONG,
                             "updateDate" to MappingProperty.DATE,
                             "basePrice" to MappingProperty.INTEGER,
-                            "suggest" to MappingProperty(type = "completion"),
+                            "suggest" to MappingProperty.COMPLETION,
                             "payload" to MappingProperty.OBJECT
                         ))
                     )
