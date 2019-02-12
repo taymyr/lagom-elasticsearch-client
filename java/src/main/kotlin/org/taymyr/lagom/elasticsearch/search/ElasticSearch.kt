@@ -14,7 +14,7 @@ import org.taymyr.lagom.elasticsearch.search.dsl.SearchRequest
 import kotlin.reflect.jvm.javaMethod
 
 /**
- * Lagom service wrapper for [Elasticsearch Search APIs](https://www.elastic.co/guide/en/elasticsearch/reference/current/search.html)
+ * Lagom service wrapper for [Elasticsearch Search APIs](https://www.elastic.co/guide/en/elasticsearch/reference/current/search.html).
  */
 interface ElasticSearch : ElasticService {
 

@@ -9,14 +9,35 @@ data class TermsAggregation @JvmOverloads constructor(
     val terms: FieldSpec,
     val aggs: Map<String, Aggregation>? = null
 ) : Aggregation {
+
     data class FieldSpec @JvmOverloads constructor(
         val field: String,
         val size: Int? = null,
         val order: Order? = null
     )
+
+    class Builder {
+        private var field: String? = null
+        private var size: Int? = null
+        private var order: Order? = null
+        private var aggs: MutableMap<String, Aggregation> = mutableMapOf()
+
+        fun field(field: String) = apply { this.field = field }
+        fun size(size: Int) = apply { this.size = size }
+        fun order(order: Order) = apply { this.order = order }
+        fun agg(name: String, aggregation: Aggregation) = apply { this.aggs[name] = aggregation }
+
+        fun build() = TermsAggregation(
+            terms = FieldSpec(
+                field = field ?: error("Field 'field' can't be null"),
+                size = size,
+                order = order
+            ),
+            aggs = if (aggs.isEmpty()) null else aggs.toMap()
+        )
+    }
+
     companion object {
-        @JvmStatic fun of(terms: FieldSpec, aggs: Map<String, Aggregation>) = TermsAggregation(terms, aggs)
-        @JvmStatic fun of(terms: FieldSpec, vararg aggs: Pair<String, Aggregation>) = TermsAggregation(terms, aggs.toMap())
-        @JvmStatic fun of(terms: FieldSpec) = TermsAggregation(terms)
+        @JvmStatic fun builder() = Builder()
     }
 }

@@ -1,0 +1,13 @@
+{
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "match_phrase_prefix": {
+            "field": "value"
+          }
+        }
+      ]
+    }
+  }
+}

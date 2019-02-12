@@ -14,15 +14,15 @@ import com.lightbend.lagom.javadsl.api.transport.Method.POST
 import com.lightbend.lagom.javadsl.api.transport.Method.PUT
 import org.taymyr.lagom.elasticsearch.ElasticService
 import org.taymyr.lagom.elasticsearch.deser.ElasticSerializerFactory
-import org.taymyr.lagom.elasticsearch.document.dsl.IndexDocumentResult
 import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkRequest
 import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkResult
 import org.taymyr.lagom.elasticsearch.document.dsl.delete.DeleteResult
+import org.taymyr.lagom.elasticsearch.document.dsl.index.IndexResult
 import org.taymyr.lagom.elasticsearch.document.dsl.update.UpdateResult
 import kotlin.reflect.jvm.javaMethod
 
 /**
- * Lagom service wrapper for [Elasticsearch Document APIs](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs.html)
+ * Lagom service wrapper for [Elasticsearch Document APIs](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs.html).
  */
 interface ElasticDocument : ElasticService {
 
@@ -30,7 +30,7 @@ interface ElasticDocument : ElasticService {
      * Add document to index.
      * See also [Elasticsearch Docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html)
      */
-    fun indexWithId(index: String, type: String, id: String): ServiceCall<ByteString, IndexDocumentResult>
+    fun indexWithId(index: String, type: String, id: String): ServiceCall<ByteString, IndexResult>
 
     /**
      * Retrieve document with meta from index.
@@ -77,7 +77,7 @@ interface ElasticDocument : ElasticService {
     @JvmDefault
     override fun descriptor(): Descriptor {
         return named("elastic-document").withCalls(
-            restCall<ByteString, IndexDocumentResult>(PUT, "/:index/:type/:id", ElasticDocument::indexWithId.javaMethod),
+            restCall<ByteString, IndexResult>(PUT, "/:index/:type/:id", ElasticDocument::indexWithId.javaMethod),
             restCall<NotUsed, ByteString>(GET, "/:index/:type/:id", ElasticDocument::get.javaMethod),
             restCall<NotUsed, Done>(HEAD, "/:index/:type/:id", ElasticDocument::exists.javaMethod),
             restCall<NotUsed, ByteString>(GET, "/:index/:type/:id/_source", ElasticDocument::getSource.javaMethod),

@@ -6,5 +6,6 @@ data class DeleteResult(
     @JsonProperty("_index") val index: String,
     @JsonProperty("_type") val type: String,
     @JsonProperty("_id") val id: String,
+    @JsonProperty("_version") val version: Int,
     val result: String? = null
 )

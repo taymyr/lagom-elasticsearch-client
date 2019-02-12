@@ -15,7 +15,7 @@ import java.util.Optional.of
 /**
  * NOP message serializer for [ByteString].
  */
-class ByteStringMessageSerializer : StrictMessageSerializer<ByteString> {
+internal class ByteStringMessageSerializer : StrictMessageSerializer<ByteString> {
 
     private val defaultProtocol = MessageProtocol(of("application/json"), of("utf-8"), empty())
 

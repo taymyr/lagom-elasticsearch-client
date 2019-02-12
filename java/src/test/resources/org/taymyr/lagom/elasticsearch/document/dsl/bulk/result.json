@@ -1,0 +1,95 @@
+{
+  "took": 30,
+  "errors": false,
+  "items": [
+    {
+      "index": {
+        "_index": "test",
+        "_type": "_doc",
+        "_id": "1",
+        "_version": 1,
+        "result": "created",
+        "_shards": {
+          "total": 2,
+          "successful": 1,
+          "failed": 0
+        },
+        "status": 201,
+        "_seq_no": 0,
+        "_primary_term": 1
+      }
+    },
+    {
+      "delete": {
+        "_index": "test",
+        "_type": "_doc",
+        "_id": "2",
+        "_version": 1,
+        "result": "not_found",
+        "_shards": {
+          "total": 2,
+          "successful": 1,
+          "failed": 0
+        },
+        "status": 404,
+        "_seq_no": 1,
+        "_primary_term": 2
+      }
+    },
+    {
+      "create": {
+        "_index": "test",
+        "_type": "_doc",
+        "_id": "3",
+        "_version": 1,
+        "result": "created",
+        "_shards": {
+          "total": 2,
+          "successful": 1,
+          "failed": 0
+        },
+        "status": 201,
+        "_seq_no": 2,
+        "_primary_term": 3
+      }
+    },
+    {
+      "update": {
+        "_index": "test",
+        "_type": "_doc",
+        "_id": "1",
+        "_version": 2,
+        "result": "updated",
+        "_shards": {
+          "total": 2,
+          "successful": 1,
+          "failed": 0
+        },
+        "status": 200,
+        "_seq_no": 3,
+        "_primary_term": 4
+      }
+    },
+    {
+      "delete": {
+        "_index": "test",
+        "_type": "_doc",
+        "_id": "4",
+        "_version": 1,
+        "result": "error",
+        "_shards": {
+          "total": 2,
+          "successful": 0,
+          "failed": 1
+        },
+        "status": 500,
+        "error": {
+          "type": "err_type",
+          "reason": "err_reason"
+        },
+        "_seq_no": 1,
+        "_primary_term": 2
+      }
+    }
+  ]
+}

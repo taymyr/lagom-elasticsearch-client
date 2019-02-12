@@ -33,7 +33,7 @@ data class MappingProperty @JvmOverloads constructor(
         fun copyTo(copyTo: String) = apply { this.copyTo = listOf(copyTo) }
         fun copyTo(copyTo: List<String>) = apply { this.copyTo = copyTo }
 
-        fun build() = MappingProperty(type ?: error("Type can't be null"), format, analyzer, properties, fields, dynamic, copyTo)
+        fun build() = MappingProperty(type ?: error("Field 'type' can not be null"), format, analyzer, properties, fields, dynamic, copyTo)
     }
 
     companion object {
@@ -48,6 +48,6 @@ data class MappingProperty @JvmOverloads constructor(
         @JvmField val DOUBLE = MappingProperty(DataType.DOUBLE)
         @JvmField val COMPLETION = MappingProperty(DataType.COMPLETION)
 
-        @JvmStatic fun mapping() = MappingProperty.Builder()
+        @JvmStatic fun builder() = MappingProperty.Builder()
     }
 }

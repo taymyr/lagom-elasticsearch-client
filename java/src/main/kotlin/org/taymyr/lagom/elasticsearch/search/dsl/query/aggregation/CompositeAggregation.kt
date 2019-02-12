@@ -5,9 +5,28 @@ package org.taymyr.lagom.elasticsearch.search.dsl.query.aggregation
  */
 data class CompositeAggregation(val composite: Composite) : Aggregation {
 
-    data class Composite(val sources: List<Map<String, TermsAggregation>>) {
-        companion object {
-            @JvmStatic fun of(vararg srcs: Map<String, TermsAggregation>) = Composite(srcs.toList())
-        }
+    data class Composite(val sources: List<Map<String, TermsAggregation>>)
+
+    class SourceBuilder {
+        private var aggs: MutableMap<String, TermsAggregation> = mutableMapOf()
+
+        fun agg(name: String, aggregation: TermsAggregation) = apply { this.aggs[name] = aggregation }
+
+        fun build() = if (aggs.isEmpty()) error("Field 'aggs' can't be empty") else aggs.toMap()
+    }
+
+    class Builder {
+        private var sources: MutableList<SourceBuilder> = mutableListOf()
+
+        fun source(source: SourceBuilder) = apply { this.sources.add(source) }
+
+        fun build() = CompositeAggregation(
+            Composite(if (sources.isEmpty()) error("CompositeAggregation can't be empty") else sources.map { it.build() })
+        )
+    }
+
+    companion object {
+        @JvmStatic fun builder() = Builder()
+        @JvmStatic fun sourceBuilder() = SourceBuilder()
     }
 }

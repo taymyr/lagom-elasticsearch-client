@@ -29,18 +29,16 @@ private constructor(private var anchor: String = "", private var expression: Str
 
     fun trunc(unit: ChronoUnit) = apply { expression += "/${mapUnit(unit)}" }
 
-    override fun toString(): String {
-        return when (anchor) {
-            NOW -> NOW
-            else -> "$anchor||"
-        } + expression
-    }
+    override fun toString(): String = when (anchor) {
+        "now" -> "now"
+        else -> "$anchor||"
+    } + expression
 
     companion object {
-        @JvmField val NOW = "now"
+        @JvmField
+        val NOW = DateRangeExpression(anchor = "now")
 
-        @JvmStatic fun ofNow() = DateRangeExpression(NOW)
-
-        @JvmStatic fun of(date: String) = DateRangeExpression(date)
+        @JvmStatic
+        fun of(date: String) = DateRangeExpression(anchor = date)
     }
 }

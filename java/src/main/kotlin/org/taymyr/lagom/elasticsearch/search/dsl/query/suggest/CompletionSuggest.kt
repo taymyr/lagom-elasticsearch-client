@@ -17,4 +17,27 @@ data class CompletionSuggest(
         @JsonProperty("skip_duplicates")
         val skipDuplicates: Boolean = false
     )
+
+    class Builder {
+        private var prefix: String? = null
+        private var field: String? = null
+        private var fuzzy: Fuzzy? = null
+        private var skipDuplicates: Boolean = false
+
+        fun prefix(prefix: String) = apply { this.prefix = prefix }
+        fun field(field: String) = apply { this.field = field }
+        fun fuzzy(fuzzy: Fuzzy) = apply { this.fuzzy = fuzzy }
+        fun fuzzy(fuzzy: String) = apply { this.fuzzy = Fuzzy(fuzzy) }
+        fun skipDuplicates(skipDuplicates: Boolean) = apply { this.skipDuplicates = skipDuplicates }
+
+        fun build() = CompletionSuggest(
+            prefix ?: error("Field 'prefix' can't be null"),
+            Completion(field ?: error("Field 'field' can't be null"), fuzzy, skipDuplicates)
+        )
+    }
+
+    companion object {
+        @JvmStatic
+        fun builder() = Builder()
+    }
 }

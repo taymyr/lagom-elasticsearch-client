@@ -21,7 +21,7 @@ import org.taymyr.lagom.elasticsearch.indices.dsl.IndexInfo
 import kotlin.reflect.jvm.javaMethod
 
 /**
- * Lagom service wrapper for [Elasticsearch Indices APIs](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices.html)
+ * Lagom service wrapper for [Elasticsearch Indices APIs](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices.html).
  */
 interface ElasticIndices : ElasticService {
 

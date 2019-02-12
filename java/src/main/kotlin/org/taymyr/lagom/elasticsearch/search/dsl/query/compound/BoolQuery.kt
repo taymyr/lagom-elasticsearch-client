@@ -8,27 +8,31 @@ import org.taymyr.lagom.elasticsearch.search.dsl.query.Query
 data class BoolQuery(val bool: BoolQueryBody) : CompoundQuery {
 
     class Builder {
-        private var should: List<Query>? = null
-        private var mustNot: List<Query>? = null
-        private var must: List<Query>? = null
-        private var filter: List<Query>? = null
+        private var should: MutableList<Query> = mutableListOf()
+        private var mustNot: MutableList<Query> = mutableListOf()
+        private var must: MutableList<Query> = mutableListOf()
+        private var filter: MutableList<Query> = mutableListOf()
 
-        fun should(should: List<Query>?) = apply { this.should = should }
-        fun should(vararg should: Query) = should(should.asList())
+        fun should(should: Query) = apply { this.should.add(should) }
+        fun mustNot(mustNot: Query) = apply { this.mustNot.add(mustNot) }
+        fun must(must: Query) = apply { this.must.add(must) }
+        fun filter(filter: Query) = apply { this.filter.add(filter) }
 
-        fun mustNot(mustNot: List<Query>?) = apply { this.mustNot = mustNot }
-        fun mustNot(vararg mustNot: Query) = mustNot(mustNot.asList())
-
-        fun must(must: List<Query>?) = apply { this.must = must }
-        fun must(vararg must: Query) = must(must.asList())
-
-        fun filter(filter: List<Query>?) = apply { this.filter = filter }
-        fun filter(vararg filter: Query) = filter(filter.asList())
-
-        fun build() = BoolQuery(BoolQueryBody(should, mustNot, must, filter))
+        fun build() =
+            if (listOf(should, mustNot, must, filter).any { it.isNotEmpty() })
+                BoolQuery(
+                    BoolQueryBody(
+                        should = if (should.isEmpty()) null else should.toList(),
+                        mustNot = if (mustNot.isEmpty()) null else mustNot.toList(),
+                        must = if (must.isEmpty()) null else must.toList(),
+                        filter = if (filter.isEmpty()) null else filter.toList()
+                    )
+                )
+            else error("BoolQuery can't be empty")
     }
 
     companion object {
-        @JvmStatic fun boolQuery() = Builder()
+        @JvmStatic
+        fun builder() = Builder()
     }
 }

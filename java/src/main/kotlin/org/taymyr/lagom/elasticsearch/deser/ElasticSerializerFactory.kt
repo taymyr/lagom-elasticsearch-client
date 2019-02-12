@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import com.lightbend.lagom.javadsl.api.deser.StrictMessageSerializer
 import com.lightbend.lagom.javadsl.jackson.JacksonSerializerFactory
 import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkRequest
@@ -33,6 +34,7 @@ class ElasticSerializerFactory(val mapper: ObjectMapper = MAPPER) : JacksonSeria
         @JvmStatic val MAPPER: ObjectMapper = ObjectMapper()
             .registerModule(KotlinModule())
             .registerModule(JavaTimeModule())
+            .registerModule(ParameterNamesModule())
             .disable(WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS)
             .disable(FAIL_ON_UNKNOWN_PROPERTIES)
             .setSerializationInclusion(NON_NULL)

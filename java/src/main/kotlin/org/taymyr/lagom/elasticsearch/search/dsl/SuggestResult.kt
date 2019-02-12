@@ -7,9 +7,9 @@ data class SuggestResult<T>(
     val options: List<SuggestOption<T>>
 ) {
 
-    data class SuggestOption<T>(
+    data class SuggestOption<T> @JvmOverloads constructor(
         val text: String,
         @JsonProperty("_source")
-        val source: T
+        val source: T? = null
     )
 }

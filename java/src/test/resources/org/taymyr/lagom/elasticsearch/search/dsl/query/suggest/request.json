@@ -1,0 +1,19 @@
+{
+  "query": {
+    "match": {
+      "name": "value"
+    }
+  },
+  "suggest": {
+    "mySuggest": {
+      "completion": {
+        "field": "suggest",
+        "fuzzy": {
+          "fuzziness": "AUTO"
+        },
+        "skip_duplicates": false
+      },
+      "prefix": "prefix"
+    }
+  }
+}

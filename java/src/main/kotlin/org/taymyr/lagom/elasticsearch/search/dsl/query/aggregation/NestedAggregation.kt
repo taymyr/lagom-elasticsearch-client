@@ -7,9 +7,23 @@ data class NestedAggregation(
     val nested: NestedPath,
     val aggs: Map<String, Aggregation>
 ) : Aggregation {
+
     data class NestedPath(val path: String)
+
+    class Builder {
+        private var nested: String? = null
+        private var aggs: MutableMap<String, Aggregation> = mutableMapOf()
+
+        fun nested(nested: String) = apply { this.nested = nested }
+        fun agg(name: String, aggregation: Aggregation) = apply { this.aggs[name] = aggregation }
+
+        fun build() = NestedAggregation(
+            nested = NestedPath(nested ?: error("Field 'nested' can't be null")),
+            aggs = if (aggs.isEmpty()) error("Field 'aggs' can't be empty") else aggs.toMap()
+        )
+    }
+
     companion object {
-        @JvmStatic fun of(path: String, aggs: Map<String, Aggregation>) = NestedAggregation(NestedPath(path), aggs)
-        @JvmStatic fun of(path: String, vararg aggs: Pair<String, Aggregation>) = NestedAggregation(NestedPath(path), aggs.toMap())
+        @JvmStatic fun builder() = Builder()
     }
 }

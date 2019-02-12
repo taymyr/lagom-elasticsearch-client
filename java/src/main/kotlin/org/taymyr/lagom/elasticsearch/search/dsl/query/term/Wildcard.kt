@@ -1,3 +1,3 @@
 package org.taymyr.lagom.elasticsearch.search.dsl.query.term
 
-interface Wildcard
+data class Wildcard @JvmOverloads constructor(val value: String, val boost: Double? = null)

@@ -12,7 +12,10 @@ import org.taymyr.lagom.elasticsearch.search.dsl.SearchResult
 import java.lang.reflect.Type
 import java.util.Optional
 
-class SearchResultSerializer(private val mapper: ObjectMapper, private val type: Type) : StrictMessageSerializer<SearchResult<*>> {
+/**
+ * Serializer for [SearchResult].
+ */
+internal class SearchResultSerializer(private val mapper: ObjectMapper, private val type: Type) : StrictMessageSerializer<SearchResult<*>> {
 
     private val defaultProtocol = MessageProtocol(Optional.of("application/json"), Optional.of("utf-8"), Optional.empty())
 

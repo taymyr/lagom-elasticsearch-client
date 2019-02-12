@@ -7,7 +7,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As.WRAPPER_OBJECT
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME
 
-data class BulkResult(val errors: Boolean, val items: List<BulkCommandResult>) {
+data class BulkResult(
+    val took: Int,
+    @JsonProperty("errors")
+    val isErrors: Boolean,
+    val items: List<BulkCommandResult>
+) {
 
     @JsonTypeInfo(include = WRAPPER_OBJECT, use = NAME)
     @JsonSubTypes(
@@ -16,19 +21,53 @@ data class BulkResult(val errors: Boolean, val items: List<BulkCommandResult>) {
         Type(BulkUpdateResult::class, name = "update"),
         Type(BulkDeleteResult::class, name = "delete")
     )
-    abstract class BulkCommandResult {
-        @JsonProperty("_index") lateinit var index: String
-        @JsonProperty("_type") lateinit var type: String
-        @JsonProperty("_id") lateinit var id: String
-        val status: Long = -1
-        val result: String? = null
-        val error: ResultItemError? = null
+    abstract class BulkCommandResult(
+        @get:JsonProperty("_index")
+        open val index: String,
+        @get:JsonProperty("_type")
+        open val type: String,
+        @get:JsonProperty("_id")
+        open val id: String,
+        open val status: Long = -1,
+        open val result: String? = null,
+        open val error: ResultItemError? = null
+    )
 
-        data class ResultItemError(val type: String, val reason: String)
-    }
+    data class ResultItemError(val type: String, val reason: String)
 
-    class BulkCreateResult : BulkCommandResult()
-    class BulkIndexResult : BulkCommandResult()
-    class BulkUpdateResult : BulkCommandResult()
-    class BulkDeleteResult : BulkCommandResult()
+    data class BulkCreateResult(
+        override val index: String,
+        override val type: String,
+        override val id: String,
+        override val status: Long,
+        override val result: String?,
+        override val error: ResultItemError?
+    ) : BulkCommandResult(index, type, id, status, result, error)
+
+    data class BulkIndexResult(
+        override val index: String,
+        override val type: String,
+        override val id: String,
+        override val status: Long,
+        override val result: String?,
+        override val error: ResultItemError?
+    ) : BulkCommandResult(index, type, id, status, result, error)
+
+    data class BulkUpdateResult(
+        override val index: String,
+        override val type: String,
+        override val id: String,
+        override val status: Long,
+        override val result: String?,
+        override val error: ResultItemError?
+    ) : BulkCommandResult(index, type, id, status, result, error)
+
+    data class BulkDeleteResult(
+        override val index: String,
+        override val type: String,
+        override val id: String,
+        override val status: Long,
+        override val result: String?,
+        override val error: ResultItemError?
+    ) : BulkCommandResult(index, type, id, status, result, error)
 }

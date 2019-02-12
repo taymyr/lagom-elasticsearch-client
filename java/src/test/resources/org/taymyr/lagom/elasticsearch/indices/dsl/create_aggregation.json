@@ -1,0 +1,52 @@
+{
+  "mappings": {
+    "aggregated_fields": {
+      "properties": {
+        "aggregate_text": {
+          "analyzer": "russian",
+          "type": "text"
+        },
+        "message": {
+          "type": "text"
+        },
+        "nested_obj": {
+          "properties": {
+            "date_field": {
+              "copy_to": [
+                "aggregate_text"
+              ],
+              "format": "yyyy-MM-dd",
+              "type": "date"
+            },
+            "integer_field": {
+              "copy_to": [
+                "aggregate_text"
+              ],
+              "type": "long"
+            },
+            "keyword_field": {
+              "copy_to": [
+                "aggregate_text"
+              ],
+              "type": "keyword"
+            },
+            "text_field": {
+              "copy_to": [
+                "aggregate_text"
+              ],
+              "type": "text"
+            }
+          },
+          "type": "object"
+        },
+        "user": {
+          "type": "keyword"
+        }
+      }
+    }
+  },
+  "settings": {
+    "number_of_replicas": 1,
+    "number_of_shards": 1
+  }
+}

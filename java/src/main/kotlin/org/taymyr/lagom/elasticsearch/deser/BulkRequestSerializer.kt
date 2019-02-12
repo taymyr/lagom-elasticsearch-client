@@ -16,9 +16,12 @@ import java.io.OutputStream
 import java.util.Optional.empty
 import java.util.Optional.of
 
-class BulkRequestSerializer(val mapper: ObjectMapper) : StrictMessageSerializer<BulkRequest> {
+/**
+ * Serializer for [BulkRequest].
+ */
+internal class BulkRequestSerializer(val mapper: ObjectMapper) : StrictMessageSerializer<BulkRequest> {
 
-    private val defaultProtocol = MessageProtocol(of("application/json"), of("utf-8"), empty())
+    private val defaultProtocol = MessageProtocol(of("application/x-ndjson"), empty(), empty())
     private val mapperAlwaysInclusion = mapper.copy().setSerializationInclusion(ALWAYS)
 
     inner class Serializer(private val protocol: MessageProtocol) : NegotiatedSerializer<BulkRequest, ByteString> {

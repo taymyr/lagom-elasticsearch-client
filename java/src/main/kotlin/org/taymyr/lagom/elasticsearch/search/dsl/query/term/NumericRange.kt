@@ -12,15 +12,25 @@ data class NumericRange(
 ) : Range {
 
     class Builder {
-        private val gte: Int? = null
-        private val gt: Int? = null
-        private val lte: Int? = null
-        private val lt: Int? = null
-        private val boost: Double? = null
+        private var gte: Int? = null
+        private var gt: Int? = null
+        private var lte: Int? = null
+        private var lt: Int? = null
+        private var boost: Double? = null
 
-        fun build() {
-            if (listOfNotNull(gte, gt, lte, lt).isEmpty()) throw error("All field of NumericRange is null")
-            NumericRange(gte, gt, lte, lt, boost)
-        }
+        fun gte(gte: Int) = apply { this.gte = gte }
+        fun gt(gt: Int) = apply { this.gt = gt }
+        fun lte(lte: Int) = apply { this.lte = lte }
+        fun lt(lt: Int) = apply { this.lt = lt }
+        fun boost(boost: Double) = apply { this.boost = boost }
+
+        fun build() =
+            if (sequenceOf(gte, gt, lte, lt).any { it != null }) NumericRange(gte, gt, lte, lt, boost)
+            else error("All field of NumericRange is null")
+    }
+
+    companion object {
+        @JvmStatic
+        fun builder() = Builder()
     }
 }

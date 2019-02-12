@@ -15,12 +15,12 @@ object Versions {
     const val ktlint = "0.29.0"
     const val `kotlin-logging` = "1.6.22"
     const val junit5 = "5.3.2"
+    const val `json-unit` = "2.4.0"
     const val assertj = "3.11.1"
     const val jacoco = "0.8.2"
     const val jackson = "2.9.7"
     const val elasticsearch = "6.4.1"
     const val `embedded-elasticsearch` = "2.7.0"
-    const val kotlintest = "3.1.10"
 }
 val lagomVersion = project.properties["lagomVersion"] as String? ?: Versions.lagom
 val scalaBinaryVersion = project.properties["scalaBinaryVersion"] as String? ?: Versions.scalaBinary
@@ -42,6 +42,9 @@ val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions.jvmTarget = "1.8"
 compileTestKotlin.kotlinOptions.freeCompilerArgs += "-Xjvm-default=enable"
 
+val compileTestJava: JavaCompile by tasks
+compileTestJava.options.compilerArgs.add("-parameters")
+
 dependencies {
     compile(kotlin("stdlib-jdk8"))
     compile(kotlin("reflect"))
@@ -53,6 +56,7 @@ dependencies {
     testCompile("org.junit.jupiter", "junit-jupiter-params", Versions.junit5)
     testRuntime("org.junit.jupiter", "junit-jupiter-engine", Versions.junit5)
     testCompile("org.assertj", "assertj-core", Versions.assertj)
+    testCompile("net.javacrumbs.json-unit", "json-unit-assertj", Versions.`json-unit`)
     testCompile( "com.lightbend.lagom", "lagom-javadsl-integration-client_$scalaBinaryVersion", lagomVersion)
     testCompile("com.lightbend.lagom", "lagom-logback_$scalaBinaryVersion", lagomVersion)
     testCompile("pl.allegro.tech" , "embedded-elasticsearch", Versions.`embedded-elasticsearch`)

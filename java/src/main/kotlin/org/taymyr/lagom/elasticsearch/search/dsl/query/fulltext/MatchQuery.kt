@@ -7,6 +7,6 @@ import org.taymyr.lagom.elasticsearch.search.dsl.query.Query
  */
 data class MatchQuery(val match: Match) : Query {
     companion object {
-        @JvmStatic fun ofMatch(match: Match) = MatchQuery(match)
+        @JvmStatic fun of(match: Match) = MatchQuery(match)
     }
 }

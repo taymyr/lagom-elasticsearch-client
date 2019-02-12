@@ -1,0 +1,42 @@
+{
+  "sort": [
+    {
+      "name": "desc"
+    },
+    {
+      "age": "asc"
+    }
+  ],
+  "query": {
+    "ids": {
+      "values": [
+        "1"
+      ]
+    }
+  },
+  "aggs": {
+    "agg1": {
+      "terms": {
+        "field": "field"
+      }
+    }
+  },
+  "from": 0,
+  "size": 10,
+  "post_filter": {
+    "term": {
+      "field": {
+        "value": "value"
+      }
+    }
+  },
+  "suggest": {
+    "suggest1": {
+      "completion": {
+        "field": "suggest",
+        "skip_duplicates": false
+      },
+      "prefix": "prefix"
+    }
+  }
+}

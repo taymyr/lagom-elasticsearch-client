@@ -1,0 +1,16 @@
+{
+  "script": {
+    "id": "123",
+    "lang": "painless",
+    "params": {
+      "balance": 4.0,
+      "user": "user-from-params"
+    },
+    "source": "ctx._source.balance += params.balance"
+  },
+  "scripted_upsert": false,
+  "upsert": {
+    "balance": 1.0,
+    "user": "user-from-upsert"
+  }
+}

@@ -1,8 +1,8 @@
 package org.taymyr.lagom.elasticsearch.search.dsl
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import org.taymyr.lagom.elasticsearch.search.dsl.query.Order
 import org.taymyr.lagom.elasticsearch.search.dsl.query.Query
-import org.taymyr.lagom.elasticsearch.search.dsl.query.Sort
 import org.taymyr.lagom.elasticsearch.search.dsl.query.aggregation.Aggregation
 import org.taymyr.lagom.elasticsearch.search.dsl.query.suggest.Suggest
 
@@ -19,5 +19,40 @@ data class SearchRequest @JvmOverloads constructor(
     @JsonProperty("post_filter")
     val postFilter: Query? = null,
     val suggest: Map<String, Suggest>? = null,
-    val sort: List<Sort>? = null
-)
+    val sort: List<Order>? = null
+) {
+
+    class Builder {
+        private var query: Query? = null
+        private var from: Int? = null
+        private var size: Int? = null
+        private var aggs: MutableMap<String, Aggregation> = mutableMapOf()
+        private var postFilter: Query? = null
+        private var suggest: MutableMap<String, Suggest> = mutableMapOf()
+        private var sort: MutableList<Order> = mutableListOf()
+
+        fun query(query: Query) = apply { this.query = query }
+        fun from(from: Int) = apply { this.from = from }
+        fun size(size: Int) = apply { this.size = size }
+        fun aggs(aggs: Map<String, Aggregation>) = apply { this.aggs.putAll(aggs) }
+        fun agg(name: String, aggregation: Aggregation) = apply { this.aggs[name] = aggregation }
+        fun postFilter(postFilter: Query) = apply { this.postFilter = postFilter }
+        fun suggest(suggest: Map<String, Suggest>) = apply { this.suggest.putAll(suggest) }
+        fun suggest(name: String, suggest: Suggest) = apply { this.suggest[name] = suggest }
+        fun sort(vararg sort: Order) = apply { this.sort.addAll(sort) }
+
+        fun build() = SearchRequest(
+            query = query ?: error("Query can't be null"),
+            from = from,
+            size = size,
+            aggs = if (aggs.isEmpty()) null else aggs.toMap(),
+            postFilter = postFilter,
+            suggest = if (suggest.isEmpty()) null else suggest.toMap(),
+            sort = if (sort.isEmpty()) null else sort.toList()
+        )
+    }
+
+    companion object {
+        @JvmStatic fun builder() = Builder()
+    }
+}

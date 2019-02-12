@@ -1,113 +1,105 @@
 package org.taymyr.lagom.elasticsearch.document;
 
 import akka.Done;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.taymyr.lagom.elasticsearch.AbstractElasticsearchIT;
-import org.taymyr.lagom.elasticsearch.IndexedSampleDocument;
-import org.taymyr.lagom.elasticsearch.SampleDocument;
-import org.taymyr.lagom.elasticsearch.deser.ServiceCallKt;
-import org.taymyr.lagom.elasticsearch.document.dsl.IndexDocumentResult;
-import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkCreate;
-import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkDelete;
-import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkIndex;
+import org.taymyr.lagom.elasticsearch.TestDocument;
+import org.taymyr.lagom.elasticsearch.TestDocument.IndexedTestDocument;
 import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkRequest;
 import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkResult;
-import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkResult.BulkCommandResult;
+import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkUpdate;
+import org.taymyr.lagom.elasticsearch.document.dsl.delete.DeleteResult;
+import org.taymyr.lagom.elasticsearch.document.dsl.index.IndexResult;
+import org.taymyr.lagom.elasticsearch.document.dsl.update.DocUpdateRequest;
+import org.taymyr.lagom.elasticsearch.document.dsl.update.UpdateRequest;
+import org.taymyr.lagom.elasticsearch.document.dsl.update.UpdateResult;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.taymyr.lagom.elasticsearch.deser.ServiceCallKt.invokeT;
+import static org.taymyr.lagom.elasticsearch.ServiceCall.invoke;
 
-@DisplayName("ElasticDocument should")
-class ElasticDocumentIT  extends AbstractElasticsearchIT {
+import static java.lang.Thread.sleep;
 
-    private static SampleDocument document = new SampleDocument("user", "message");
-    private static IndexedSampleDocument testEntity = new IndexedSampleDocument(new SampleDocument("tt", "mm"));
+class ElasticDocumentIT extends AbstractElasticsearchIT {
 
-    @BeforeAll
-    static void shouldSuccessfullyAddDocument() throws InterruptedException, ExecutionException, TimeoutException {
-        IndexDocumentResult result = eventually(
-                ServiceCallKt.invoke(elasticDocument.indexWithId("test", "sample", "1"), document)
-        );
+    @Test
+    @DisplayName("Document service descriptor should work correct")
+    void shouldWorkCorrect() throws InterruptedException, ExecutionException, TimeoutException {
+        indexDocument();
+        sleep(1000);
+        bulkUpdate();
+        sleep(1000);
+        getDocument();
+        update();
+        sleep(1000);
+        getSource();
+        checkExists();
+        delete();
+    }
+
+    private void indexDocument() throws InterruptedException, ExecutionException, TimeoutException {
+        IndexResult result = eventually(invoke(elasticDocument.indexWithId("test", "sample", "1"),
+                new TestDocument("user", "message")));
         assertThat(result.getIndex()).isEqualTo("test");
         assertThat(result.getType()).isEqualTo("sample");
     }
 
-    @Test
-    @DisplayName("successfully check to exist a document")
-    void shouldSuccessfullyCheckExistDocument() throws InterruptedException, ExecutionException, TimeoutException {
-        Done result = eventually(elasticDocument.exists("test", "sample", "1").invoke());
-        assertThat(result).isEqualTo(Done.getInstance());
-    }
-
-    @Test
-    @DisplayName("successfully get a document by id")
-    void shouldSuccessfullyGetDocumentById() throws InterruptedException, ExecutionException, TimeoutException {
-        IndexedSampleDocument result = eventually(invokeT(elasticDocument.get("test", "sample", "1"), IndexedSampleDocument.class));
-        assertThat(result.getSource()).isEqualTo(document);
+    private void getDocument() throws InterruptedException, ExecutionException, TimeoutException {
+        IndexedTestDocument result = eventually(invoke(elasticDocument.get("test", "sample", "1"), IndexedTestDocument.class));
         assertThat(result.getIndex()).isEqualTo("test");
         assertThat(result.getType()).isEqualTo("sample");
         assertThat(result.getId()).isEqualTo("1");
-        assertThat(result.getVersion()).isEqualTo(1);
+        assertThat(result.getSource().getUser()).isEqualTo("user.bulkUpdate");
+        assertThat(result.getSource().getMessage()).isEqualTo("message");
     }
 
-    @Test
-    @DisplayName("successfully check to exist a document source")
-    void shouldSuccessfullyCheckExistDocumentSource() throws InterruptedException, ExecutionException, TimeoutException {
-        Done result = eventually(elasticDocument.existsSource("test", "sample", "1").invoke());
+    private void getSource() throws InterruptedException, ExecutionException, TimeoutException {
+        TestDocument result = eventually(invoke(elasticDocument.getSource("test", "sample", "1"), TestDocument.class));
+        assertThat(result.getUser()).isEqualTo("user.update");
+        assertThat(result.getMessage()).isEqualTo("message");
+    }
+
+    private void checkExists() throws InterruptedException, ExecutionException, TimeoutException {
+        Done result = eventually(elasticDocument.exists("test", "sample", "1").invoke());
+        assertThat(result).isEqualTo(Done.getInstance());
+        result = eventually(elasticDocument.existsSource("test", "sample", "1").invoke());
         assertThat(result).isEqualTo(Done.getInstance());
     }
 
-    @Test
-    @DisplayName("successfully get a document source by id")
-    void shouldSuccessfullyGetDocumentSourceById() throws InterruptedException, ExecutionException, TimeoutException {
-        SampleDocument result = eventually(invokeT(elasticDocument.getSource("test", "sample", "1"), SampleDocument.class));
-        assertThat(result).isEqualTo(document);
-    }
-
-    @Test
-    @DisplayName("successfully add a document via bulk")
-    void shouldSuccessfullyAddDocumentBulk() throws InterruptedException, ExecutionException, TimeoutException {
-        BulkRequest request = BulkRequest.ofCommands(new BulkCreate("12", testEntity));
+    private void bulkUpdate() throws InterruptedException, ExecutionException, TimeoutException {
+        BulkRequest request = BulkRequest.of(
+                new BulkUpdate("1", new IndexedTestDocument(new TestDocument("user.bulkUpdate", "message")))
+        );
         BulkResult result = eventually(elasticDocument.bulk("test", "sample").invoke(request));
-        assertThat(result.getErrors()).isFalse();
+        assertThat(result.isErrors()).isFalse();
         assertThat(result.getItems()).hasSize(1);
-        BulkCommandResult item = result.getItems().get(0);
-        assertThat(item.getStatus()).isEqualTo(201);
-        assertThat(item.getResult()).isEqualTo("created");
-        assertThat(item.getError()).isNull();
-        assertThat(item.getIndex()).isEqualTo("test");
-        assertThat(item.getType()).isEqualTo("sample");
-        assertThat(item.getId()).isEqualTo("12");
-
-        result = eventually(elasticDocument.bulk("test", "sample").invoke(request));
-        assertThat(result.getErrors()).isTrue();
-        assertThat(result.getItems()).hasSize(1);
-        item = result.getItems().get(0);
-        assertThat(item.getStatus()).isEqualTo(409);
-        assertThat(item.getError()).isNotNull();
-        assertThat(item.getError()).isInstanceOf(BulkResult.BulkCommandResult.ResultItemError.class);
-        assertThat(item.getError().getReason()).containsIgnoringCase("document already exists");
-        assertThat(item.getError().getType()).containsIgnoringCase("version_conflict_engine_exception");
-
-        request = BulkRequest.ofCommands(new BulkIndex("12", testEntity));
-        result = eventually(elasticDocument.bulk("test", "sample").invoke(request));
-        assertThat(result.getErrors()).isFalse();
-        assertThat(result.getItems()).hasSize(1);
-        item = result.getItems().get(0);
-        assertThat(item.getStatus()).isEqualTo(200);
-        assertThat(item.getResult()).isEqualTo("updated");
-
-        request = BulkRequest.ofCommands(new BulkDelete("12"));
-        result = eventually(elasticDocument.bulk("test", "sample").invoke(request));
-        assertThat(result.getErrors()).isFalse();
-        assertThat(result.getItems()).hasSize(1);
-        item = result.getItems().get(0);
-        assertThat(item.getStatus()).isEqualTo(200);
-        assertThat(item.getResult()).isEqualTo("deleted");
+        assertThat(result.getItems().get(0).getStatus()).isEqualTo(200);
+        assertThat(result.getItems().get(0).getResult()).isEqualTo("updated");
+        assertThat(result.getItems().get(0).getError()).isNull();
+        assertThat(result.getItems().get(0).getIndex()).isEqualTo("test");
+        assertThat(result.getItems().get(0).getType()).isEqualTo("sample");
+        assertThat(result.getItems().get(0).getId()).isEqualTo("1");
     }
+
+    private void update() throws InterruptedException, ExecutionException, TimeoutException {
+        TestDocument doc = new TestDocument("user.update", "message");
+        UpdateRequest updateRequest = DocUpdateRequest.builder().doc(doc).build();
+        UpdateResult result = eventually(invoke(elasticDocument.update("test", "sample", "1"), updateRequest));
+        assertThat(result.getIndex()).isEqualTo("test");
+        assertThat(result.getType()).isEqualTo("sample");
+        assertThat(result.getId()).isEqualTo("1");
+        assertThat(result.getResult()).isEqualTo("updated");
+    }
+
+    private void delete() throws InterruptedException, ExecutionException, TimeoutException {
+        DeleteResult result = eventually(elasticDocument.delete("test", "sample", "1").invoke());
+        assertThat(result.getIndex()).isEqualTo("test");
+        assertThat(result.getType()).isEqualTo("sample");
+        assertThat(result.getId()).isEqualTo("1");
+        assertThat(result.getResult()).isEqualTo("deleted");
+    }
+
 }

@@ -9,19 +9,28 @@ data class MultiMatchQuery(
     val multiMatch: MultiMatch
 ) : Query {
 
+    class Builder {
+        private var query: String? = null
+        private var fields: MutableList<String> = mutableListOf()
+        private var type: MultiMatchQueryType = BEST_FIELDS
+
+        fun query(query: String) = apply { this.query = query }
+        fun fields(vararg fields: String) = apply { this.fields.addAll(fields) }
+        fun field(field: String) = apply { this.fields.add(field) }
+        fun field(field: String, boost: Int) = apply { this.fields.add("$field^$boost") }
+        fun type(type: MultiMatchQueryType) = apply { this.type = type }
+
+        fun build() = MultiMatchQuery(
+            MultiMatch(
+                query = query ?: error("Field 'query' can't be null"),
+                fields = if (fields.isEmpty()) error("Fields can't be empty") else fields.toList(),
+                type = type
+            )
+        )
+    }
+
     companion object {
-
         @JvmStatic
-        fun of(multiMatch: MultiMatch) = MultiMatchQuery(multiMatch)
-
-        @JvmStatic
-        @JvmOverloads
-        fun of(query: String, fieldsMap: Map<String, Int>, type: MultiMatchQueryType = BEST_FIELDS) =
-            MultiMatchQuery(MultiMatch(query, fieldsMap.map { "${it.key}^${it.value}" }, type))
-
-        @JvmStatic
-        @JvmOverloads
-        fun of(query: String, fields: List<String>, type: MultiMatchQueryType = BEST_FIELDS) =
-            MultiMatchQuery(MultiMatch(query, fields.toMutableList(), type))
+        fun builder() = Builder()
     }
 }

@@ -1,0 +1,5 @@
+{
+  "query": {
+    "wildcard" : { "user" : { "value" : "ki*y", "boost" : 2.0 } }
+  }
+}
