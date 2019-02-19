@@ -17,9 +17,9 @@ cache:
 
 script:
   # Test with Lagom 1.4.X
-  - ./gradlew check -PscalaBinaryVersion=$SCALA_VERSION
+  - ./gradlew clean check -PscalaBinaryVersion=$SCALA_VERSION
   # Test with Lagom 1.5.X
-  - ./gradlew check -PlagomVersion=1.5.0-RC1 -PscalaBinaryVersion=$SCALA_VERSION
+  - ./gradlew clean check -PlagomVersion=1.5.0-RC1 -PscalaBinaryVersion=$SCALA_VERSION
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
@@ -30,13 +30,13 @@ before_deploy:
 deploy:
   # Deploy releases
   - provider: script
-    script: ./gradlew publishToNexus closeAndReleaseRepository -Psigning.keyId=$GPG_KEY_NAME -Psigning.password="$GPG_PASSPHRASE" -Psigning.secretKeyRingFile=$HOME/.gnupg/taymyr.gpg -PossrhUsername=$OSS_USERNAME -PossrhPassword="$OSS_PASSWORD" -PscalaBinaryVersion=$SCALA_VERSION
+    script: ./gradlew publishToNexus closeAndReleaseRepository  -x test -Psigning.keyId=$GPG_KEY_NAME -Psigning.password="$GPG_PASSPHRASE" -Psigning.secretKeyRingFile=$HOME/.gnupg/taymyr.gpg -PossrhUsername=$OSS_USERNAME -PossrhPassword="$OSS_PASSWORD" -PscalaBinaryVersion=$SCALA_VERSION
     skip_cleanup: true
     on:
       tags: true
   # Deploy snapshots
   - provider: script
-    script: ./gradlew publishToNexus -Psigning.keyId=$GPG_KEY_NAME -Psigning.password="$GPG_PASSPHRASE" -Psigning.secretKeyRingFile=$HOME/.gnupg/taymyr.gpg -PossrhUsername=$OSS_USERNAME -PossrhPassword="$OSS_PASSWORD" -PscalaBinaryVersion=$SCALA_VERSION
+    script: ./gradlew publishToNexus  -x test -Psigning.keyId=$GPG_KEY_NAME -Psigning.password="$GPG_PASSPHRASE" -Psigning.secretKeyRingFile=$HOME/.gnupg/taymyr.gpg -PossrhUsername=$OSS_USERNAME -PossrhPassword="$OSS_PASSWORD" -PscalaBinaryVersion=$SCALA_VERSION
     skip_cleanup: true
     on:
       branch: master
