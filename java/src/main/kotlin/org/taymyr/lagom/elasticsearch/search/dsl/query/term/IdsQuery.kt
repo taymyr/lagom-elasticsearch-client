@@ -15,10 +15,12 @@ data class IdsQuery(val ids: Ids) : TermLevelQuery {
         fun types(types: List<String>) = apply { this.types.addAll(types) }
         fun types(vararg types: String) = apply { this.types.addAll(types) }
 
-        fun build() = IdsQuery(Ids(
-            values = if (values.isNotEmpty()) values.toList() else error("Values can't be empty"),
-            type = if (types.isNotEmpty()) types.toList() else null
-        ))
+        fun build() = IdsQuery(
+            Ids(
+                values = if (values.isNotEmpty()) values.toList() else error("Values can't be empty"),
+                type = if (types.isNotEmpty()) types.toList() else null
+            )
+        )
     }
 
     companion object {
@@ -27,6 +29,7 @@ data class IdsQuery(val ids: Ids) : TermLevelQuery {
 
         @JvmStatic
         fun of(vararg values: String) = IdsQuery(Ids(values = values.toList()))
+
         @JvmStatic
         fun of(values: List<String>) = IdsQuery(Ids(values = values))
     }

@@ -37,6 +37,7 @@ data class DateRange(
                 throw error("One of the 'gte', 'gt', 'lt', 'lte' should be specified")
             }
         }
+
         abstract fun build(): DateRange
     }
 
@@ -116,8 +117,13 @@ data class DateRange(
     }
 
     companion object {
-        @JvmStatic fun localDateTimeBuilder() = LocalDateTimeRangeBuilder()
-        @JvmStatic fun zonedDateTimeBuilder() = ZonedDateTimeRangeBuilder()
-        @JvmStatic fun nativeBuilder() = NativeRangeBuilder()
+        @JvmStatic
+        fun localDateTimeBuilder() = LocalDateTimeRangeBuilder()
+
+        @JvmStatic
+        fun zonedDateTimeBuilder() = ZonedDateTimeRangeBuilder()
+
+        @JvmStatic
+        fun nativeBuilder() = NativeRangeBuilder()
     }
 }

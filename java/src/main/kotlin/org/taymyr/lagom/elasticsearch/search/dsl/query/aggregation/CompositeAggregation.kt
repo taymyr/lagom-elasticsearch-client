@@ -26,7 +26,10 @@ data class CompositeAggregation(val composite: Composite) : Aggregation {
     }
 
     companion object {
-        @JvmStatic fun builder() = Builder()
-        @JvmStatic fun sourceBuilder() = SourceBuilder()
+        @JvmStatic
+        fun builder() = Builder()
+
+        @JvmStatic
+        fun sourceBuilder() = SourceBuilder()
     }
 }

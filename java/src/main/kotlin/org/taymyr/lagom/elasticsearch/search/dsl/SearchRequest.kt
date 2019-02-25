@@ -54,6 +54,7 @@ data class SearchRequest @JvmOverloads constructor(
     }
 
     companion object {
-        @JvmStatic fun builder() = Builder()
+        @JvmStatic
+        fun builder() = Builder()
     }
 }

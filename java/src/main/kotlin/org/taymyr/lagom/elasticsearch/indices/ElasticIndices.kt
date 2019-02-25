@@ -72,19 +72,34 @@ interface ElasticIndices : ElasticService {
     @JvmDefault
     override fun descriptor(): Descriptor {
         return named("elastic-indices").withCalls(
-            restCall<CreateIndex, CreateIndexResult>(PUT, "/:indexName", ElasticIndices::create.javaMethod),
-            restCall<NotUsed, DeleteIndicesResult>(DELETE, "/:index",
-                forceKF<ElasticIndices.(String) -> ServiceCall<*, *>>(ElasticIndices::delete).javaMethod),
-            restCall<NotUsed, DeleteIndicesResult>(DELETE, "/:indices",
-                forceKF<ElasticIndices.(List<String>) -> ServiceCall<*, *>>(ElasticIndices::delete).javaMethod),
-            restCall<NotUsed, Done>(HEAD, "/:index",
-                forceKF<ElasticIndices.(String) -> ServiceCall<*, *>>(ElasticIndices::exists).javaMethod),
-            restCall<NotUsed, Done>(HEAD, "/:indices",
-                forceKF<ElasticIndices.(List<String>) -> ServiceCall<*, *>>(ElasticIndices::exists).javaMethod),
-            restCall<NotUsed, Map<String, IndexInfo>>(GET, "/:index",
-                forceKF<ElasticIndices.(String) -> ServiceCall<*, *>>(ElasticIndices::get).javaMethod),
-            restCall<NotUsed, Map<String, IndexInfo>>(GET, "/:indices",
-                forceKF<ElasticIndices.(List<String>) -> ServiceCall<*, *>>(ElasticIndices::get).javaMethod)
+            restCall<CreateIndex, CreateIndexResult>(
+                PUT, "/:indexName",
+                ElasticIndices::create.javaMethod
+            ),
+            restCall<NotUsed, DeleteIndicesResult>(
+                DELETE, "/:index",
+                forceKF<ElasticIndices.(String) -> ServiceCall<*, *>>(ElasticIndices::delete).javaMethod
+            ),
+            restCall<NotUsed, DeleteIndicesResult>(
+                DELETE, "/:indices",
+                forceKF<ElasticIndices.(List<String>) -> ServiceCall<*, *>>(ElasticIndices::delete).javaMethod
+            ),
+            restCall<NotUsed, Done>(
+                HEAD, "/:index",
+                forceKF<ElasticIndices.(String) -> ServiceCall<*, *>>(ElasticIndices::exists).javaMethod
+            ),
+            restCall<NotUsed, Done>(
+                HEAD, "/:indices",
+                forceKF<ElasticIndices.(List<String>) -> ServiceCall<*, *>>(ElasticIndices::exists).javaMethod
+            ),
+            restCall<NotUsed, Map<String, IndexInfo>>(
+                GET, "/:index",
+                forceKF<ElasticIndices.(String) -> ServiceCall<*, *>>(ElasticIndices::get).javaMethod
+            ),
+            restCall<NotUsed, Map<String, IndexInfo>>(
+                GET, "/:indices",
+                forceKF<ElasticIndices.(List<String>) -> ServiceCall<*, *>>(ElasticIndices::get).javaMethod
+            )
         )
             .withSerializerFactory(ElasticSerializerFactory(objectMapper()))
             .withPathParamSerializer(List::class.java, LIST)

@@ -23,6 +23,7 @@ data class DocUpdateRequest<Document> @JvmOverloads constructor(
     }
 
     companion object {
-        @JvmStatic fun <Document> builder() = DocUpdateRequest.Builder<Document>()
+        @JvmStatic
+        fun <Document> builder() = DocUpdateRequest.Builder<Document>()
     }
 }

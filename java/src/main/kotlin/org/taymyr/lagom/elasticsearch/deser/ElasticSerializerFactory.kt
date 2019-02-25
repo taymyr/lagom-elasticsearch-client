@@ -31,7 +31,8 @@ class ElasticSerializerFactory(val mapper: ObjectMapper = MAPPER) : JacksonSeria
     }
 
     companion object {
-        @JvmStatic val MAPPER: ObjectMapper = ObjectMapper()
+        @JvmStatic
+        val MAPPER: ObjectMapper = ObjectMapper()
             .registerModule(KotlinModule())
             .registerModule(JavaTimeModule())
             .registerModule(ParameterNamesModule())

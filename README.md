@@ -8,16 +8,6 @@
 
 This is Lagom Service Descriptor for [Elasticsearch](https://www.elastic.co/products/elasticsearch).
 
-_Note: We try not to change the API, but before the release of stable version `1.0.0` API may be changed._
-
-## Versions compatibility
-
-| Lagom Elasticsearch Client | Lagom           | Scala          | Elastic                 |
-|----------------------------|-----------------|----------------|-------------------------|
-| 1.+                        | 1.4.+ <br> 1.5.+| 2.11 <br> 2.12 | 5.+(partial) <br> 6.+  |
-
-## About
-
 Lagom Elasticsearch Client has next services:
 
 * [ElasticSearch](java/src/main/kotlin/org/taymyr/lagom/elasticsearch/search/ElasticSearch.kt) implement 
@@ -26,6 +16,14 @@ Lagom Elasticsearch Client has next services:
   [Elasticsearch Indices APIs](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices.html) and named `elastic-indices`
 * [ElasticDocument](java/src/main/kotlin/org/taymyr/lagom/elasticsearch/document/ElasticDocument.kt) implement 
   [Elasticsearch Document APIs](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs.html) and named `elastic-document`
+
+_Note: We try not to change the API, but before the release of stable version `1.0.0` API may be changed._
+
+## Versions compatibility
+
+| Lagom Elasticsearch Client | Lagom           | Scala          | Elastic                 |
+|----------------------------|-----------------|----------------|-------------------------|
+| 1.+                        | 1.4.+ <br> 1.5.+| 2.11 <br> 2.12 | 5.+(partial) <br> 6.+   |
 
 ## How to use
 
@@ -75,7 +73,7 @@ This repository must be added in your build system.
 * **SBT**
 
 ```scala
-resolvers ++= Resolver.sonatypeRepo("snapshots")
+resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
 ```
 
 * **Maven**

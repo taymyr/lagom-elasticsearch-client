@@ -51,16 +51,26 @@ interface ElasticSearch : ElasticService {
     @JvmDefault
     override fun descriptor(): Descriptor {
         return named("elastic-search").withCalls(
-            restCall<SearchRequest, ByteString>(GET, "/:indices/:types/_search",
-                forceKF<ElasticSearch.(List<String>, List<String>) -> ServiceCall<*, *>>(ElasticSearch::search).javaMethod),
-            restCall<SearchRequest, ByteString>(GET, "/:indices/_search",
-                forceKF<ElasticSearch.(List<String>) -> ServiceCall<*, *>>(ElasticSearch::search).javaMethod),
-            restCall<SearchRequest, ByteString>(GET, "/:index/:type/_search",
-                forceKF<ElasticSearch.(String, String) -> ServiceCall<*, *>>(ElasticSearch::search).javaMethod),
-            restCall<SearchRequest, ByteString>(GET, "/:index/_search",
-                forceKF<ElasticSearch.(String) -> ServiceCall<*, *>>(ElasticSearch::search).javaMethod),
-            restCall<SearchRequest, ByteString>(GET, "/_search",
-                forceKF<ElasticSearch.() -> ServiceCall<*, *>>(ElasticSearch::search).javaMethod)
+            restCall<SearchRequest, ByteString>(
+                GET, "/:indices/:types/_search",
+                forceKF<ElasticSearch.(List<String>, List<String>) -> ServiceCall<*, *>>(ElasticSearch::search).javaMethod
+            ),
+            restCall<SearchRequest, ByteString>(
+                GET, "/:indices/_search",
+                forceKF<ElasticSearch.(List<String>) -> ServiceCall<*, *>>(ElasticSearch::search).javaMethod
+            ),
+            restCall<SearchRequest, ByteString>(
+                GET, "/:index/:type/_search",
+                forceKF<ElasticSearch.(String, String) -> ServiceCall<*, *>>(ElasticSearch::search).javaMethod
+            ),
+            restCall<SearchRequest, ByteString>(
+                GET, "/:index/_search",
+                forceKF<ElasticSearch.(String) -> ServiceCall<*, *>>(ElasticSearch::search).javaMethod
+            ),
+            restCall<SearchRequest, ByteString>(
+                GET, "/_search",
+                forceKF<ElasticSearch.() -> ServiceCall<*, *>>(ElasticSearch::search).javaMethod
+            )
         )
             .withPathParamSerializer(List::class.java, LIST)
             .withSerializerFactory(ElasticSerializerFactory(objectMapper()))

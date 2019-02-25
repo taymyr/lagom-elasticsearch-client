@@ -21,6 +21,7 @@ data class FullScriptedUpdateBody<Params> @JvmOverloads constructor(
     }
 
     companion object {
-        @JvmStatic fun <Params> builder() = Builder<Params>()
+        @JvmStatic
+        fun <Params> builder() = Builder<Params>()
     }
 }

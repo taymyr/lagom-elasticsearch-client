@@ -35,12 +35,14 @@ internal class BulkRequestSerializer(val mapper: ObjectMapper) : StrictMessageSe
                     is BulkCreate -> mapper.writeValue(os.writeNextLine(), command.element.source)
                     is BulkIndex -> mapper.writeValue(os.writeNextLine(), command.element.source)
                     is BulkUpdate -> mapperAlwaysInclusion.writeValue(os.writeNextLine(), mapOf("doc" to command.element.source))
-                    else -> {} // Ignore
+                    else -> {
+                    } // Ignore
                 }
                 os.writeNextLine()
             }
             return builder.result()
         }
+
         private fun OutputStream.writeNextLine(): OutputStream = this.also { it.write('\n'.toInt()) }
     }
 

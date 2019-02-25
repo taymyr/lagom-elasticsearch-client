@@ -1,4 +1,5 @@
 @file:JvmName("ServiceCall")
+
 package org.taymyr.lagom.elasticsearch
 
 import akka.NotUsed

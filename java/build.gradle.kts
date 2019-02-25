@@ -1,4 +1,3 @@
-
 import org.jetbrains.dokka.DokkaConfiguration
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
@@ -12,7 +11,7 @@ val ossrhPassword: String? by project
 object Versions {
     const val scalaBinary = "2.12"
     const val lagom = "1.4.6" // "1.5.0-RC1"
-    const val ktlint = "0.29.0"
+    const val ktlint = "0.30.0"
     const val `kotlin-logging` = "1.6.22"
     const val junit5 = "5.3.2"
     const val `json-unit` = "2.4.0"
@@ -22,6 +21,7 @@ object Versions {
     const val elasticsearch = "6.4.1"
     const val `embedded-elasticsearch` = "2.7.0"
 }
+
 val lagomVersion = project.properties["lagomVersion"] as String? ?: Versions.lagom
 val scalaBinaryVersion = project.properties["scalaBinaryVersion"] as String? ?: Versions.scalaBinary
 
@@ -50,16 +50,16 @@ dependencies {
     compile(kotlin("reflect"))
     compile("com.fasterxml.jackson.module", "jackson-module-kotlin", Versions.jackson)
     compile("com.fasterxml.jackson.datatype", "jackson-datatype-jsr310", Versions.jackson)
-    compileOnly("com.lightbend.lagom", "lagom-javadsl-server_$scalaBinaryVersion" , lagomVersion)
+    compileOnly("com.lightbend.lagom", "lagom-javadsl-server_$scalaBinaryVersion", lagomVersion)
 
     testCompile("org.junit.jupiter", "junit-jupiter-api", Versions.junit5)
     testCompile("org.junit.jupiter", "junit-jupiter-params", Versions.junit5)
     testRuntime("org.junit.jupiter", "junit-jupiter-engine", Versions.junit5)
     testCompile("org.assertj", "assertj-core", Versions.assertj)
     testCompile("net.javacrumbs.json-unit", "json-unit-assertj", Versions.`json-unit`)
-    testCompile( "com.lightbend.lagom", "lagom-javadsl-integration-client_$scalaBinaryVersion", lagomVersion)
+    testCompile("com.lightbend.lagom", "lagom-javadsl-integration-client_$scalaBinaryVersion", lagomVersion)
     testCompile("com.lightbend.lagom", "lagom-logback_$scalaBinaryVersion", lagomVersion)
-    testCompile("pl.allegro.tech" , "embedded-elasticsearch", Versions.`embedded-elasticsearch`)
+    testCompile("pl.allegro.tech", "embedded-elasticsearch", Versions.`embedded-elasticsearch`)
 }
 
 ktlint {

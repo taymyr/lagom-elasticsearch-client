@@ -24,6 +24,7 @@ data class NestedAggregation(
     }
 
     companion object {
-        @JvmStatic fun builder() = Builder()
+        @JvmStatic
+        fun builder() = Builder()
     }
 }

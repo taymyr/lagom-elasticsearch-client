@@ -6,6 +6,7 @@ package org.taymyr.lagom.elasticsearch.search.dsl.query.term
 data class ExistsQuery(val exists: Exists) : TermLevelQuery {
 
     companion object {
-        @JvmStatic fun of(field: String) = ExistsQuery(Exists(field))
+        @JvmStatic
+        fun of(field: String) = ExistsQuery(Exists(field))
     }
 }

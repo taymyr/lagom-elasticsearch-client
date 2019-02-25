@@ -26,7 +26,10 @@ abstract class Order(private val value: String) {
     }
 
     companion object {
-        @JvmStatic fun asc(expr: String) = AscOrder(expr)
-        @JvmStatic fun desc(expr: String) = DescOrder(expr)
+        @JvmStatic
+        fun asc(expr: String) = AscOrder(expr)
+
+        @JvmStatic
+        fun desc(expr: String) = DescOrder(expr)
     }
 }

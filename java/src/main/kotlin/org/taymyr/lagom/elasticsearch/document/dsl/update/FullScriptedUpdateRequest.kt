@@ -22,6 +22,7 @@ data class FullScriptedUpdateRequest<Upsert, Params> @JvmOverloads constructor(
     }
 
     companion object {
-        @JvmStatic fun <Upsert, Params> builder() = Builder<Upsert, Params>()
+        @JvmStatic
+        fun <Upsert, Params> builder() = Builder<Upsert, Params>()
     }
 }

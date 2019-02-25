@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
+
 /**
  * See [Elasticsearch Docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-range-query.html)
  */
@@ -24,6 +25,7 @@ data class RangeQuery(val field: String, val range: Range) : TermLevelQuery {
     }
 
     companion object {
-        @JvmStatic fun of(field: String, range: Range) = RangeQuery(field, range)
+        @JvmStatic
+        fun of(field: String, range: Range) = RangeQuery(field, range)
     }
 }

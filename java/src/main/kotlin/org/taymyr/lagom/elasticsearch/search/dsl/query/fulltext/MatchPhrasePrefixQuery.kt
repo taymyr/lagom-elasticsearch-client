@@ -11,6 +11,7 @@ data class MatchPhrasePrefixQuery(
     val matchPhrasePrefix: MatchPhrasePrefix
 ) : Query {
     companion object {
-        @JvmStatic fun of(matchPhrasePrefix: MatchPhrasePrefix) = MatchPhrasePrefixQuery(matchPhrasePrefix)
+        @JvmStatic
+        fun of(matchPhrasePrefix: MatchPhrasePrefix) = MatchPhrasePrefixQuery(matchPhrasePrefix)
     }
 }

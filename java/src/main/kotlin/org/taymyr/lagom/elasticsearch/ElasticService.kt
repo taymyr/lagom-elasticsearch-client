@@ -10,5 +10,6 @@ inline fun <T : Function<*>> forceKF(fn: T) = fn as KFunction<*>
  * Abstract service for ElasticSearch.
  */
 interface ElasticService : Service {
-    @JvmDefault fun objectMapper() = ElasticSerializerFactory.MAPPER
+    @JvmDefault
+    fun objectMapper() = ElasticSerializerFactory.MAPPER
 }
