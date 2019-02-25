@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.taymyr.lagom.elasticsearch.search.dsl.SearchRequest;
 import org.taymyr.lagom.elasticsearch.search.dsl.query.compound.BoolQuery;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.taymyr.lagom.elasticsearch.Helpers.resourceAsString;
@@ -25,6 +28,24 @@ class FulltextTest {
                         .type(MultiMatchQueryType.CROSS_FIELDS)
                         .build()
                 ).build();
+        String actual = serializeRequest(request, SearchRequest.class);
+        String expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/query/fulltext/multi_match.json");
+        assertThatJson(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("successfully serialize search request with multi-match with list")
+    void shouldSuccessfullySerializeMultiMatchWithList() {
+        List<String> fields = Arrays.asList("field1", "field2");
+        SearchRequest request = SearchRequest.builder()
+            .query(MultiMatchQuery.builder()
+                .query("query")
+                .field("fullTextBoosted", 10)
+                .field("fullText")
+                .fields(fields)
+                .type(MultiMatchQueryType.CROSS_FIELDS)
+                .build()
+            ).build();
         String actual = serializeRequest(request, SearchRequest.class);
         String expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/query/fulltext/multi_match.json");
         assertThatJson(actual).isEqualTo(expected);

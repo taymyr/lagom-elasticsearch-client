@@ -40,6 +40,7 @@ data class SearchRequest @JvmOverloads constructor(
         fun suggest(suggest: Map<String, Suggest>) = apply { this.suggest.putAll(suggest) }
         fun suggest(name: String, suggest: Suggest) = apply { this.suggest[name] = suggest }
         fun sort(vararg sort: Order) = apply { this.sort.addAll(sort) }
+        fun sort(sort: List<Order>) = apply { this.sort.addAll(sort) }
 
         fun build() = SearchRequest(
             query = query ?: error("Query can't be null"),

@@ -14,15 +14,15 @@ import org.taymyr.lagom.elasticsearch.search.dsl.query.term.TermQuery;
 
 import java.util.List;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.taymyr.lagom.elasticsearch.Helpers.deserializeResponse;
 import static org.taymyr.lagom.elasticsearch.Helpers.resourceAsString;
 import static org.taymyr.lagom.elasticsearch.Helpers.serializeRequest;
-
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 
 class SearchRequestTest {
 
@@ -34,9 +34,32 @@ class SearchRequestTest {
             .aggs(ImmutableMap.of("agg1", TermsAggregation.builder().field("field").build()))
             .sort(Order.desc("name"), Order.asc("age"))
             .suggest(ImmutableMap.of("suggest1", CompletionSuggest.builder()
-                        .prefix("prefix")
-                        .field("suggest")
-                        .build())
+                .prefix("prefix")
+                .field("suggest")
+                .build())
+            )
+            .postFilter(TermQuery.of("field", "value"))
+            .from(0)
+            .size(10)
+            .build();
+        String actual = serializeRequest(request, SearchRequest.class);
+        String expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/request.json");
+        assertThatJson(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("successfully serialize search request with wildcard query with list")
+    void shouldSuccessfullySerializeTermWithList() {
+        List<Order> orderList = asList(Order.desc("name"), Order.asc("age"));
+        List<String> ids = asList("1");
+        SearchRequest request = SearchRequest.builder()
+            .query(IdsQuery.of(ids))
+            .aggs(ImmutableMap.of("agg1", TermsAggregation.builder().field("field").build()))
+            .sort(orderList)
+            .suggest(ImmutableMap.of("suggest1", CompletionSuggest.builder()
+                .prefix("prefix")
+                .field("suggest")
+                .build())
             )
             .postFilter(TermQuery.of("field", "value"))
             .from(0)
@@ -51,8 +74,8 @@ class SearchRequestTest {
     @DisplayName("successfully deserialize search result")
     void shouldSuccessfullyDeserializeSearchResult() {
         TestDocumentResult result = deserializeResponse(
-                resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/result.json"),
-                TestDocumentResult.class
+            resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/result.json"),
+            TestDocumentResult.class
         );
         assertThat(result.getTamedOut()).isFalse();
         assertThat(result.getTook()).isEqualTo(2);
@@ -74,7 +97,7 @@ class SearchRequestTest {
     @DisplayName("throw exception for incorrect request")
     void shouldThrowExceptionForIncorrectRequest() {
         assertThatThrownBy(() -> SearchRequest.builder().build())
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("Query can't be null");
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage("Query can't be null");
     }
 }

@@ -10,7 +10,9 @@ data class IdsQuery(val ids: Ids) : TermLevelQuery {
         private var types: MutableList<String> = mutableListOf()
 
         fun values(vararg values: String) = apply { this.values.addAll(values) }
+        fun values(values: List<String>) = apply { this.values.addAll(values) }
         fun type(type: String) = apply { this.types.add(type) }
+        fun types(types: List<String>) = apply { this.types.addAll(types) }
         fun types(vararg types: String) = apply { this.types.addAll(types) }
 
         fun build() = IdsQuery(Ids(
@@ -25,5 +27,7 @@ data class IdsQuery(val ids: Ids) : TermLevelQuery {
 
         @JvmStatic
         fun of(vararg values: String) = IdsQuery(Ids(values = values.toList()))
+        @JvmStatic
+        fun of(values: List<String>) = IdsQuery(Ids(values = values))
     }
 }

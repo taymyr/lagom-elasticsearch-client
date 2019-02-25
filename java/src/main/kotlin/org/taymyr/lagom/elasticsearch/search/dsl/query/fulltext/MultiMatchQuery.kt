@@ -16,6 +16,7 @@ data class MultiMatchQuery(
 
         fun query(query: String) = apply { this.query = query }
         fun fields(vararg fields: String) = apply { this.fields.addAll(fields) }
+        fun fields(fields: List<String>) = apply { this.fields.addAll(fields) }
         fun field(field: String) = apply { this.fields.add(field) }
         fun field(field: String, boost: Int) = apply { this.fields.add("$field^$boost") }
         fun type(type: MultiMatchQueryType) = apply { this.type = type }

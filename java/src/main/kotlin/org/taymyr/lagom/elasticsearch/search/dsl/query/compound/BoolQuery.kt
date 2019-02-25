@@ -18,17 +18,14 @@ data class BoolQuery(val bool: BoolQueryBody) : CompoundQuery {
         fun must(must: Query) = apply { this.must.add(must) }
         fun filter(filter: Query) = apply { this.filter.add(filter) }
 
-        fun build() =
-            if (listOf(should, mustNot, must, filter).any { it.isNotEmpty() })
-                BoolQuery(
-                    BoolQueryBody(
-                        should = if (should.isEmpty()) null else should.toList(),
-                        mustNot = if (mustNot.isEmpty()) null else mustNot.toList(),
-                        must = if (must.isEmpty()) null else must.toList(),
-                        filter = if (filter.isEmpty()) null else filter.toList()
-                    )
-                )
-            else error("BoolQuery can't be empty")
+        fun build() = BoolQuery(
+            BoolQueryBody(
+                should = if (should.isEmpty()) null else should.toList(),
+                mustNot = if (mustNot.isEmpty()) null else mustNot.toList(),
+                must = if (must.isEmpty()) null else must.toList(),
+                filter = if (filter.isEmpty()) null else filter.toList()
+            )
+        )
     }
 
     companion object {
