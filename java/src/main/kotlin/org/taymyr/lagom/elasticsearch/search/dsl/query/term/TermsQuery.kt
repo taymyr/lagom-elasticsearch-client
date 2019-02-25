@@ -9,6 +9,7 @@ data class TermsQuery(val terms: Map<String, List<String>>) : TermLevelQuery {
         private var terms: MutableMap<String, List<String>> = mutableMapOf()
 
         fun term(field: String, vararg values: String) = apply { this.terms[field] = values.toList() }
+        fun term(field: String, values: List<String>) = apply { this.terms[field] = values }
 
         fun build() = TermsQuery(terms.toMap())
     }

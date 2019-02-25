@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.taymyr.lagom.elasticsearch.search.dsl.SearchRequest;
 import org.taymyr.lagom.elasticsearch.search.dsl.query.compound.BoolQuery;
 
+import java.util.List;
+
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.taymyr.lagom.elasticsearch.Helpers.resourceAsString;
@@ -44,6 +46,23 @@ class TermTest {
                             .values("1", "4", "100")
                             .build()
                     ).build();
+            String actual = serializeRequest(request, SearchRequest.class);
+            String expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/query/term/request_ids.json");
+            assertThatJson(actual).isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("successfully serialize search request with ids query with list")
+        void shouldSuccessfullySerializeIdsWithList() {
+            List<String> types = asList("_doc2", "_doc3");
+            List<String> values = asList("1", "4", "100");
+            SearchRequest request = SearchRequest.builder()
+                .query(IdsQuery.builder()
+                    .type("_doc1")
+                    .types(types)
+                    .values(values)
+                    .build()
+                ).build();
             String actual = serializeRequest(request, SearchRequest.class);
             String expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/query/term/request_ids.json");
             assertThatJson(actual).isEqualTo(expected);
@@ -209,6 +228,25 @@ class TermTest {
             assertThatJson(actual).isEqualTo(expected);
             request = new SearchRequest(
                     TermsQuery.of(ImmutableMap.of("user", asList("kimchy", "elasticsearch")))
+            );
+            actual = serializeRequest(request, SearchRequest.class);
+            assertThatJson(actual).isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("successfully serialize search request with terms query with list")
+        void shouldSuccessfullySerializeTermsWithList() {
+            List<String> values = asList("kimchy", "elasticsearch");
+            SearchRequest request = SearchRequest.builder()
+                .query(TermsQuery.builder()
+                    .term("user", values)
+                    .build()
+                ).build();
+            String actual = serializeRequest(request, SearchRequest.class);
+            String expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/query/term/request_terms.json");
+            assertThatJson(actual).isEqualTo(expected);
+            request = new SearchRequest(
+                TermsQuery.of(ImmutableMap.of("user", asList("kimchy", "elasticsearch")))
             );
             actual = serializeRequest(request, SearchRequest.class);
             assertThatJson(actual).isEqualTo(expected);
