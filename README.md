@@ -2,7 +2,7 @@
 [![Gitter_RU](https://img.shields.io/badge/chat-russian%20channel-purple.svg)](https://gitter.im/taymyr/taymyr_ru)
 [![Build Status](https://travis-ci.org/taymyr/lagom-elasticsearch-client.svg?branch=master)](https://travis-ci.org/taymyr/lagom-elasticsearch-client)
 [![codecov](https://codecov.io/gh/taymyr/lagom-elasticsearch-client/branch/master/graph/badge.svg)](https://codecov.io/gh/taymyr/lagom-elasticsearch-client)
-[![Maven Central](https://img.shields.io/maven-central/v/org.taymyr.lagom/lagom-elasticsearch-client_2.12.svg)](https://search.maven.org/search?q=a:lagom-elasticsearch-client-java_2.12%20AND%20g:org.taymyr.lagom)
+[![Maven Central](https://img.shields.io/maven-central/v/org.taymyr.lagom/lagom-elasticsearch-client-java_2.12.svg)](https://search.maven.org/search?q=a:lagom-elasticsearch-client-java_2.12%20AND%20g:org.taymyr.lagom)
 
 # Lagom client for [Elasticsearch](https://www.elastic.co/products/elasticsearch)
 
