@@ -1,28 +1,38 @@
 package org.taymyr.lagom.elasticsearch;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.taymyr.lagom.elasticsearch.document.dsl.Document;
 import org.taymyr.lagom.elasticsearch.search.dsl.SearchResult;
 
 import java.util.Objects;
+import java.util.Optional;
+
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 
 public class TestDocument {
 
     private String user;
     private String message;
     private Double balance;
+    @JsonInclude(NON_ABSENT)
+    private Optional<String> comment;
 
     public TestDocument() {
     }
 
     public TestDocument(String user, String message) {
-        this.user = user;
-        this.message = message;
+        this(user, message, null, Optional.empty());
     }
 
     public TestDocument(String user, String message, Double balance) {
+        this(user, message, balance, Optional.empty());
+    }
+
+    public TestDocument(String user, String message, Double balance, Optional<String> comment) {
         this.user = user;
         this.message = message;
         this.balance = balance;
+        this.comment = comment;
     }
 
     public String getUser() {
@@ -47,6 +57,14 @@ public class TestDocument {
 
     public void setBalance(Double balance) {
         this.balance = balance;
+    }
+
+    public Optional<String> getComment() {
+        return comment;
+    }
+
+    public void setComment(Optional<String> comment) {
+        this.comment = comment;
     }
 
     @Override
