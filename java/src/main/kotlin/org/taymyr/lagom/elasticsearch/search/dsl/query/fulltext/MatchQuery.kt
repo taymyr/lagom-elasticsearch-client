@@ -68,5 +68,8 @@ data class MatchQuery(@JsonIgnore val field: String, val match: Match) : Query {
     companion object {
         @JvmStatic
         fun builder() = Builder()
+
+        @JvmStatic
+        fun of(field: String, query: String) = MatchQuery(field, Match(query))
     }
 }

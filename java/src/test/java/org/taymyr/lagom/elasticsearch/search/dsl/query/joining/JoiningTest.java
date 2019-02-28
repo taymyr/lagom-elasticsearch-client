@@ -16,10 +16,7 @@ class JoiningTest {
     @Test
     @DisplayName("successfully serialize search request with nested query")
     void shouldSuccessfullySerializeNestedQuery() {
-        MatchQuery match = MatchQuery.builder()
-            .field("obj1.name")
-            .query("blue")
-            .build();
+        MatchQuery match = MatchQuery.of("obj1.name", "blue");
         SearchRequest request = SearchRequest.builder()
                 .query(NestedQuery.builder()
                         .path("obj1")

@@ -57,12 +57,12 @@ class TermTest {
             List<String> types = asList("_doc2", "_doc3");
             List<String> values = asList("1", "4", "100");
             SearchRequest request = SearchRequest.builder()
-                .query(IdsQuery.builder()
-                    .type("_doc1")
-                    .types(types)
-                    .values(values)
-                    .build()
-                ).build();
+                    .query(IdsQuery.builder()
+                            .type("_doc1")
+                            .types(types)
+                            .values(values)
+                            .build()
+                    ).build();
             String actual = serializeRequest(request, SearchRequest.class);
             String expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/query/term/request_ids.json");
             assertThatJson(actual).isEqualTo(expected);
@@ -81,8 +81,8 @@ class TermTest {
     class NumericRangeTest {
 
         @Test
-        @DisplayName("successfully serialize search request with ids query")
-        void shouldSuccessfullySerializeIds() {
+        @DisplayName("successfully serialize search request with numeric range")
+        void shouldSuccessfullySerializeNumericRange() {
             NumericRange range = NumericRange.builder()
                     .gt(9)
                     .gte(10)
@@ -96,6 +96,11 @@ class TermTest {
             String actual = serializeRequest(request, SearchRequest.class);
             String expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/query/term/request_numeric_range.json");
             assertThatJson(actual).isEqualTo(expected);
+
+            assertThatJson(serializeRequest(NumericRange.gt(1), NumericRange.class)).isEqualTo("{\"gt\": 1}");
+            assertThatJson(serializeRequest(NumericRange.gte(1), NumericRange.class)).isEqualTo("{\"gte\": 1}");
+            assertThatJson(serializeRequest(NumericRange.lte(1), NumericRange.class)).isEqualTo("{\"lte\": 1}");
+            assertThatJson(serializeRequest(NumericRange.lt(1), NumericRange.class)).isEqualTo("{\"lt\": 1}");
         }
 
         @Test
@@ -238,15 +243,15 @@ class TermTest {
         void shouldSuccessfullySerializeTermsWithList() {
             List<String> values = asList("kimchy", "elasticsearch");
             SearchRequest request = SearchRequest.builder()
-                .query(TermsQuery.builder()
-                    .term("user", values)
-                    .build()
-                ).build();
+                    .query(TermsQuery.builder()
+                            .term("user", values)
+                            .build()
+                    ).build();
             String actual = serializeRequest(request, SearchRequest.class);
             String expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/query/term/request_terms.json");
             assertThatJson(actual).isEqualTo(expected);
             request = new SearchRequest(
-                TermsQuery.of(ImmutableMap.of("user", asList("kimchy", "elasticsearch")))
+                    TermsQuery.of(ImmutableMap.of("user", asList("kimchy", "elasticsearch")))
             );
             actual = serializeRequest(request, SearchRequest.class);
             assertThatJson(actual).isEqualTo(expected);

@@ -4,11 +4,11 @@ package org.taymyr.lagom.elasticsearch.search.dsl.query.term
  * See [Elasticsearch Docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-range-query.html#query-dsl-range-query)
  */
 data class NumericRange(
-    val gte: Int?,
-    val gt: Int?,
-    val lte: Int?,
-    val lt: Int?,
-    val boost: Double?
+    val gte: Int? = null,
+    val gt: Int? = null,
+    val lte: Int? = null,
+    val lt: Int? = null,
+    val boost: Double? = null
 ) : Range {
 
     class Builder {
@@ -32,5 +32,17 @@ data class NumericRange(
     companion object {
         @JvmStatic
         fun builder() = Builder()
+
+        @JvmStatic
+        fun gte(gte: Int) = NumericRange(gte = gte)
+
+        @JvmStatic
+        fun gt(gt: Int) = NumericRange(gt = gt)
+
+        @JvmStatic
+        fun lte(lte: Int) = NumericRange(lte = lte)
+
+        @JvmStatic
+        fun lt(lt: Int) = NumericRange(lt = lt)
     }
 }
