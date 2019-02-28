@@ -1,11 +1,9 @@
 package org.taymyr.lagom.elasticsearch.search.dsl.query.joining;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.taymyr.lagom.elasticsearch.search.dsl.SearchRequest;
 import org.taymyr.lagom.elasticsearch.search.dsl.query.compound.BoolQuery;
-import org.taymyr.lagom.elasticsearch.search.dsl.query.fulltext.Match;
 import org.taymyr.lagom.elasticsearch.search.dsl.query.fulltext.MatchQuery;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -18,15 +16,15 @@ class JoiningTest {
     @Test
     @DisplayName("successfully serialize search request with nested query")
     void shouldSuccessfullySerializeNestedQuery() {
-        Match match = new Match() {
-            @JsonProperty("obj1.name")
-            private String name = "blue";
-        };
+        MatchQuery match = MatchQuery.builder()
+            .field("obj1.name")
+            .query("blue")
+            .build();
         SearchRequest request = SearchRequest.builder()
                 .query(NestedQuery.builder()
                         .path("obj1")
                         .scoreMode(NestedQueryScoreMode.AVG)
-                        .query(BoolQuery.builder().must(MatchQuery.of(match)).build())
+                        .query(BoolQuery.builder().must(match).build())
                         .build()
                 ).build();
         String actual = serializeRequest(request, SearchRequest.class);

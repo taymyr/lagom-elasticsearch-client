@@ -1,0 +1,16 @@
+{
+  "query": {
+    "match": {
+      "field": {
+        "query": "value",
+        "operator": "or",
+        "minimum_should_match": "2",
+        "analyzer": "analyzer",
+        "lenient": true,
+        "zero_terms_query": "all",
+        "cutoff_frequency": 0.001,
+        "auto_generate_synonyms_phrase_query": false
+      }
+    }
+  }
+}
