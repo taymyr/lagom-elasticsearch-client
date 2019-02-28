@@ -84,11 +84,7 @@ class FulltextTest {
     @Test
     @DisplayName("successfully serialize search request with match query")
     void shouldSuccessfullySerializeMatchQuery() {
-        SearchRequest request = new SearchRequest(MatchQuery.builder()
-                .field("field")
-                .query("value")
-                .build()
-        );
+        SearchRequest request = new SearchRequest(MatchQuery.of("field", "value"));
         String actual = serializeRequest(request, SearchRequest.class);
         String expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/query/fulltext/match.json");
         assertThatJson(actual).isEqualTo(expected);

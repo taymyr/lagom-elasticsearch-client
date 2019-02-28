@@ -17,7 +17,7 @@ class SuggestTest {
     @DisplayName("successfully serialize search request with suggest")
     void shouldSuccessfullySerializeSuggest() {
         SearchRequest request = SearchRequest.builder()
-                .query(MatchQuery.builder().field("name").query("value").build())
+                .query(MatchQuery.of("name", "value"))
                 .suggest("mySuggest", CompletionSuggest.builder()
                                 .prefix("prefix")
                                 .field("suggest")
