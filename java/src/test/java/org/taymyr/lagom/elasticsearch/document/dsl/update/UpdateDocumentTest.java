@@ -4,6 +4,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.taymyr.lagom.elasticsearch.TestDocument;
 
+import java.util.Optional;
+
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -48,6 +50,16 @@ class UpdateDocumentTest {
         DocUpdateRequest request = new DocUpdateRequest<>(partialDoc);
         String actual = serializeRequest(request, DocUpdateRequest.class);
         String expected = resourceAsString("org/taymyr/lagom/elasticsearch/document/dsl/update/request_partial.json");
+        assertThatJson(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("successfully serialize a partial document update with Optional field")
+    void shouldSuccessfullySerializePartialDocumentUpdateWithNotEmptyOptionalField() {
+        TestDocument partialDoc = new TestDocument("user.updated", null, null, Optional.of("comment.updated"));
+        DocUpdateRequest request = new DocUpdateRequest<>(partialDoc);
+        String actual = serializeRequest(request, DocUpdateRequest.class);
+        String expected = resourceAsString("org/taymyr/lagom/elasticsearch/document/dsl/update/request_partial_with_optional.json");
         assertThatJson(actual).isEqualTo(expected);
     }
 

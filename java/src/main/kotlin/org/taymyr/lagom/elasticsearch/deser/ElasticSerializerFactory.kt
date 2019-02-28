@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL
 import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
@@ -36,6 +37,7 @@ class ElasticSerializerFactory(val mapper: ObjectMapper = MAPPER) : JacksonSeria
             .registerModule(KotlinModule())
             .registerModule(JavaTimeModule())
             .registerModule(ParameterNamesModule())
+            .registerModule(Jdk8Module())
             .disable(WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS)
             .disable(FAIL_ON_UNKNOWN_PROPERTIES)
             .setSerializationInclusion(NON_NULL)
