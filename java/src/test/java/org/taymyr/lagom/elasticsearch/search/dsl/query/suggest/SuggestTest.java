@@ -1,11 +1,9 @@
 package org.taymyr.lagom.elasticsearch.search.dsl.query.suggest;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.taymyr.lagom.elasticsearch.search.dsl.SearchRequest;
 import org.taymyr.lagom.elasticsearch.search.dsl.query.Fuzzy;
-import org.taymyr.lagom.elasticsearch.search.dsl.query.fulltext.Match;
 import org.taymyr.lagom.elasticsearch.search.dsl.query.fulltext.MatchQuery;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -18,12 +16,8 @@ class SuggestTest {
     @Test
     @DisplayName("successfully serialize search request with suggest")
     void shouldSuccessfullySerializeSuggest() {
-        Match match = new Match() {
-            @JsonProperty
-            private String name = "value";
-        };
         SearchRequest request = SearchRequest.builder()
-                .query(MatchQuery.of(match))
+                .query(MatchQuery.builder().field("name").query("value").build())
                 .suggest("mySuggest", CompletionSuggest.builder()
                                 .prefix("prefix")
                                 .field("suggest")

@@ -38,14 +38,14 @@ class FulltextTest {
     void shouldSuccessfullySerializeMultiMatchWithList() {
         List<String> fields = Arrays.asList("field1", "field2");
         SearchRequest request = SearchRequest.builder()
-            .query(MultiMatchQuery.builder()
-                .query("query")
-                .field("fullTextBoosted", 10)
-                .field("fullText")
-                .fields(fields)
-                .type(MultiMatchQueryType.CROSS_FIELDS)
-                .build()
-            ).build();
+                .query(MultiMatchQuery.builder()
+                        .query("query")
+                        .field("fullTextBoosted", 10)
+                        .field("fullText")
+                        .fields(fields)
+                        .type(MultiMatchQueryType.CROSS_FIELDS)
+                        .build()
+                ).build();
         String actual = serializeRequest(request, SearchRequest.class);
         String expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/query/fulltext/multi_match.json");
         assertThatJson(actual).isEqualTo(expected);
@@ -84,19 +84,45 @@ class FulltextTest {
     @Test
     @DisplayName("successfully serialize search request with match query")
     void shouldSuccessfullySerializeMatchQuery() {
-        Match match = new Match() {
-            @JsonProperty
-            private String field = "value";
-        };
-        SearchRequest request = new SearchRequest(MatchQuery.of(match));
+        SearchRequest request = new SearchRequest(MatchQuery.builder()
+                .field("field")
+                .query("value")
+                .build()
+        );
         String actual = serializeRequest(request, SearchRequest.class);
         String expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/query/fulltext/match.json");
         assertThatJson(actual).isEqualTo(expected);
     }
 
     @Test
+    @DisplayName("successfully serialize search request with full match query")
+    void shouldSuccessfullySerializeFullMatchQuery() {
+        SearchRequest request = new SearchRequest(MatchQuery.builder()
+                .field("field")
+                .query("value")
+                .operator(MatchOperator.OR)
+                .minimumShouldMatch("2")
+                .analyzer("analyzer")
+                .lenient(true)
+                .zeroTermsQuery(ZeroTerms.ALL)
+                .cutoffFrequency(0.001)
+                .autoGenerateSynonymsPhraseQuery(false)
+                .build()
+        );
+        String actual = serializeRequest(request, SearchRequest.class);
+        String expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/query/fulltext/match_all.json");
+        assertThatJson(actual).isEqualTo(expected);
+    }
+
+    @Test
     @DisplayName("throw exception for incorrect request")
     void shouldThrowExceptionForIncorrectRequest() {
+        assertThatThrownBy(() -> MatchQuery.builder().build())
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Field name can't be null");
+        assertThatThrownBy(() -> MatchQuery.builder().field("field").build())
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Query can't be null");
         assertThatThrownBy(() -> MultiMatchQuery.builder().build())
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Field 'query' can't be null");

@@ -1,7 +1,9 @@
 {
   "query": {
     "match": {
-      "name": "value"
+      "name": {
+        "query": "value"
+      }
     }
   },
   "suggest": {
