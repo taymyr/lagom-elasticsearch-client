@@ -1,5 +1,6 @@
 package org.taymyr.lagom.elasticsearch.search.dsl
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectReader
@@ -10,6 +11,9 @@ abstract class SearchResult<T> {
     @JsonProperty("timed_out")
     val tamedOut: Boolean = false
     val suggest: Map<String, List<SuggestResult<T>>>? = null
+
+    val sources: List<T>
+        @JsonIgnore get() = hits.hits.map { it.source }
 
     /**
      * JSON root node of result for search query.

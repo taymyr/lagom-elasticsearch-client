@@ -14,15 +14,16 @@ import org.taymyr.lagom.elasticsearch.search.dsl.query.term.TermQuery;
 
 import java.util.List;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.taymyr.lagom.elasticsearch.Helpers.deserializeResponse;
 import static org.taymyr.lagom.elasticsearch.Helpers.resourceAsString;
 import static org.taymyr.lagom.elasticsearch.Helpers.serializeRequest;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 
 class SearchRequestTest {
 
@@ -83,8 +84,9 @@ class SearchRequestTest {
         assertThat(result.getHits().getHits()).hasSize(1);
         HitResult<TestDocument> hitResult = result.getHits().getHits().get(0);
         assertThat(hitResult.getScore()).isEqualTo(1.3862944);
-        assertThat(hitResult.getSource().getUser()).isEqualTo("kimchy");
-        assertThat(hitResult.getSource().getMessage()).isEqualTo("trying out Elasticsearch");
+        TestDocument source = result.getSources().get(0);
+        assertThat(source.getUser()).isEqualTo("kimchy");
+        assertThat(source.getMessage()).isEqualTo("trying out Elasticsearch");
         assertThat(result.getSuggest()).containsKeys("my-suggest-1");
         List<SuggestResult<TestDocument>> suggestResults = result.getSuggest().get("my-suggest-1");
         SuggestResult<TestDocument> suggest1 = new SuggestResult<>("tring", singletonList(new SuggestOption<>("trying")));
