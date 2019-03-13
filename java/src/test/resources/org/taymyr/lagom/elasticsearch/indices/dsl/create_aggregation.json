@@ -9,6 +9,9 @@
         "message": {
           "type": "text"
         },
+        "suggest": {
+          "type": "completion"
+        },
         "nested_obj": {
           "properties": {
             "date_field": {

@@ -17,15 +17,16 @@ class SuggestTest {
     @DisplayName("successfully serialize search request with suggest")
     void shouldSuccessfullySerializeSuggest() {
         SearchRequest request = SearchRequest.builder()
-                .query(MatchQuery.of("name", "value"))
-                .suggest("mySuggest", CompletionSuggest.builder()
-                                .prefix("prefix")
-                                .field("suggest")
-                                .fuzzy("override by next line")
-                                .fuzzy(Fuzzy.AUTO)
-                                .skipDuplicates(false)
-                                .build()
-                ).build();
+            .query(MatchQuery.of("name", "value"))
+            .suggest("mySuggest", CompletionSuggest.builder()
+                .prefix("prefix")
+                .field("suggest")
+                .fuzzy("override by next line")
+                .fuzzy(Fuzzy.AUTO)
+                .context("name", "value")
+                .skipDuplicates(false)
+                .build()
+            ).build();
         String actual = serializeRequest(request, SearchRequest.class);
         String expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/query/suggest/request.json");
         assertThatJson(actual).isEqualTo(expected);
@@ -35,11 +36,11 @@ class SuggestTest {
     @DisplayName("throw exception for incorrect request")
     void shouldThrowExceptionForIncorrectRequest() {
         assertThatThrownBy(() -> CompletionSuggest.builder().build())
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("Field 'prefix' can't be null");
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage("Field 'prefix' can't be null");
         assertThatThrownBy(() -> CompletionSuggest.builder().prefix("prefix").build())
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("Field 'field' can't be null");
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage("Field 'field' can't be null");
     }
 
 }

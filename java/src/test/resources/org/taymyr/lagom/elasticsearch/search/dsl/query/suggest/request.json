@@ -13,6 +13,9 @@
         "fuzzy": {
           "fuzziness": "AUTO"
         },
+        "contexts": {
+          "name": "value"
+        },
         "skip_duplicates": false
       },
       "prefix": "prefix"
