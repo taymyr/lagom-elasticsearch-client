@@ -11,6 +11,7 @@ data class MappingProperty @JvmOverloads constructor(
     val analyzer: String? = null,
     val properties: Map<String, MappingProperty>? = null,
     val fields: Map<String, MappingProperty>? = null,
+    val contexts: List<Context>? = null,
     val dynamic: DynamicType? = null,
     @JsonProperty("copy_to") val copyTo: List<String>? = null
 ) {
@@ -21,6 +22,7 @@ data class MappingProperty @JvmOverloads constructor(
         private var analyzer: String? = null
         private var properties: Map<String, MappingProperty>? = null
         private var fields: Map<String, MappingProperty>? = null
+        private val contexts: MutableList<Context> = mutableListOf()
         private var dynamic: DynamicType? = null
         private var copyTo: List<String>? = null
 
@@ -29,11 +31,20 @@ data class MappingProperty @JvmOverloads constructor(
         fun analyzer(analyzer: String) = apply { this.analyzer = analyzer }
         fun properties(properties: Map<String, MappingProperty>) = apply { this.properties = properties }
         fun fields(fields: Map<String, MappingProperty>) = apply { this.fields = fields }
+        fun context(context: Context) = apply { this.contexts.add(context) }
         fun dynamic(dynamic: DynamicType) = apply { this.dynamic = dynamic }
         fun copyTo(copyTo: String) = apply { this.copyTo = listOf(copyTo) }
         fun copyTo(copyTo: List<String>) = apply { this.copyTo = copyTo }
 
-        fun build() = MappingProperty(type ?: error("Field 'type' can not be null"), format, analyzer, properties, fields, dynamic, copyTo)
+        fun build() = MappingProperty(
+            type = type ?: error("Field 'type' can not be null"),
+            format = format,
+            analyzer = analyzer,
+            properties = properties,
+            fields = fields,
+            contexts = if (contexts.isEmpty()) null else contexts,
+            dynamic = dynamic,
+            copyTo = copyTo)
     }
 
     companion object {

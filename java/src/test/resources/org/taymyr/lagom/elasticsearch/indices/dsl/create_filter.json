@@ -42,6 +42,16 @@
         "attachAllowed": {
           "type": "boolean"
         },
+        "suggest": {
+          "type": "completion",
+          "contexts": [
+            {
+              "name": "name",
+              "type": "category",
+              "path": "name"
+            }
+          ]
+        },
         "fields": {
           "fields": {
             "enabled": {
