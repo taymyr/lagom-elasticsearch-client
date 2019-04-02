@@ -42,6 +42,7 @@ class SearchRequestTest {
             .postFilter(TermQuery.of("field", "value"))
             .from(0)
             .size(10)
+            .minScore(0.3)
             .build();
         String actual = serializeRequest(request, SearchRequest.class);
         String expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/request.json");
@@ -65,6 +66,7 @@ class SearchRequestTest {
             .postFilter(TermQuery.of("field", "value"))
             .from(0)
             .size(10)
+            .minScore(0.3)
             .build();
         String actual = serializeRequest(request, SearchRequest.class);
         String expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/request.json");
