@@ -19,7 +19,9 @@ data class SearchRequest @JvmOverloads constructor(
     @JsonProperty("post_filter")
     val postFilter: Query? = null,
     val suggest: Map<String, Suggest>? = null,
-    val sort: List<Order>? = null
+    val sort: List<Order>? = null,
+    @JsonProperty("min_score")
+    val minScore: Double? = null
 ) {
 
     class Builder {
@@ -30,6 +32,7 @@ data class SearchRequest @JvmOverloads constructor(
         private var postFilter: Query? = null
         private var suggest: MutableMap<String, Suggest> = mutableMapOf()
         private var sort: MutableList<Order> = mutableListOf()
+        private var minScore: Double? = null
 
         fun query(query: Query) = apply { this.query = query }
         fun from(from: Int) = apply { this.from = from }
@@ -41,6 +44,7 @@ data class SearchRequest @JvmOverloads constructor(
         fun suggest(name: String, suggest: Suggest) = apply { this.suggest[name] = suggest }
         fun sort(vararg sort: Order) = apply { this.sort.addAll(sort) }
         fun sort(sort: List<Order>) = apply { this.sort.addAll(sort) }
+        fun minScore(minScore: Double) = apply { this.minScore = minScore }
 
         fun build() = SearchRequest(
             query = query ?: error("Query can't be null"),
@@ -49,7 +53,8 @@ data class SearchRequest @JvmOverloads constructor(
             aggs = if (aggs.isEmpty()) null else aggs.toMap(),
             postFilter = postFilter,
             suggest = if (suggest.isEmpty()) null else suggest.toMap(),
-            sort = if (sort.isEmpty()) null else sort.toList()
+            sort = if (sort.isEmpty()) null else sort.toList(),
+            minScore = minScore
         )
     }
 
