@@ -11,7 +11,11 @@
       "completion": {
         "field": "suggest",
         "fuzzy": {
-          "fuzziness": "AUTO"
+          "fuzziness": "1",
+          "transpositions": true,
+          "min_length": 2,
+          "prefix_length": 3,
+          "unicode_aware": true
         },
         "contexts": {
           "name": "value"
