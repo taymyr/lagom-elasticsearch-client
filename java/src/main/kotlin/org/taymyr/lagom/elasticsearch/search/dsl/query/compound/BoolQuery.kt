@@ -14,9 +14,13 @@ data class BoolQuery(val bool: BoolQueryBody) : CompoundQuery {
         private var filter: MutableList<Query> = mutableListOf()
 
         fun should(should: Query) = apply { this.should.add(should) }
+        fun should(should: List<Query>) = apply { this.should.addAll(should) }
         fun mustNot(mustNot: Query) = apply { this.mustNot.add(mustNot) }
+        fun mustNot(mustNot: List<Query>) = apply { this.mustNot.addAll(mustNot) }
         fun must(must: Query) = apply { this.must.add(must) }
+        fun must(must: List<Query>) = apply { this.must.addAll(must) }
         fun filter(filter: Query) = apply { this.filter.add(filter) }
+        fun filter(filter: List<Query>) = apply { this.filter.addAll(filter) }
 
         fun build() = BoolQuery(
             BoolQueryBody(
