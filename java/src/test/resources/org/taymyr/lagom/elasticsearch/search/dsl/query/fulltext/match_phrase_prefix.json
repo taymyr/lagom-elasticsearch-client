@@ -4,7 +4,9 @@
       "filter": [
         {
           "match_phrase_prefix": {
-            "field": "value"
+            "field": {
+              "query": "value"
+            }
           }
         }
       ]

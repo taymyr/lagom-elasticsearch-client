@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.taymyr.lagom.elasticsearch.Helpers.resourceAsString;
 import static org.taymyr.lagom.elasticsearch.Helpers.serializeRequest;
@@ -69,12 +70,8 @@ class FulltextTest {
     @Test
     @DisplayName("successfully serialize search request with match phrase prefix")
     void shouldSuccessfullySerializeMatchPhrasePrefixQuery() {
-        MatchPhrasePrefix matchPhrasePrefix = new MatchPhrasePrefix() {
-            @JsonProperty
-            private String field = "value";
-        };
         SearchRequest request = new SearchRequest(
-                BoolQuery.builder().filter(MatchPhrasePrefixQuery.of(matchPhrasePrefix)).build()
+                BoolQuery.builder().filter(MatchPhrasePrefixQuery.of("field", "value")).build()
         );
         String actual = serializeRequest(request, SearchRequest.class);
         String expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/query/fulltext/match_phrase_prefix.json");
@@ -126,4 +123,26 @@ class FulltextTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Fields can't be empty");
     }
+
+    @Test
+    @DisplayName("successfully build query with match phrase prefix")
+    void shouldSuccessfullyBuildMatchPhrasePrefixQuery() {
+        MatchPhrasePrefixQuery actual = new MatchPhrasePrefixQuery.Builder().field("testfield").query("testvalue").maxExpansions(1).build();
+        assertThat(actual.getField()).isEqualTo("testfield");
+        assertThat(actual.getMatchPhrasePrefix()).isNotNull();
+        assertThat(actual.getMatchPhrasePrefix().getQuery()).isEqualTo("testvalue");
+        assertThat(actual.getMatchPhrasePrefix().getMaxExpansions()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("throw exception for incorrect builder invocation for query with match phrase prefix")
+    void shouldThrowExceptionForIncorrectBuilderMatchPhrasePrefixQuery() {
+        assertThatThrownBy(() -> MatchPhrasePrefixQuery.builder().query("testvalue").maxExpansions(1).build())
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Field name can't be null");
+        assertThatThrownBy(() -> MatchPhrasePrefixQuery.builder().field("testfield").maxExpansions(1).build())
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Query can't be null");
+    }
+
 }
