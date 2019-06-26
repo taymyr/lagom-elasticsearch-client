@@ -1,6 +1,5 @@
 package org.taymyr.lagom.elasticsearch.search.dsl.query.fulltext;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.taymyr.lagom.elasticsearch.search.dsl.SearchRequest;
@@ -55,12 +54,14 @@ class FulltextTest {
     @Test
     @DisplayName("successfully serialize search request with match phrase")
     void shouldSuccessfullySerializeMatchPhraseQuery() {
-        MatchPhrase matchPhrase = new MatchPhrase() {
-            @JsonProperty
-            private String field = "value";
-        };
         SearchRequest request = new SearchRequest(
-                BoolQuery.builder().filter(MatchPhraseQuery.of(matchPhrase)).build()
+                BoolQuery.builder().filter(MatchPhraseQuery.builder()
+                        .field("field")
+                        .query("value")
+                        .analyzer("analyzer")
+                        .zeroTermsQuery(ZeroTerms.NONE)
+                        .slop(1)
+                        .build()).build()
         );
         String actual = serializeRequest(request, SearchRequest.class);
         String expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/query/fulltext/match_phrase.json");
@@ -71,7 +72,14 @@ class FulltextTest {
     @DisplayName("successfully serialize search request with match phrase prefix")
     void shouldSuccessfullySerializeMatchPhrasePrefixQuery() {
         SearchRequest request = new SearchRequest(
-                BoolQuery.builder().filter(MatchPhrasePrefixQuery.of("field", "value")).build()
+                BoolQuery.builder().filter(MatchPhrasePrefixQuery.builder()
+                        .field("field")
+                        .query("value")
+                        .analyzer("analyzer")
+                        .zeroTermsQuery(ZeroTerms.NONE)
+                        .slop(1)
+                        .maxExpansions(10)
+                        .build()).build()
         );
         String actual = serializeRequest(request, SearchRequest.class);
         String expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/query/fulltext/match_phrase_prefix.json");
@@ -125,13 +133,70 @@ class FulltextTest {
     }
 
     @Test
+    @DisplayName("successfully build query with match phrase")
+    void shouldSuccessfullyBuildMatchPhraseQuery() {
+        MatchPhraseQuery actual = MatchPhraseQuery.builder()
+                .field("testfield")
+                .query("testvalue")
+                .analyzer("testanalyzer")
+                .zeroTermsQuery(ZeroTerms.ALL)
+                .slop(10)
+                .build();
+        assertThat(actual.getField()).isEqualTo("testfield");
+        assertThat(actual.getMatchPhrase()).isNotNull();
+        assertThat(actual.getMatchPhrase().getQuery()).isEqualTo("testvalue");
+        assertThat(actual.getMatchPhrase().getAnalyzer()).isEqualTo("testanalyzer");
+        assertThat(actual.getMatchPhrase().getZeroTermsQuery()).isEqualTo(ZeroTerms.ALL);
+        assertThat(actual.getMatchPhrase().getSlop()).isEqualTo(10);
+    }
+
+    @Test
+    @DisplayName("successfully build query with match phrase (using method \"of\")")
+    void shouldSuccessfullyBuildMatchPhraseQueryUsingOf() {
+        MatchPhraseQuery actual = MatchPhraseQuery.of("testfield", "testvalue");
+        assertThat(actual.getField()).isEqualTo("testfield");
+        assertThat(actual.getMatchPhrase()).isNotNull();
+        assertThat(actual.getMatchPhrase().getQuery()).isEqualTo("testvalue");
+    }
+
+    @Test
+    @DisplayName("throw exception for incorrect builder invocation for query with match phrase")
+    void shouldThrowExceptionForIncorrectBuilderMatchPhraseQuery() {
+        assertThatThrownBy(() -> MatchPhraseQuery.builder().query("testvalue").slop(1).build())
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Field name can't be null");
+        assertThatThrownBy(() -> MatchPhraseQuery.builder().field("testfield").slop(1).build())
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Query can't be null");
+    }
+
+    @Test
     @DisplayName("successfully build query with match phrase prefix")
     void shouldSuccessfullyBuildMatchPhrasePrefixQuery() {
-        MatchPhrasePrefixQuery actual = new MatchPhrasePrefixQuery.Builder().field("testfield").query("testvalue").maxExpansions(1).build();
+        MatchPhrasePrefixQuery actual = MatchPhrasePrefixQuery.builder()
+                .field("testfield")
+                .query("testvalue")
+                .analyzer("testanalyzer")
+                .zeroTermsQuery(ZeroTerms.ALL)
+                .slop(10)
+                .maxExpansions(1)
+                .build();
         assertThat(actual.getField()).isEqualTo("testfield");
         assertThat(actual.getMatchPhrasePrefix()).isNotNull();
         assertThat(actual.getMatchPhrasePrefix().getQuery()).isEqualTo("testvalue");
+        assertThat(actual.getMatchPhrasePrefix().getAnalyzer()).isEqualTo("testanalyzer");
+        assertThat(actual.getMatchPhrasePrefix().getZeroTermsQuery()).isEqualTo(ZeroTerms.ALL);
+        assertThat(actual.getMatchPhrasePrefix().getSlop()).isEqualTo(10);
         assertThat(actual.getMatchPhrasePrefix().getMaxExpansions()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("successfully build query with match phrase prefix (using method \"of\")")
+    void shouldSuccessfullyBuildMatchPhrasePrefixQueryUsingOf() {
+        MatchPhrasePrefixQuery actual = MatchPhrasePrefixQuery.of("testfield", "testvalue");
+        assertThat(actual.getField()).isEqualTo("testfield");
+        assertThat(actual.getMatchPhrasePrefix()).isNotNull();
+        assertThat(actual.getMatchPhrasePrefix().getQuery()).isEqualTo("testvalue");
     }
 
     @Test

@@ -4,7 +4,12 @@
       "filter": [
         {
           "match_phrase": {
-            "field": "value"
+            "field": {
+              "query": "value",
+              "analyzer": "analyzer",
+              "zero_terms_query": "none",
+              "slop": 1
+            }
           }
         }
       ]

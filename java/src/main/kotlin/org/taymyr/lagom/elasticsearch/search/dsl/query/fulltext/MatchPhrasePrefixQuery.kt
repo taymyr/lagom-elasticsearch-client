@@ -13,8 +13,10 @@ import org.taymyr.lagom.elasticsearch.search.dsl.query.Query
  */
 @JsonSerialize(using = MatchPhrasePrefixQuery.Serializer::class)
 data class MatchPhrasePrefixQuery(
-    @JsonIgnore val field: String,
-    @JsonProperty("match_phrase_prefix") val matchPhrasePrefix: MatchPhrasePrefix
+    @JsonIgnore
+    val field: String,
+    @JsonProperty("match_phrase_prefix")
+    val matchPhrasePrefix: MatchPhrasePrefix
 ) : Query {
 
     class Serializer : JsonSerializer<MatchPhrasePrefixQuery>() {
@@ -35,16 +37,25 @@ data class MatchPhrasePrefixQuery(
     class Builder {
         private var field: String? = null
         private var query: String? = null
+        private var analyzer: String? = null
+        private var zeroTermsQuery: ZeroTerms? = null
+        private var slop: Int? = null
         private var maxExpansions: Int? = null
 
         fun field(field: String) = apply { this.field = field }
         fun query(query: String) = apply { this.query = query }
+        fun analyzer(analyzer: String) = apply { this.analyzer = analyzer }
+        fun zeroTermsQuery(zeroTermsQuery: ZeroTerms) = apply { this.zeroTermsQuery = zeroTermsQuery }
+        fun slop(slop: Int) = apply { this.slop = slop }
         fun maxExpansions(maxExpansions: Int) = apply { this.maxExpansions = maxExpansions }
 
         fun build() = MatchPhrasePrefixQuery(
             field ?: error("Field name can't be null"),
             MatchPhrasePrefix(
                 query = query ?: error("Query can't be null"),
+                analyzer = analyzer,
+                zeroTermsQuery = zeroTermsQuery,
+                slop = slop,
                 maxExpansions = maxExpansions
             )
         )
@@ -52,7 +63,7 @@ data class MatchPhrasePrefixQuery(
 
     companion object {
         @JvmStatic
-        fun builder() = Builder()
+        fun builder() = MatchPhrasePrefixQuery.Builder()
 
         @JvmStatic
         fun of(field: String, query: String) = MatchPhrasePrefixQuery(field, MatchPhrasePrefix(query))
