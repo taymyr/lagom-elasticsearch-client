@@ -21,9 +21,9 @@ _Note: We try not to change the API, but before the release of stable version `1
 
 ## Versions compatibility
 
-| Lagom Elasticsearch Client | Lagom           | Scala          | Elastic                 |
-|----------------------------|-----------------|----------------|-------------------------|
-| 1.+                        | 1.4.+ <br> 1.5.+| 2.11 <br> 2.12 | 5.+(partial) <br> 6.+   |
+| Lagom Elasticsearch Client | Lagom                      | Scala          | Elastic                        |
+|----------------------------|----------------------------|----------------|--------------------------------|
+| 1.+                        | 1.4.+ <br> 1.5.+ <br> 1.6.+| 2.11 <br> 2.12 | 5.+(partial) <br> 6.+ <br> 7.+ |
 
 ## How to use
 
