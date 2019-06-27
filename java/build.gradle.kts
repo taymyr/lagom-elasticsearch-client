@@ -10,26 +10,27 @@ val ossrhPassword: String? by project
 
 object Versions {
     const val scalaBinary = "2.12"
-    const val lagom = "1.4.6" // "1.5.0-RC1"
-    const val ktlint = "0.30.0"
+    const val lagom = "1.5.1" // "1.4.14" "1.6.0-M2"
+    const val ktlint = "0.31.0"
     const val `kotlin-logging` = "1.6.22"
     const val junit5 = "5.3.2"
-    const val `json-unit` = "2.4.0"
-    const val assertj = "3.11.1"
+    const val `json-unit` = "2.7.0"
+    const val assertj = "3.12.2"
     const val jacoco = "0.8.2"
     const val jackson = "2.9.7"
     const val elasticsearch = "6.4.1"
-    const val `embedded-elasticsearch` = "2.7.0"
+    const val `embedded-elasticsearch` = "2.10.0"
 }
 
 val lagomVersion = project.properties["lagomVersion"] as String? ?: Versions.lagom
 val scalaBinaryVersion = project.properties["scalaBinaryVersion"] as String? ?: Versions.scalaBinary
 
 plugins {
-    kotlin("jvm") version "1.3.21"
-    id("org.jetbrains.dokka") version "0.9.17"
-    id("org.jlleitschuh.gradle.ktlint") version "6.3.1"
+    kotlin("jvm") version "1.3.40"
+    id("org.jetbrains.dokka") version "0.9.18"
+    id("org.jlleitschuh.gradle.ktlint") version "8.1.0"
     id("de.marcphilipp.nexus-publish") version "0.2.0"
+    id("com.github.ben-manes.versions") version "0.21.0"
     signing
     jacoco
 }
