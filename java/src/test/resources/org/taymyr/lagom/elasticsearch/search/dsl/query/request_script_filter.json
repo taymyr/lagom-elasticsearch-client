@@ -1,0 +1,32 @@
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match_all": {}
+        },
+        {
+          "script": {
+            "script": {
+              "id": "script1",
+              "params": {
+                "param1": "value1"
+              }
+            }
+          }
+        },
+        {
+          "script": {
+            "script": {
+              "lang": "painless",
+              "source": "select",
+              "params": {
+                "param2": 2.5
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

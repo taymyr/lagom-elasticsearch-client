@@ -1,0 +1,28 @@
+{
+  "script_fields": [
+    {
+      "field1": {
+        "script": {
+          "id": "script1",
+          "params": {
+            "param1": "value1"
+          }
+        }
+      }
+    },
+    {
+      "field2": {
+        "script": {
+          "source": "select",
+          "lang": "painless",
+          "params": {
+            "param2": 2.5
+          }
+        }
+      }
+    }
+  ],
+  "query": {
+    "match_all": {}
+  }
+}

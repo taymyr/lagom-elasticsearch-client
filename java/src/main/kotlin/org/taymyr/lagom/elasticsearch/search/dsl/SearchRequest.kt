@@ -1,9 +1,11 @@
 package org.taymyr.lagom.elasticsearch.search.dsl
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import org.taymyr.lagom.elasticsearch.script.Script
 import org.taymyr.lagom.elasticsearch.search.dsl.query.Order
 import org.taymyr.lagom.elasticsearch.search.dsl.query.Query
 import org.taymyr.lagom.elasticsearch.search.dsl.query.aggregation.Aggregation
+import org.taymyr.lagom.elasticsearch.search.dsl.query.script.ScriptField
 import org.taymyr.lagom.elasticsearch.search.dsl.query.suggest.Suggest
 
 /**
@@ -13,6 +15,8 @@ import org.taymyr.lagom.elasticsearch.search.dsl.query.suggest.Suggest
  */
 data class SearchRequest @JvmOverloads constructor(
     val query: Query,
+    @JsonProperty("script_fields")
+    val scriptFields: List<ScriptField>? = null,
     val from: Int? = null,
     val size: Int? = null,
     val aggs: Map<String, Aggregation>? = null,
@@ -26,6 +30,7 @@ data class SearchRequest @JvmOverloads constructor(
 
     class Builder {
         private var query: Query? = null
+        private var scriptFields: MutableList<ScriptField> = mutableListOf()
         private var from: Int? = null
         private var size: Int? = null
         private var aggs: MutableMap<String, Aggregation> = mutableMapOf()
@@ -35,6 +40,7 @@ data class SearchRequest @JvmOverloads constructor(
         private var minScore: Double? = null
 
         fun query(query: Query) = apply { this.query = query }
+        fun scriptField(name: String, script: Script) = apply { this.scriptFields.add(ScriptField(name, script)) }
         fun from(from: Int) = apply { this.from = from }
         fun size(size: Int) = apply { this.size = size }
         fun aggs(aggs: Map<String, Aggregation>) = apply { this.aggs.putAll(aggs) }
@@ -48,6 +54,7 @@ data class SearchRequest @JvmOverloads constructor(
 
         fun build() = SearchRequest(
             query = query ?: error("Query can't be null"),
+            scriptFields = if (scriptFields.isEmpty()) null else scriptFields.toList(),
             from = from,
             size = size,
             aggs = if (aggs.isEmpty()) null else aggs.toMap(),
