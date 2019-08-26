@@ -3,6 +3,7 @@ package org.taymyr.lagom.elasticsearch.document.dsl.update;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.taymyr.lagom.elasticsearch.TestDocument;
+import org.taymyr.lagom.elasticsearch.script.Script;
 
 import java.util.Optional;
 
@@ -35,9 +36,9 @@ class UpdateDocumentTest {
         assertThatThrownBy(() -> DocUpdateRequest.builder().build())
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Field 'doc' can not be null");
-        assertThatThrownBy(() -> FullScriptedUpdateBody.builder().build())
+        assertThatThrownBy(() -> Script.builder().build())
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("Field 'source' can not be null");
+                .hasMessage("Field 'source' or 'id' can't be null");
         assertThatThrownBy(() -> FullScriptedUpdateRequest.builder().build())
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Field 'script' can not be null");
@@ -66,20 +67,20 @@ class UpdateDocumentTest {
     @Test
     @DisplayName("successfully serialize update request by compact script command")
     void shouldSuccessfullySerializeUpdateByCompactScriptCommand() {
-        ShortScriptedUpdateRequest request = new ShortScriptedUpdateRequest("ctx._source.age = 20");
+        ShortScriptedUpdateRequest request = new ShortScriptedUpdateRequest(Script.of("ctx._source.age = 20"));
         String actual = serializeRequest(request, ShortScriptedUpdateRequest.class);
-        assertThatJson(actual).isEqualTo("{\"script\":\"ctx._source.age = 20\"}");
+        assertThatJson(actual).isEqualTo("{\"script\":{\"source\":\"ctx._source.age = 20\"}}");
     }
 
     @Test
     @DisplayName("successfully serialize update request by full script command")
     void shouldSuccessfullySerializeUpdateByFullScriptCommand() {
-        FullScriptedUpdateRequest<TestDocument, TestDocument> request = FullScriptedUpdateRequest.<TestDocument, TestDocument>builder()
-                .script(FullScriptedUpdateBody.<TestDocument>builder()
+        FullScriptedUpdateRequest<TestDocument> request = FullScriptedUpdateRequest.<TestDocument>builder()
+                .script(Script.builder()
                         .id("123")
                         .lang("painless")
                         .source("ctx._source.balance += params.balance")
-                        .params(new TestDocument("user-from-params", null, 4.0))
+                        .param("balance", 4.0)
                         .build()
                 )
                 .upsert(new TestDocument("user-from-upsert", null, 1.0))

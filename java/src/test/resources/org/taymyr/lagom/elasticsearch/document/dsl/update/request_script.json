@@ -3,8 +3,7 @@
     "id": "123",
     "lang": "painless",
     "params": {
-      "balance": 4.0,
-      "user": "user-from-params"
+      "balance": 4.0
     },
     "source": "ctx._source.balance += params.balance"
   },

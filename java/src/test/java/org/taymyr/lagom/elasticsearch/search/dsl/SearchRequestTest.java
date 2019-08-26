@@ -5,25 +5,28 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.taymyr.lagom.elasticsearch.TestDocument;
 import org.taymyr.lagom.elasticsearch.TestDocument.TestDocumentResult;
+import org.taymyr.lagom.elasticsearch.script.Script;
 import org.taymyr.lagom.elasticsearch.search.dsl.SuggestResult.SuggestOption;
 import org.taymyr.lagom.elasticsearch.search.dsl.query.Order;
 import org.taymyr.lagom.elasticsearch.search.dsl.query.aggregation.TermsAggregation;
+import org.taymyr.lagom.elasticsearch.search.dsl.query.compound.BoolQuery;
+import org.taymyr.lagom.elasticsearch.search.dsl.query.script.ScriptQuery;
 import org.taymyr.lagom.elasticsearch.search.dsl.query.suggest.CompletionSuggest;
 import org.taymyr.lagom.elasticsearch.search.dsl.query.term.IdsQuery;
 import org.taymyr.lagom.elasticsearch.search.dsl.query.term.TermQuery;
 
 import java.util.List;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.taymyr.lagom.elasticsearch.Helpers.deserializeResponse;
 import static org.taymyr.lagom.elasticsearch.Helpers.resourceAsString;
 import static org.taymyr.lagom.elasticsearch.Helpers.serializeRequest;
-
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
+import static org.taymyr.lagom.elasticsearch.search.dsl.query.Query.MATCH_ALL;
 
 class SearchRequestTest {
 
@@ -70,6 +73,43 @@ class SearchRequestTest {
             .build();
         String actual = serializeRequest(request, SearchRequest.class);
         String expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/request.json");
+        assertThatJson(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("successfully serialize search request with script fields")
+    void shouldSuccessfullySerializeTermWithScriptFields() {
+        SearchRequest request = SearchRequest.builder()
+            .query(MATCH_ALL)
+            .scriptField("field1", Script.builder()
+                .id("script1")
+                .param("param1", "value1")
+                .build()
+            )
+            .scriptField("field2", Script.builder()
+                .source("select")
+                .param("param2", 2.5)
+                .lang("painless")
+                .build()
+            )
+            .build();
+        String actual = serializeRequest(request, SearchRequest.class);
+        String expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/request_script_fields.json");
+        assertThatJson(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("successfully serialize search request with script filters")
+    void shouldSuccessfullySerializeTermWithScriptFilter() {
+        SearchRequest request = SearchRequest.builder()
+            .query(BoolQuery.builder()
+                .must(MATCH_ALL)
+                .must(new ScriptQuery(Script.builder().id("script1").param("param1", "value1").build()))
+                .must(new ScriptQuery(Script.builder().source("select").param("param2", 2.5).lang("painless").build()))
+                .build())
+            .build();
+        String actual = serializeRequest(request, SearchRequest.class);
+        String expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/query/request_script_filter.json");
         assertThatJson(actual).isEqualTo(expected);
     }
 
