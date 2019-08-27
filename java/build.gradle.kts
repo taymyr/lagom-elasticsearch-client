@@ -10,7 +10,7 @@ val ossrhPassword: String? by project
 
 object Versions {
     const val scalaBinary = "2.12"
-    const val lagom = "1.5.1" // "1.4.14" "1.6.0-M2"
+    const val lagom = "1.5.1" // "1.4.15" "1.6.0-M5"
     const val ktlint = "0.31.0"
     const val `kotlin-logging` = "1.6.22"
     const val junit5 = "5.3.2"
@@ -26,7 +26,7 @@ val lagomVersion = project.properties["lagomVersion"] as String? ?: Versions.lag
 val scalaBinaryVersion = project.properties["scalaBinaryVersion"] as String? ?: Versions.scalaBinary
 
 plugins {
-    kotlin("jvm") version "1.3.40"
+    kotlin("jvm") version "1.3.50"
     id("org.jetbrains.dokka") version "0.9.18"
     id("org.jlleitschuh.gradle.ktlint") version "8.1.0"
     id("de.marcphilipp.nexus-publish") version "0.2.0"
