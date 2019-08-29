@@ -1,0 +1,8 @@
+{
+  "gradle": {
+    "enabled": true
+  },
+  "extends": [
+    "config:base"
+  ]
+}
