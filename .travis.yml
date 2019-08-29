@@ -1,5 +1,9 @@
 language: java
 
+# Only build non-pushes (so PRs, API requests & cron jobs) OR tags OR forks OR main branch builds
+# https://docs.travis-ci.com/user/conditional-builds-stages-jobs/
+if: type != push OR tag IS present OR fork OR branch = master
+
 env:
   - SCALA_VERSION=2.11 LAGOM_VERSION=1.4.15
   - SCALA_VERSION=2.12 LAGOM_VERSION=1.5.1
