@@ -150,3 +150,9 @@ signing {
     isRequired = isReleaseVersion
     sign(publishing.publications["maven"])
 }
+
+nexusPublishing {
+    repositories {
+        sonatype()
+    }
+}
