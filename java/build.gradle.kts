@@ -11,7 +11,7 @@ val ossrhPassword: String? by project
 object Versions {
     const val scalaBinary = "2.12"
     const val lagom = "1.5.1" // "1.4.15" "1.6.0-M5"
-    const val ktlint = "0.31.0"
+    const val ktlint = "0.33.0"
     const val `kotlin-logging` = "1.6.22"
     const val junit5 = "5.3.2"
     const val `json-unit` = "2.7.0"
@@ -28,7 +28,7 @@ val scalaBinaryVersion = project.properties["scalaBinaryVersion"] as String? ?: 
 plugins {
     kotlin("jvm") version "1.3.50"
     id("org.jetbrains.dokka") version "0.9.18"
-    id("org.jlleitschuh.gradle.ktlint") version "8.2.0"
+    id("org.jlleitschuh.gradle.ktlint") version "9.0.0"
     id("de.marcphilipp.nexus-publish") version "0.3.1"
     signing
     jacoco
@@ -65,7 +65,9 @@ dependencies {
 ktlint {
     version.set(Versions.ktlint)
     outputToConsole.set(true)
-    reporters.set(setOf(ReporterType.CHECKSTYLE))
+    reporters {
+        reporter(ReporterType.CHECKSTYLE)
+    }
 }
 
 tasks.withType<Test> {
