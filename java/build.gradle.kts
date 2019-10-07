@@ -1,4 +1,4 @@
-import org.jetbrains.dokka.DokkaConfiguration
+
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 import java.net.URL
@@ -27,7 +27,7 @@ val scalaBinaryVersion = project.properties["scalaBinaryVersion"] as String? ?: 
 
 plugins {
     kotlin("jvm") version "1.3.50"
-    id("org.jetbrains.dokka") version "0.9.18"
+    id("org.jetbrains.dokka") version "0.10.0"
     id("org.jlleitschuh.gradle.ktlint") version "9.0.0"
     id("de.marcphilipp.nexus-publish") version "0.3.1"
     signing
@@ -101,12 +101,14 @@ val dokkaJar by tasks.creating(Jar::class) {
 tasks.dokka {
     outputFormat = "javadoc"
     outputDirectory = "$buildDir/javadoc"
-    jdkVersion = 8
-    reportUndocumented = true
-    impliedPlatforms = mutableListOf("JVM")
-    externalDocumentationLink(delegateClosureOf<DokkaConfiguration.ExternalDocumentationLink.Builder> {
-        url = URL("https://www.lagomframework.com/documentation/1.4.x/java/api/")
-    })
+    configuration {
+        jdkVersion = 8
+        reportUndocumented = true
+        impliedPlatforms = mutableListOf("JVM")
+        externalDocumentationLink {
+            url = URL("https://www.lagomframework.com/documentation/1.5.x/java/api/")
+        }
+    }
 }
 
 publishing {
