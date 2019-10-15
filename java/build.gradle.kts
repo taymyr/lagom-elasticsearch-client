@@ -29,7 +29,7 @@ plugins {
     kotlin("jvm") version "1.3.50"
     id("org.jetbrains.dokka") version "0.10.0"
     id("org.jlleitschuh.gradle.ktlint") version "9.0.0"
-    id("de.marcphilipp.nexus-publish") version "0.3.1"
+    id("de.marcphilipp.nexus-publish") version "0.4.0"
     signing
     jacoco
 }
