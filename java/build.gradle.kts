@@ -104,9 +104,11 @@ tasks.dokka {
     configuration {
         jdkVersion = 8
         reportUndocumented = true
-        impliedPlatforms = mutableListOf("JVM")
+        platform = "jvm"
         externalDocumentationLink {
             url = URL("https://www.lagomframework.com/documentation/1.5.x/java/api/")
+            // TODO: remove after fix https://github.com/Kotlin/dokka/issues/514
+            packageListUrl = URL("https://www.lagomframework.com/documentation/1.5.x/java/api/package-list")
         }
     }
 }
