@@ -12,11 +12,10 @@ import org.taymyr.lagom.elasticsearch.search.dsl.query.term.IdsQuery;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.taymyr.lagom.elasticsearch.ServiceCall.invoke;
-
 import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.taymyr.lagom.elasticsearch.ServiceCall.invoke;
 
 class ElasticSearchIT extends AbstractElasticsearchIT {
 

@@ -21,20 +21,15 @@ import java.util.concurrent.TimeoutException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.taymyr.lagom.elasticsearch.ServiceCall.invoke;
 
-import static java.lang.Thread.sleep;
-
 class ElasticDocumentIT extends AbstractElasticsearchIT {
 
     @Test
     @DisplayName("Document service descriptor should work correct")
     void shouldWorkCorrect() throws InterruptedException, ExecutionException, TimeoutException {
         indexDocument();
-        sleep(1000);
         bulkUpdate();
-        sleep(1000);
         getDocument();
         update();
-        sleep(1000);
         getSource();
         checkExists();
         delete();

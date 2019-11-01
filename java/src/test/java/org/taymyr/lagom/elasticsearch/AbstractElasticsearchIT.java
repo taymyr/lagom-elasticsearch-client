@@ -6,53 +6,45 @@ import org.junit.jupiter.api.BeforeAll;
 import org.taymyr.lagom.elasticsearch.document.ElasticDocument;
 import org.taymyr.lagom.elasticsearch.indices.ElasticIndices;
 import org.taymyr.lagom.elasticsearch.search.ElasticSearch;
-import pl.allegro.tech.embeddedelasticsearch.EmbeddedElastic;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import static pl.allegro.tech.embeddedelasticsearch.PopularProperties.CLUSTER_NAME;
-import static pl.allegro.tech.embeddedelasticsearch.PopularProperties.HTTP_PORT;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
+@Testcontainers
 public class AbstractElasticsearchIT {
 
-    static final String ELASTIC_PORT = "9250";
+    static final String ELASTIC_VERSION = "6.4.1";
 
     protected static LagomClientFactory clientFactory;
-    protected static EmbeddedElastic embeddedElastic;
     protected static ElasticSearch elasticSearch;
     protected static ElasticIndices elasticIndices;
     protected static ElasticDocument elasticDocument;
 
+    @Container
+    protected static final ElasticsearchContainer elastic = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:" + ELASTIC_VERSION);
+
     @BeforeAll
-    static void beforeAll() throws URISyntaxException, IOException, InterruptedException {
+    static void beforeAll() throws URISyntaxException {
         clientFactory = LagomClientFactory.create("elastic-search",
                 LagomClientFactory.class.getClassLoader()
         );
-        elasticSearch = clientFactory.createClient(ElasticSearch.class, new URI("http://localhost:" + ELASTIC_PORT));
-        elasticIndices = clientFactory.createClient(ElasticIndices.class, new URI("http://localhost:" + ELASTIC_PORT));
-        elasticDocument = clientFactory.createClient(ElasticDocument.class, new URI("http://localhost:" + ELASTIC_PORT));
-        embeddedElastic = EmbeddedElastic.builder()
-                .withElasticVersion("6.4.1")
-                .withSetting(CLUSTER_NAME, "test_cluster")
-                .withSetting(HTTP_PORT, ELASTIC_PORT)
-                .withEsJavaOpts("-Xms128m -Xmx512m")
-                .withStartTimeout(5, TimeUnit.MINUTES)
-                .build()
-                .start();
+        URI elasticAddress = new URI("http://" + elastic.getHttpHostAddress());
+        elasticSearch = clientFactory.createClient(ElasticSearch.class, elasticAddress);
+        elasticIndices = clientFactory.createClient(ElasticIndices.class, elasticAddress);
+        elasticDocument = clientFactory.createClient(ElasticDocument.class, elasticAddress);
     }
 
     @AfterAll
     static void afterAll() {
         clientFactory.close();
-        embeddedElastic.stop();
     }
 
     protected static <T> T eventually(CompletionStage<T> stage) throws InterruptedException, ExecutionException, TimeoutException {

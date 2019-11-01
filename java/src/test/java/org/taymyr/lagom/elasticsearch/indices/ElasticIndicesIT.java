@@ -13,11 +13,9 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ElasticIndicesIT extends AbstractElasticsearchIT {
 
@@ -25,7 +23,6 @@ class ElasticIndicesIT extends AbstractElasticsearchIT {
     @DisplayName("Indices service descriptor should work correct")
     void shouldWorkCorrect() throws InterruptedException, ExecutionException, TimeoutException {
         createIndices();
-        sleep(1000);
         checkExists();
         getIndices();
         deleteIndices();
