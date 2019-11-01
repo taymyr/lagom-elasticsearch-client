@@ -10,7 +10,7 @@ val ossrhPassword: String? by project
 
 object Versions {
     const val scalaBinary = "2.12"
-    const val lagom = "1.5.1" // "1.4.15" "1.6.0-M5"
+    const val lagom = "1.5.4" // "1.4.15" "1.6.0-RC1"
     const val ktlint = "0.33.0"
     const val `kotlin-logging` = "1.6.22"
     const val junit5 = "5.3.2"
@@ -19,7 +19,7 @@ object Versions {
     const val jacoco = "0.8.2"
     const val jackson = "2.9.7"
     const val elasticsearch = "6.4.1"
-    const val `embedded-elasticsearch` = "2.10.0"
+    const val testcontainers = "1.12.3"
 }
 
 val lagomVersion = project.properties["lagomVersion"] as String? ?: Versions.lagom
@@ -59,7 +59,9 @@ dependencies {
     testCompile("net.javacrumbs.json-unit", "json-unit-assertj", Versions.`json-unit`)
     testCompile("com.lightbend.lagom", "lagom-javadsl-integration-client_$scalaBinaryVersion", lagomVersion)
     testCompile("com.lightbend.lagom", "lagom-logback_$scalaBinaryVersion", lagomVersion)
-    testCompile("pl.allegro.tech", "embedded-elasticsearch", Versions.`embedded-elasticsearch`)
+    testImplementation("org.testcontainers", "testcontainers", Versions.testcontainers)
+    testImplementation("org.testcontainers", "junit-jupiter", Versions.testcontainers)
+    testImplementation("org.testcontainers", "elasticsearch", Versions.testcontainers)
 }
 
 ktlint {
