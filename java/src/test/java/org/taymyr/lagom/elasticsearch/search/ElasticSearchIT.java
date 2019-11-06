@@ -36,7 +36,7 @@ class ElasticSearchIT extends AbstractElasticsearchIT {
 
     void check(TestDocumentResult result) {
         assertThat(result.getTamedOut()).isFalse();
-        assertThat(result.getHits().getTotal()).isEqualTo(1);
+        assertThat(result.getHits().getTotal().getValue()).isEqualTo(1);
         assertThat(result.getHits().getHits()).hasSize(1);
         assertThat(result.getHits().getHits().get(0).getScore()).isEqualTo(1.0);
         assertThat(result.getHits().getHits().get(0).getSource().getUser()).isEqualTo("user");

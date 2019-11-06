@@ -21,7 +21,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 @Testcontainers
 public class AbstractElasticsearchIT {
 
-    static final String ELASTIC_VERSION = "6.4.1";
+    static final String ELASTIC_VERSION = "7.4.1";
 
     protected static LagomClientFactory clientFactory;
     protected static ElasticSearch elasticSearch;

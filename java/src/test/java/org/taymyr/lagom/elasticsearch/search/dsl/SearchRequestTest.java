@@ -122,7 +122,7 @@ class SearchRequestTest {
         );
         assertThat(result.getTamedOut()).isFalse();
         assertThat(result.getTook()).isEqualTo(2);
-        assertThat(result.getHits().getTotal()).isEqualTo(1);
+        assertThat(result.getHits().getTotal().getValue()).isEqualTo(1);
         assertThat(result.getHits().getHits()).hasSize(1);
         HitResult<TestDocument> hitResult = result.getHits().getHits().get(0);
         assertThat(hitResult.getScore()).isEqualTo(1.3862944);
