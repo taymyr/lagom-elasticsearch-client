@@ -18,7 +18,7 @@ object Versions {
     const val assertj = "3.12.2"
     const val jacoco = "0.8.2"
     const val jackson = "2.9.7"
-    const val elasticsearch = "6.4.1"
+    const val elasticsearch = "7.4.1"
     const val testcontainers = "1.12.3"
 }
 

@@ -23,7 +23,7 @@ _Note: We try not to change the API, but before the release of stable version `1
 
 | Lagom Elasticsearch Client | Lagom                      | Scala                    | Elastic                        |
 |----------------------------|----------------------------|--------------------------|--------------------------------|
-| 1.+                        | 1.4.+ <br> 1.5.+ <br> 1.6.+| 2.11 <br> 2.12 <br> 2.13 | 5.+(partial) <br> 6.+ <br> 7.+ |
+| 1.+                        | 1.4.+ <br> 1.5.+ <br> 1.6.+| 2.11 <br> 2.12 <br> 2.13 | 7.+ |
 
 ## How to use
 
