@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectReader
 
 abstract class SearchResult<T> {
-    val hits: Hits<T> = Hits(listOf(), 0)
+    val hits: Hits<T> = Hits(listOf(), Total())
     val took: Int = -1
     @JsonProperty("timed_out")
     val tamedOut: Boolean = false
