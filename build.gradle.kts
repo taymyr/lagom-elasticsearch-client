@@ -3,7 +3,7 @@ val ossrhPassword: String? by project
 val projectVersion: String by project
 
 plugins {
-    id("io.codearte.nexus-staging") version "0.21.1"
+    id("io.codearte.nexus-staging") version "0.21.2"
 }
 
 allprojects {
