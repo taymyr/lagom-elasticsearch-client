@@ -67,7 +67,7 @@ libraryDependencies += "org.taymyr.lagom" %% "lagom-elasticsearch-client-java" %
 </dependency>
 ```
 
-All **snapshot** artifacts are available in the [Sonatype snapshots repository](https://oss.sonatype.org/content/repositories/snapshots/org/taymyr/lagom).
+All **snapshot** artifacts are available in the [Sonatype snapshots repository](https://oss.sonatype.org/content/repositories/snapshots/org/taymyr/lagom/).
 This repository must be added in your build system. 
 
 * **SBT**
