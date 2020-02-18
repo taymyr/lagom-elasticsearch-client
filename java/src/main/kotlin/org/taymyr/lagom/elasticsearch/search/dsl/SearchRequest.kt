@@ -25,7 +25,9 @@ data class SearchRequest @JvmOverloads constructor(
     val suggest: Map<String, Suggest>? = null,
     val sort: List<Order>? = null,
     @JsonProperty("min_score")
-    val minScore: Double? = null
+    val minScore: Double? = null,
+    @JsonProperty("search_after")
+    val searchAfter: List<Any>? = null
 ) {
 
     class Builder {
@@ -38,6 +40,7 @@ data class SearchRequest @JvmOverloads constructor(
         private var suggest: MutableMap<String, Suggest> = mutableMapOf()
         private var sort: MutableList<Order> = mutableListOf()
         private var minScore: Double? = null
+        private var searchAfter: MutableList<Any> = mutableListOf()
 
         fun query(query: Query) = apply { this.query = query }
         fun scriptField(name: String, script: Script) = apply { this.scriptFields.add(ScriptField(name, script)) }
@@ -51,6 +54,8 @@ data class SearchRequest @JvmOverloads constructor(
         fun sort(vararg sort: Order) = apply { this.sort.addAll(sort) }
         fun sort(sort: List<Order>) = apply { this.sort.addAll(sort) }
         fun minScore(minScore: Double) = apply { this.minScore = minScore }
+        fun searchAfter(vararg searchAfter: Any) = apply { this.searchAfter.addAll(searchAfter) }
+        fun searchAfter(searchAfter: List<Any>) = apply { this.searchAfter.addAll(searchAfter) }
 
         fun build() = SearchRequest(
             query = query ?: error("Query can't be null"),
@@ -61,7 +66,8 @@ data class SearchRequest @JvmOverloads constructor(
             postFilter = postFilter,
             suggest = if (suggest.isEmpty()) null else suggest.toMap(),
             sort = if (sort.isEmpty()) null else sort.toList(),
-            minScore = minScore
+            minScore = minScore,
+            searchAfter = if (searchAfter.isEmpty()) null else searchAfter.toList()
         )
     }
 

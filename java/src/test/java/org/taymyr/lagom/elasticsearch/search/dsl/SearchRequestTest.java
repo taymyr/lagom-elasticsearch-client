@@ -1,5 +1,6 @@
 package org.taymyr.lagom.elasticsearch.search.dsl;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -110,6 +111,28 @@ class SearchRequestTest {
             .build();
         String actual = serializeRequest(request, SearchRequest.class);
         String expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/query/request_script_filter.json");
+        assertThatJson(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("successfully serialize search request with search after parameter")
+    void shouldSuccessfullySerializeTermWithSearchAfter() {
+        List<String> ids = asList("1");
+        SearchRequest request = SearchRequest.builder()
+            .query(IdsQuery.of(ids))
+            .aggs(ImmutableMap.of("agg1", TermsAggregation.builder().field("field").build()))
+            .sort(Order.desc("name"), Order.asc("age"))
+            .suggest(ImmutableMap.of("suggest1", CompletionSuggest.builder()
+                .prefix("prefix")
+                .field("suggest")
+                .build())
+            )
+            .postFilter(TermQuery.of("field", "value"))
+            .minScore(0.3)
+            .searchAfter("John", 18)
+            .build();
+        String actual = serializeRequest(request, SearchRequest.class);
+        String expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/request_search_after.json");
         assertThatJson(actual).isEqualTo(expected);
     }
 

@@ -1,0 +1,42 @@
+{
+  "sort": [
+    {
+      "name": "desc"
+    },
+    {
+      "age": "asc"
+    }
+  ],
+  "query": {
+    "ids": {
+      "values": [
+        "1"
+      ]
+    }
+  },
+  "aggs": {
+    "agg1": {
+      "terms": {
+        "field": "field"
+      }
+    }
+  },
+  "min_score": 0.3,
+  "post_filter": {
+    "term": {
+      "field": {
+        "value": "value"
+      }
+    }
+  },
+  "suggest": {
+    "suggest1": {
+      "completion": {
+        "field": "suggest",
+        "skip_duplicates": false
+      },
+      "prefix": "prefix"
+    }
+  },
+  "search_after" : ["John", 18]
+}
