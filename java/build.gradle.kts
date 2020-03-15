@@ -27,7 +27,7 @@ val scalaBinaryVersion = project.properties["scalaBinaryVersion"] as String? ?: 
 
 plugins {
     kotlin("jvm") version "1.3.50"
-    id("org.jetbrains.dokka") version "0.10.0"
+    id("org.jetbrains.dokka") version "0.10.1"
     id("org.jlleitschuh.gradle.ktlint") version "9.1.0"
     id("de.marcphilipp.nexus-publish") version "0.4.0"
     signing
