@@ -12,6 +12,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -49,5 +51,9 @@ public class AbstractElasticsearchIT {
 
     protected static <T> T eventually(CompletionStage<T> stage) throws InterruptedException, ExecutionException, TimeoutException {
         return stage.toCompletableFuture().get(5, SECONDS);
+    }
+
+    protected static <T> T eventually(CompletionStage<T> stage, Duration duration) throws InterruptedException, ExecutionException, TimeoutException {
+        return stage.toCompletableFuture().get(duration.get(ChronoUnit.SECONDS), SECONDS);
     }
 }

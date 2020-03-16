@@ -7,15 +7,23 @@ import org.taymyr.lagom.elasticsearch.TestDocument;
 import org.taymyr.lagom.elasticsearch.TestDocument.TestDocumentResult;
 import org.taymyr.lagom.elasticsearch.document.dsl.index.IndexResult;
 import org.taymyr.lagom.elasticsearch.search.dsl.SearchRequest;
+import org.taymyr.lagom.elasticsearch.search.dsl.query.term.ExistsQuery;
 import org.taymyr.lagom.elasticsearch.search.dsl.query.term.IdsQuery;
 
+import java.time.Duration;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.IntStream;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.taymyr.lagom.elasticsearch.ServiceCall.invoke;
+import static org.taymyr.lagom.elasticsearch.search.dsl.query.Order.asc;
 
 import static java.lang.Thread.sleep;
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.taymyr.lagom.elasticsearch.ServiceCall.invoke;
 
 class ElasticSearchIT extends AbstractElasticsearchIT {
 
@@ -51,4 +59,33 @@ class ElasticSearchIT extends AbstractElasticsearchIT {
         check(eventually(invoke(elasticSearch.search("test"), searchRequest, TestDocumentResult.class)));
     }
 
+    @Test
+    void testFindAll() throws InterruptedException, ExecutionException, TimeoutException {
+        int firstId = 1;
+        int latestId = 12000;
+        IntStream.range(firstId, latestId + 1).forEach(i -> {
+            try {
+                eventually(invoke(elasticDocument.indexWithId("test", "sample", String.valueOf(i)),
+                    new TestDocument("user" + i, "message" + i)));
+            } catch (Throwable e) {
+                throw  new RuntimeException(e);
+            }
+        });
+        sleep(Duration.of(10, SECONDS).toMillis());
+        SearchRequest searchRequest = SearchRequest.builder()
+            .query(ExistsQuery.of("user"))
+            .sort(asc("user"))
+            .build();
+        List<TestDocument> cs = eventually(
+            SearchUtils.findAll(elasticSearch, "test", "sample", searchRequest, TestDocumentResult.class),
+            Duration.of(20, SECONDS)
+        );
+        assertThat(cs).isNotEmpty().hasSize(latestId)
+            .extracting(TestDocument::getUser, TestDocument::getMessage)
+            .contains(tuple("user" + latestId, "message" + latestId));
+        assertThat(cs)
+            .first().extracting(TestDocument::getUser, TestDocument::getMessage).contains("user" + firstId, "message" + firstId);
+        assertThat(cs)
+            .last().extracting(TestDocument::getUser, TestDocument::getMessage).contains("user" + latestId, "message" + latestId);
+    }
 }
