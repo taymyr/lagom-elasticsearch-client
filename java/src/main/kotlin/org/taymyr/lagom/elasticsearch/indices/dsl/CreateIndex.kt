@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 class CreateIndex @JvmOverloads constructor(
     val settings: Settings? = null,
-    val mappings: Map<String, Mapping>? = null
+    val mappings: Mapping? = null
 ) {
 
     data class Settings @JvmOverloads constructor(

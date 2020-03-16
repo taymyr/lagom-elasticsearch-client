@@ -1,50 +1,48 @@
 {
   "mappings": {
-    "aggregated_fields": {
-      "properties": {
-        "aggregate_text": {
-          "analyzer": "russian",
-          "type": "text"
-        },
-        "message": {
-          "type": "text"
-        },
-        "suggest": {
-          "type": "completion"
-        },
-        "nested_obj": {
-          "properties": {
-            "date_field": {
-              "copy_to": [
-                "aggregate_text"
-              ],
-              "format": "yyyy-MM-dd",
-              "type": "date"
-            },
-            "integer_field": {
-              "copy_to": [
-                "aggregate_text"
-              ],
-              "type": "long"
-            },
-            "keyword_field": {
-              "copy_to": [
-                "aggregate_text"
-              ],
-              "type": "keyword"
-            },
-            "text_field": {
-              "copy_to": [
-                "aggregate_text"
-              ],
-              "type": "text"
-            }
+    "properties": {
+      "aggregate_text": {
+        "analyzer": "russian",
+        "type": "text"
+      },
+      "message": {
+        "type": "text"
+      },
+      "suggest": {
+        "type": "completion"
+      },
+      "nested_obj": {
+        "properties": {
+          "date_field": {
+            "copy_to": [
+              "aggregate_text"
+            ],
+            "format": "yyyy-MM-dd",
+            "type": "date"
           },
-          "type": "object"
+          "integer_field": {
+            "copy_to": [
+              "aggregate_text"
+            ],
+            "type": "long"
+          },
+          "keyword_field": {
+            "copy_to": [
+              "aggregate_text"
+            ],
+            "type": "keyword"
+          },
+          "text_field": {
+            "copy_to": [
+              "aggregate_text"
+            ],
+            "type": "text"
+          }
         },
-        "user": {
-          "type": "keyword"
-        }
+        "type": "object"
+      },
+      "user": {
+        "type": "keyword"
       }
     }
   },

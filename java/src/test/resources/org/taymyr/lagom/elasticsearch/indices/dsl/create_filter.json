@@ -23,43 +23,41 @@
     }
   },
   "mappings": {
-    "some_type": {
-      "properties": {
-        "id": {
-          "type": "long",
-          "dynamic": "true"
-        },
-        "name": {
-          "type": "text",
-          "analyzer": "autocomplete"
-        },
-        "title": {
-          "type": "object"
-        },
-        "technicalName": {
-          "type": "text"
-        },
-        "attachAllowed": {
-          "type": "boolean"
-        },
-        "suggest": {
-          "type": "completion",
-          "contexts": [
-            {
-              "name": "name",
-              "type": "category",
-              "path": "name"
-            }
-          ]
-        },
+    "properties": {
+      "id": {
+        "type": "long",
+        "dynamic": "true"
+      },
+      "name": {
+        "type": "text",
+        "analyzer": "autocomplete"
+      },
+      "title": {
+        "type": "object"
+      },
+      "technicalName": {
+        "type": "text"
+      },
+      "attachAllowed": {
+        "type": "boolean"
+      },
+      "suggest": {
+        "type": "completion",
+        "contexts": [
+          {
+            "name": "name",
+            "type": "category",
+            "path": "name"
+          }
+        ]
+      },
+      "fields": {
         "fields": {
-          "fields": {
-            "enabled": {
-              "type": "boolean"
-            }
-          },
-          "type": "object"
-        }
+          "enabled": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
       }
     }
   }
