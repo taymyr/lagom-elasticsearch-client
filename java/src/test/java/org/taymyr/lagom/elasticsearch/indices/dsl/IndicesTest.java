@@ -8,13 +8,14 @@ import org.taymyr.lagom.elasticsearch.indices.dsl.CreateIndex.Settings;
 
 import java.util.List;
 
-import static java.util.Arrays.asList;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.taymyr.lagom.elasticsearch.Helpers.deserializeResponse;
 import static org.taymyr.lagom.elasticsearch.Helpers.resourceAsString;
 import static org.taymyr.lagom.elasticsearch.Helpers.serializeRequest;
+
+import static java.util.Arrays.asList;
 
 class IndicesTest {
 
@@ -30,26 +31,25 @@ class IndicesTest {
                     "autocomplete", new CustomAnalyzer("standard", asList("lowercase", "autocomplete_filter"))
                 )
             )),
-            ImmutableMap.of("some_type", new Mapping(
-                    ImmutableMap.<String, MappingProperty>builder()
-                        .put("id", MappingProperty.builder().type(DataType.LONG).dynamic(DynamicType.TRUE).build())
-                        .put("name", MappingProperty.builder().type(DataType.TEXT).analyzer("autocomplete").build())
-                        .put("title", MappingProperty.OBJECT)
-                        .put("technicalName", MappingProperty.TEXT)
-                        .put("attachAllowed", MappingProperty.BOOLEAN)
-                        .put("suggest", MappingProperty.builder()
-                            .type(DataType.COMPLETION)
-                            .context(Context.builder()
-                                .name("name")
-                                .type(ContextType.CATEGORY)
-                                .path("name")
-                                .build())
+            new Mapping(
+                ImmutableMap.<String, MappingProperty>builder()
+                    .put("id", MappingProperty.builder().type(DataType.LONG).dynamic(DynamicType.TRUE).build())
+                    .put("name", MappingProperty.builder().type(DataType.TEXT).analyzer("autocomplete").build())
+                    .put("title", MappingProperty.OBJECT)
+                    .put("technicalName", MappingProperty.TEXT)
+                    .put("attachAllowed", MappingProperty.BOOLEAN)
+                    .put("suggest", MappingProperty.builder()
+                        .type(DataType.COMPLETION)
+                        .context(Context.builder()
+                            .name("name")
+                            .type(ContextType.CATEGORY)
+                            .path("name")
                             .build())
-                        .put("fields", MappingProperty.builder().type(DataType.OBJECT).fields(
-                            ImmutableMap.of("enabled", MappingProperty.BOOLEAN)
-                        ).build())
-                        .build()
-                )
+                        .build())
+                    .put("fields", MappingProperty.builder().type(DataType.OBJECT).fields(
+                        ImmutableMap.of("enabled", MappingProperty.BOOLEAN)
+                    ).build())
+                    .build()
             )
         );
         String actual = serializeRequest(request, CreateIndex.class);
@@ -65,22 +65,20 @@ class IndicesTest {
         List<String> aggregateText = asList(aggregateTextField);
         CreateIndex request = new CreateIndex(
             new Settings(1, 1),
-            ImmutableMap.of(
-                aggregatedFieldsDoc, new Mapping(
-                    ImmutableMap.of(
-                        "user", MappingProperty.KEYWORD,
-                        "message", MappingProperty.TEXT,
-                        "suggest", MappingProperty.COMPLETION,
-                        aggregateTextField, MappingProperty.builder().type(DataType.TEXT).analyzer("russian").build(),
-                        "nested_obj", MappingProperty.builder().type(DataType.OBJECT).properties(
-                            ImmutableMap.of(
-                                "text_field", MappingProperty.builder().type(DataType.TEXT).copyTo(aggregateTextField).build(),
-                                "keyword_field", MappingProperty.builder().type(DataType.KEYWORD).copyTo(aggregateText).build(),
-                                "integer_field", MappingProperty.builder().type(DataType.LONG).copyTo(aggregateText).build(),
-                                "date_field", MappingProperty.builder().type(DataType.DATE).format("yyyy-MM-dd").copyTo(aggregateText).build()
-                            )
-                        ).build()
-                    )
+            new Mapping(
+                ImmutableMap.of(
+                    "user", MappingProperty.KEYWORD,
+                    "message", MappingProperty.TEXT,
+                    "suggest", MappingProperty.COMPLETION,
+                    aggregateTextField, MappingProperty.builder().type(DataType.TEXT).analyzer("russian").build(),
+                    "nested_obj", MappingProperty.builder().type(DataType.OBJECT).properties(
+                        ImmutableMap.of(
+                            "text_field", MappingProperty.builder().type(DataType.TEXT).copyTo(aggregateTextField).build(),
+                            "keyword_field", MappingProperty.builder().type(DataType.KEYWORD).copyTo(aggregateText).build(),
+                            "integer_field", MappingProperty.builder().type(DataType.LONG).copyTo(aggregateText).build(),
+                            "date_field", MappingProperty.builder().type(DataType.DATE).format("yyyy-MM-dd").copyTo(aggregateText).build()
+                        )
+                    ).build()
                 )
             )
         );
