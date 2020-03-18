@@ -78,6 +78,7 @@ class ElasticSearchIT extends AbstractElasticsearchIT {
                     .plus("message", MappingProperty.builder().type(TEXT).build())
             )
         ));
+        sleep(Duration.of(5, SECONDS).toMillis());
         int firstId = 1;
         int latestId = 12000;
         IntStream.range(firstId, latestId + 1).forEach(i -> {
@@ -88,7 +89,7 @@ class ElasticSearchIT extends AbstractElasticsearchIT {
                 throw  new RuntimeException(e);
             }
         });
-        sleep(Duration.of(10, SECONDS).toMillis());
+        sleep(Duration.of(5, SECONDS).toMillis());
         SearchRequest searchRequest = SearchRequest.builder()
             .query(ExistsQuery.of("user"))
             .sort(asc("user"))
