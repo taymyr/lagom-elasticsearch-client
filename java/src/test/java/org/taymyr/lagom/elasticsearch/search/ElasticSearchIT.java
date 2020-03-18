@@ -64,6 +64,7 @@ class ElasticSearchIT extends AbstractElasticsearchIT {
         check(eventually(invoke(elasticSearch.search(asList("test")), searchRequest, TestDocumentResult.class)));
         check(eventually(invoke(elasticSearch.search("test", "sample"), searchRequest, TestDocumentResult.class)));
         check(eventually(invoke(elasticSearch.search("test"), searchRequest, TestDocumentResult.class)));
+        assertThat(eventually(elasticSearch.count("test").invoke(searchRequest)).getCount()).isEqualTo(1);
     }
 
     @Test
