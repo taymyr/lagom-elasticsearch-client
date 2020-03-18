@@ -10,6 +10,7 @@ import org.taymyr.lagom.elasticsearch.ElasticService
 import org.taymyr.lagom.elasticsearch.deser.ElasticSerializerFactory
 import org.taymyr.lagom.elasticsearch.deser.LIST
 import org.taymyr.lagom.elasticsearch.forceKF
+import org.taymyr.lagom.elasticsearch.search.dsl.CountResult
 import org.taymyr.lagom.elasticsearch.search.dsl.SearchRequest
 import kotlin.reflect.jvm.javaMethod
 
@@ -48,6 +49,12 @@ interface ElasticSearch : ElasticService {
      */
     fun search(): ServiceCall<SearchRequest, ByteString>
 
+    /**
+     * Search documents across all types within an index, and across all indices.
+     * See also [Elasticsearch Docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-count.html)
+     */
+    fun count(index: String): ServiceCall<SearchRequest, CountResult>
+
     @JvmDefault
     override fun descriptor(): Descriptor {
         return named("elastic-search").withCalls(
@@ -70,6 +77,10 @@ interface ElasticSearch : ElasticService {
             restCall<SearchRequest, ByteString>(
                 GET, "/_search",
                 forceKF<ElasticSearch.() -> ServiceCall<*, *>>(ElasticSearch::search).javaMethod
+            ),
+            restCall<SearchRequest, CountResult>(
+                GET, "/:index/_count",
+                ElasticSearch::count.javaMethod
             )
         )
             .withPathParamSerializer(List::class.java, LIST)
