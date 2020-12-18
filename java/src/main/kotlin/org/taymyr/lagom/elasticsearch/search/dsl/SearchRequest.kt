@@ -27,7 +27,9 @@ data class SearchRequest @JvmOverloads constructor(
     @JsonProperty("min_score")
     val minScore: Double? = null,
     @JsonProperty("search_after")
-    val searchAfter: List<Any>? = null
+    val searchAfter: List<Any>? = null,
+    @JsonProperty("_source")
+    val source: SourceFilter<*>? = null
 ) {
 
     class Builder {
@@ -41,6 +43,7 @@ data class SearchRequest @JvmOverloads constructor(
         private var sort: MutableList<Order> = mutableListOf()
         private var minScore: Double? = null
         private var searchAfter: MutableList<Any> = mutableListOf()
+        private var source: SourceFilter<*>? = null
 
         fun query(query: Query) = apply { this.query = query }
         fun scriptField(name: String, script: Script) = apply { this.scriptFields.add(ScriptField(name, script)) }
@@ -56,6 +59,7 @@ data class SearchRequest @JvmOverloads constructor(
         fun minScore(minScore: Double) = apply { this.minScore = minScore }
         fun searchAfter(vararg searchAfter: Any) = apply { this.searchAfter.addAll(searchAfter) }
         fun searchAfter(searchAfter: List<Any>) = apply { this.searchAfter.addAll(searchAfter) }
+        fun source(source: SourceFilter<*>) = apply { this.source = source }
 
         fun build() = SearchRequest(
             query = query ?: error("Query can't be null"),
@@ -67,7 +71,8 @@ data class SearchRequest @JvmOverloads constructor(
             suggest = if (suggest.isEmpty()) null else suggest.toMap(),
             sort = if (sort.isEmpty()) null else sort.toList(),
             minScore = minScore,
-            searchAfter = if (searchAfter.isEmpty()) null else searchAfter.toList()
+            searchAfter = if (searchAfter.isEmpty()) null else searchAfter.toList(),
+            source = source
         )
     }
 

@@ -1,0 +1,10 @@
+{
+  "_source": "order.client.*",
+  "query": {
+    "ids": {
+      "values": [
+        "1"
+      ]
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "_source": {
+    "includes": ["order.client.*", "order.seller.*"],
+    "excludes": ["order.price.*"]
+  },
+  "query": {
+    "ids": {
+      "values": [
+        "1"
+      ]
+    }
+  }
+}
