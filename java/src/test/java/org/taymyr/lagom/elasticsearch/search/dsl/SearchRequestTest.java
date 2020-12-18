@@ -1,6 +1,5 @@
 package org.taymyr.lagom.elasticsearch.search.dsl;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -166,5 +165,49 @@ class SearchRequestTest {
         assertThatThrownBy(() -> SearchRequest.builder().build())
             .isInstanceOf(IllegalStateException.class)
             .hasMessage("Query can't be null");
+    }
+
+    @Test
+    @DisplayName("source filter serialization")
+    void shouldSerializeSourceFilter() {
+        SearchRequest request = SearchRequest.builder()
+            .source(SourceFilter.EXCLUDE_SOURCE)
+            .query(IdsQuery.of("1"))
+            .build();
+        String actual = serializeRequest(request, SearchRequest.class);
+        String expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/query/source/source_excluded.json");
+        assertThatJson(actual).isEqualTo(expected);
+
+        request = SearchRequest.builder()
+            .source(SourceFilter.INCLUDE_SOURCE)
+            .query(IdsQuery.of("1"))
+            .build();
+        actual = serializeRequest(request, SearchRequest.class);
+        expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/query/source/source_included.json");
+        assertThatJson(actual).isEqualTo(expected);
+
+        request = SearchRequest.builder()
+            .source(SourceFilter.singlePath("order.client.*"))
+            .query(IdsQuery.of("1"))
+            .build();
+        actual = serializeRequest(request, SearchRequest.class);
+        expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/query/source/source_single_path.json");
+        assertThatJson(actual).isEqualTo(expected);
+
+        request = SearchRequest.builder()
+            .source(SourceFilter.multiPath(asList("order.client.*", "order.price.*")))
+            .query(IdsQuery.of("1"))
+            .build();
+        actual = serializeRequest(request, SearchRequest.class);
+        expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/query/source/source_multi_path.json");
+        assertThatJson(actual).isEqualTo(expected);
+
+        request = SearchRequest.builder()
+            .source(SourceFilter.multiPath(asList("order.client.*", "order.seller.*"), asList( "order.price.*")))
+            .query(IdsQuery.of("1"))
+            .build();
+        actual = serializeRequest(request, SearchRequest.class);
+        expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/query/source/source_includes_excludes.json");
+        assertThatJson(actual).isEqualTo(expected);
     }
 }
