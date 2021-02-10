@@ -9,6 +9,10 @@ import org.taymyr.lagom.elasticsearch.search.dsl.query.Order
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionStage
 
+/**
+ * It's recommended to use [ScrollSearchSourceStage] instead.
+ */
+@Deprecated("It is recommended to use ScrollSearchSource instead")
 class SearchScroller(
     val elasticSearch: ElasticSearch,
     val index: String,
