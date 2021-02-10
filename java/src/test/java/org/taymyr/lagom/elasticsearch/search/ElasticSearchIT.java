@@ -1,5 +1,7 @@
 package org.taymyr.lagom.elasticsearch.search;
 
+import akka.stream.javadsl.Keep;
+import akka.stream.javadsl.Sink;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.pcollections.HashTreePMap;
@@ -17,20 +19,21 @@ import org.taymyr.lagom.elasticsearch.search.dsl.query.term.IdsQuery;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.IntStream;
 
+import static java.lang.Thread.sleep;
+import static java.time.temporal.ChronoUnit.SECONDS;
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.taymyr.lagom.elasticsearch.ServiceCall.invoke;
 import static org.taymyr.lagom.elasticsearch.indices.dsl.DataType.KEYWORD;
 import static org.taymyr.lagom.elasticsearch.indices.dsl.DataType.TEXT;
+import static org.taymyr.lagom.elasticsearch.search.ScrollSearchSourceStage.scrollSearchSource;
 import static org.taymyr.lagom.elasticsearch.search.dsl.query.Order.asc;
-
-import static java.lang.Thread.sleep;
-import static java.time.temporal.ChronoUnit.SECONDS;
-import static java.util.Arrays.asList;
 
 class ElasticSearchIT extends AbstractElasticsearchIT {
 
@@ -68,8 +71,8 @@ class ElasticSearchIT extends AbstractElasticsearchIT {
     }
 
     @Test
-    void testSearchScroller() throws InterruptedException, TimeoutException, ExecutionException {
-        String indexName = "search-after-idx";
+    void testScrollingSearch() throws Throwable {
+        String indexName = "search-scroller-idx";
         String type = "_doc";
         elasticIndices.create(indexName).invoke(new CreateIndex(
             new Settings(1, 1),
@@ -94,12 +97,47 @@ class ElasticSearchIT extends AbstractElasticsearchIT {
         SearchRequest searchRequest = SearchRequest.builder()
             .query(ExistsQuery.of("user"))
             .sort(asc("user"))
+            .size(1000)
             .build();
-        List<TestDocument> cs = eventually(
-            new SearchScroller(elasticSearch, indexName, type).searchAfter(searchRequest, TestDocumentResult.class),
-            Duration.of(30, SECONDS)
+        List<TestDocument> foundDocs;
+        foundDocs = loggingTimings(
+            "Search using " + SearchScroller.class.getName(),
+            () -> eventually(
+                new SearchScroller(elasticSearch, indexName, type).searchAfter(searchRequest, TestDocumentResult.class),
+                Duration.of(30, SECONDS)
+            )
         );
-        assertThat(cs).isNotEmpty().hasSize(latestId)
+        assertThat(foundDocs).isNotEmpty().hasSize(latestId)
+            .extracting(TestDocument::getUser, TestDocument::getMessage)
+            .contains(
+                tuple("user" + latestId, "message" + latestId),
+                tuple("user" + firstId, "message" + firstId)
+            );
+        foundDocs = loggingTimings(
+            "Search using " + ScrollSearchSourceStage.class.getName(),
+            () -> eventually(
+                scrollSearchSource(indexName, type, searchRequest, TestDocumentResult.class, elasticSearch)
+                    .mapAsyncUnordered(2, d ->
+                        CompletableFuture.supplyAsync(() -> {
+                            try {
+                                return d.getSources();
+                            } catch (Throwable throwable) {
+                                throw new RuntimeException(throwable);
+                            }
+                        })
+                    )
+                    .toMat(
+                        Sink.reduce((next, acc) -> {
+                            acc.addAll(next);
+                            return acc;
+                        }),
+                        Keep.right()
+                    )
+                    .run(materializer),
+                Duration.of(30, SECONDS)
+            )
+        );
+        assertThat(foundDocs).isNotEmpty().hasSize(latestId)
             .extracting(TestDocument::getUser, TestDocument::getMessage)
             .contains(
                 tuple("user" + latestId, "message" + latestId),
