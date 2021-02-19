@@ -1,16 +1,12 @@
-
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 import java.net.URL
 
-val isReleaseVersion = !version.toString().endsWith("SNAPSHOT")
-
-val ossrhUsername: String? by project
-val ossrhPassword: String? by project
+val isReleaseVersion = !version.toString().endsWith("-SNAPSHOT")
 
 object Versions {
-    const val scalaBinary = "2.12"
-    const val lagom = "1.5.4" // "1.4.15" "1.6.0-RC1"
+    const val scalaBinary = "2.12" // "2.11" "2.13"
+    const val lagom = "1.5.5" // "1.4.15" "1.6.2"
     const val ktlint = "0.33.0"
     const val `kotlin-logging` = "1.6.22"
     const val junit5 = "5.3.2"
@@ -29,7 +25,7 @@ plugins {
     kotlin("jvm") version "1.3.50"
     id("org.jetbrains.dokka") version "0.10.0"
     id("org.jlleitschuh.gradle.ktlint") version "9.1.0"
-    id("de.marcphilipp.nexus-publish") version "0.4.0"
+    `maven-publish`
     signing
     jacoco
 }
@@ -157,10 +153,4 @@ publishing {
 signing {
     isRequired = isReleaseVersion
     sign(publishing.publications["maven"])
-}
-
-nexusPublishing {
-    repositories {
-        sonatype()
-    }
 }

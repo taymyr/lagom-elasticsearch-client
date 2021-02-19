@@ -1,25 +1,24 @@
-val ossrhUsername: String? by project
-val ossrhPassword: String? by project
+import java.time.Duration
+
 val projectVersion: String by project
 
 plugins {
-    id("io.codearte.nexus-staging") version "0.21.1"
+    id("io.github.gradle-nexus.publish-plugin") version "1.0.0"
 }
 
 allprojects {
+    group = "org.taymyr.lagom"
+    version = projectVersion
     repositories {
         mavenCentral()
         jcenter()
     }
 }
 
-subprojects {
-    group = "org.taymyr.lagom"
-    version = projectVersion
-}
-
-nexusStaging {
-    packageGroup = "org.taymyr"
-    username = ossrhUsername
-    password = ossrhPassword
+nexusPublishing {
+    packageGroup.set("org.taymyr")
+    clientTimeout.set(Duration.ofMinutes(60))
+    repositories {
+        sonatype()
+    }
 }
