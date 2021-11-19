@@ -1,5 +1,0 @@
-{
-  "query": {
-    "terms" : { "user" : ["kimchy", "elasticsearch"]}
-  }
-}

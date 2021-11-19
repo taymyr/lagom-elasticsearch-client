@@ -1,8 +1,0 @@
-{
-  "doc_as_upsert": true,
-  "detect_noop": false,
-  "doc": {
-    "user": "user.original",
-    "message": "message.original"
-  }
-}

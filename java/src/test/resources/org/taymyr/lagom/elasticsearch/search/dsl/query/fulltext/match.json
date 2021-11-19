@@ -1,9 +1,0 @@
-{
-  "query": {
-    "match": {
-      "field": {
-        "query": "value"
-      }
-    }
-  }
-}
