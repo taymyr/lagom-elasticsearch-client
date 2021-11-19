@@ -1,5 +1,0 @@
-{
-  "query": {
-    "exists" : { "field" : "user" }
-  }
-}
