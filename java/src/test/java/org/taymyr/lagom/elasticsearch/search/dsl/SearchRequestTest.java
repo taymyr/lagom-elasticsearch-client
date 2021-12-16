@@ -148,6 +148,9 @@ class SearchRequestTest {
         assertThat(result.getHits().getHits()).hasSize(1);
         HitResult<TestDocument> hitResult = result.getHits().getHits().get(0);
         assertThat(hitResult.getScore()).isEqualTo(1.3862944);
+        assertThat(hitResult.getHighlight()).isNotNull();
+        assertThat(hitResult.getHighlight().get("message")).containsExactly("<em>trying</em> out Elasticsearch", "trying out <em>Elasticsearch</em>");
+        assertThat(hitResult.getHighlight().get("user")).containsExactly("<em>kimchy</em>");
         TestDocument source = result.getSources().get(0);
         assertThat(source.getUser()).isEqualTo("kimchy");
         assertThat(source.getMessage()).isEqualTo("trying out Elasticsearch");

@@ -11,6 +11,7 @@ import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkResult.BulkIndexResu
 import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkResult.BulkUpdateResult;
 import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkResult.ResultItemError;
 
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.taymyr.lagom.elasticsearch.Helpers.deserializeResponse;
@@ -34,7 +35,7 @@ class BulkTest {
         BulkRequest request = BulkRequest.of(new BulkDelete("1"));
         String actual = serializeRequest(request, BulkRequest.class);
         String expected = resourceAsString("org/taymyr/lagom/elasticsearch/document/dsl/bulk/delete.json");
-        assertThat(actual).isEqualTo(expected);
+        assertThatJson(actual).isEqualTo(expected);
     }
 
     @Test
@@ -43,7 +44,7 @@ class BulkTest {
         BulkRequest request = BulkRequest.of(new BulkCreate("1", testEntity));
         String actual = serializeRequest(request, BulkRequest.class);
         String expected = resourceAsString("org/taymyr/lagom/elasticsearch/document/dsl/bulk/create.json");
-        assertThat(actual).isEqualTo(expected);
+        assertThatJson(actual).isEqualTo(expected);
     }
 
     @Test
@@ -52,7 +53,7 @@ class BulkTest {
         BulkRequest request = BulkRequest.of(new BulkIndex("1", testEntity));
         String actual = serializeRequest(request, BulkRequest.class);
         String expected = resourceAsString("org/taymyr/lagom/elasticsearch/document/dsl/bulk/index.json");
-        assertThat(actual).isEqualTo(expected);
+        assertThatJson(actual).isEqualTo(expected);
     }
 
     @Test
@@ -62,7 +63,7 @@ class BulkTest {
         BulkRequest request = BulkRequest.of(new BulkUpdate("1", testEntityWithNull));
         String actual = serializeRequest(request, BulkRequest.class);
         String expected = resourceAsString("org/taymyr/lagom/elasticsearch/document/dsl/bulk/update.json");
-        assertThat(actual).isEqualTo(expected);
+        assertThatJson(actual).isEqualTo(expected);
     }
 
     @Test

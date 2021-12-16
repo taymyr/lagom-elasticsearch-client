@@ -22,6 +22,10 @@
           "date": "2009-11-15T14:12:12",
           "message": "trying out Elasticsearch",
           "likes": 0
+        },
+        "highlight": {
+          "message": ["<em>trying</em> out Elasticsearch", "trying out <em>Elasticsearch</em>"],
+          "user": ["<em>kimchy</em>"]
         }
       }
     ]
