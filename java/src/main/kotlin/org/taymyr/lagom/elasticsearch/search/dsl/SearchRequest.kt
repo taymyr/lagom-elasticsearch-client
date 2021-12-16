@@ -5,6 +5,7 @@ import org.taymyr.lagom.elasticsearch.script.Script
 import org.taymyr.lagom.elasticsearch.search.dsl.query.Order
 import org.taymyr.lagom.elasticsearch.search.dsl.query.Query
 import org.taymyr.lagom.elasticsearch.search.dsl.query.aggregation.Aggregation
+import org.taymyr.lagom.elasticsearch.search.dsl.query.highlight.Highlight
 import org.taymyr.lagom.elasticsearch.search.dsl.query.script.ScriptField
 import org.taymyr.lagom.elasticsearch.search.dsl.query.suggest.Suggest
 
@@ -29,7 +30,8 @@ data class SearchRequest @JvmOverloads constructor(
     @JsonProperty("search_after")
     val searchAfter: List<Any>? = null,
     @JsonProperty("_source")
-    val source: SourceFilter<*>? = null
+    val source: SourceFilter<*>? = null,
+    val highlight: Highlight? = null
 ) {
 
     class Builder {
@@ -44,6 +46,7 @@ data class SearchRequest @JvmOverloads constructor(
         private var minScore: Double? = null
         private var searchAfter: MutableList<Any> = mutableListOf()
         private var source: SourceFilter<*>? = null
+        private var highlight: Highlight? = null
 
         fun query(query: Query) = apply { this.query = query }
         fun scriptField(name: String, script: Script) = apply { this.scriptFields.add(ScriptField(name, script)) }
@@ -60,6 +63,7 @@ data class SearchRequest @JvmOverloads constructor(
         fun searchAfter(vararg searchAfter: Any) = apply { this.searchAfter.addAll(searchAfter) }
         fun searchAfter(searchAfter: List<Any>) = apply { this.searchAfter.addAll(searchAfter) }
         fun source(source: SourceFilter<*>) = apply { this.source = source }
+        fun highlight(highlight: Highlight) = apply { this.highlight = highlight }
 
         fun build() = SearchRequest(
             query = query ?: error("Query can't be null"),
@@ -72,7 +76,8 @@ data class SearchRequest @JvmOverloads constructor(
             sort = if (sort.isEmpty()) null else sort.toList(),
             minScore = minScore,
             searchAfter = if (searchAfter.isEmpty()) null else searchAfter.toList(),
-            source = source
+            source = source,
+            highlight = highlight
         )
     }
 

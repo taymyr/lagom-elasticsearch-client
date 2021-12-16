@@ -1,0 +1,69 @@
+{
+  "query": {
+    "match": {
+      "name": {
+        "query": "value"
+      }
+    }
+  },
+  "highlight": {
+    "boundary_chars": "qwerty",
+    "boundary_max_scan": 20,
+    "boundary_scanner": "sentence",
+    "boundary_scanner_locale": "en-CA",
+    "encoder": "html",
+    "force_source": true,
+    "fragmenter": "span",
+    "fragment_offset": 12,
+    "fragment_size": 1024,
+    "matched_fields": [
+      "field1",
+      "field2"
+    ],
+    "no_match_size": 11,
+    "number_of_fragments": 3,
+    "order": "field3",
+    "phrase_limit": 101,
+    "pre_tags": [
+      "<h1>",
+      "<h2>"
+    ],
+    "post_tags": [
+      "</h1>",
+      "</h2>"
+    ],
+    "require_field_match": false,
+    "tags_schema": "styled",
+    "type": "unified",
+    "fields": {
+      "field4": {
+        "boundary_chars": "qwerty",
+        "boundary_max_scan": 21,
+        "boundary_scanner": "word",
+        "boundary_scanner_locale": "en-US",
+        "encoder": "default",
+        "force_source": true,
+        "fragmenter": "simple",
+        "fragment_offset": 13,
+        "fragment_size": 1023,
+        "matched_fields": [
+          "field5",
+          "field6"
+        ],
+        "no_match_size": 10,
+        "number_of_fragments": 4,
+        "order": "field7",
+        "phrase_limit": 101,
+        "pre_tags": [
+          "<p>"
+        ],
+        "post_tags": [
+          "</p>"
+        ],
+        "require_field_match": true,
+        "tags_schema": "styled",
+        "type": "fvh"
+      }
+    }
+  }
+}
