@@ -9,13 +9,13 @@ object Versions {
     const val lagom = "1.5.5" // "1.4.15" "1.6.2"
     const val ktlint = "0.33.0"
     const val `kotlin-logging` = "1.6.22"
-    const val junit5 = "5.3.2"
+    const val junit5 = "5.8.2"
     const val `json-unit` = "2.7.0"
     const val assertj = "3.12.2"
     const val jacoco = "0.8.2"
     const val jackson = "2.9.7"
-    const val elasticsearch = "7.4.1"
-    const val testcontainers = "1.12.3"
+    const val elasticsearch = "7.16.2"
+    const val testcontainers = "1.16.2"
 }
 
 val lagomVersion = project.properties["lagomVersion"] as String? ?: Versions.lagom
