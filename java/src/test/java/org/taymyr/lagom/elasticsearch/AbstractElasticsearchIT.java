@@ -31,7 +31,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 @Testcontainers
 public class AbstractElasticsearchIT {
 
-    static final String ELASTIC_VERSION = "7.4.1";
+    static final String ELASTIC_VERSION = "7.16.2";
 
     protected static Config config;
     protected static ActorSystem actorSystem;
