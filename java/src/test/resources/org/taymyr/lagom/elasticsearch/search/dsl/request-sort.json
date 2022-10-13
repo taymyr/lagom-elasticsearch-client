@@ -1,0 +1,23 @@
+{
+  "sort": [
+    { "field_a": "asc" },
+    { "field_b": { "order": "asc", "mode": "max" } },
+    { "field_c": { "order": "desc" } },
+    {
+      "_script": {
+        "type": "number",
+        "script": {
+          "lang": "painless",
+          "source": "doc['field_c'].value == params.a ? 1 : 0",
+          "params": {
+            "a": "foo"
+          }
+        },
+        "order": "asc"
+      }
+    }
+  ],
+  "query": {
+    "match_all": {}
+  }
+}
