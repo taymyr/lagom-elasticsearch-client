@@ -7,7 +7,13 @@ import org.taymyr.lagom.elasticsearch.TestDocument;
 import org.taymyr.lagom.elasticsearch.TestDocument.TestDocumentResult;
 import org.taymyr.lagom.elasticsearch.script.Script;
 import org.taymyr.lagom.elasticsearch.search.dsl.SuggestResult.SuggestOption;
+import org.taymyr.lagom.elasticsearch.search.dsl.query.FieldSort;
+import org.taymyr.lagom.elasticsearch.search.dsl.query.FieldSortSpec;
+import org.taymyr.lagom.elasticsearch.search.dsl.query.MatchAllQuery;
 import org.taymyr.lagom.elasticsearch.search.dsl.query.Order;
+import org.taymyr.lagom.elasticsearch.search.dsl.query.ScriptSort;
+import org.taymyr.lagom.elasticsearch.search.dsl.query.SortDirection;
+import org.taymyr.lagom.elasticsearch.search.dsl.query.SortMode;
 import org.taymyr.lagom.elasticsearch.search.dsl.query.aggregation.TermsAggregation;
 import org.taymyr.lagom.elasticsearch.search.dsl.query.compound.BoolQuery;
 import org.taymyr.lagom.elasticsearch.search.dsl.query.script.ScriptQuery;
@@ -15,7 +21,9 @@ import org.taymyr.lagom.elasticsearch.search.dsl.query.suggest.CompletionSuggest
 import org.taymyr.lagom.elasticsearch.search.dsl.query.term.IdsQuery;
 import org.taymyr.lagom.elasticsearch.search.dsl.query.term.TermQuery;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -211,6 +219,33 @@ class SearchRequestTest {
             .build();
         actual = serializeRequest(request, SearchRequest.class);
         expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/query/source/source_includes_excludes.json");
+        assertThatJson(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("successfully serialize search request with different sort types")
+    void shouldSuccessfullySerializeSortTypes() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("a", "foo");
+        SearchRequest request = SearchRequest.builder()
+            .sort(
+                Order.asc("field_a"),
+                FieldSort.fieldSort("field_b", FieldSortSpec.asc(SortMode.MAX)),
+                FieldSort.fieldSort("field_c", FieldSortSpec.desc()),
+                ScriptSort.scriptSort(
+                    "number",
+                    Script.builder()
+                        .lang("painless")
+                        .source("doc['field_c'].value == params.a ? 1 : 0")
+                        .params(params)
+                        .build(),
+                    SortDirection.ASC
+                )
+            )
+            .query(MatchAllQuery.of())
+            .build();
+        String actual = serializeRequest(request, SearchRequest.class);
+        String expected = resourceAsString("org/taymyr/lagom/elasticsearch/search/dsl/request-sort.json");
         assertThatJson(actual).isEqualTo(expected);
     }
 }

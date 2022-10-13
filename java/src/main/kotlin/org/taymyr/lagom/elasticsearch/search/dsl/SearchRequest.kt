@@ -2,8 +2,8 @@ package org.taymyr.lagom.elasticsearch.search.dsl
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.taymyr.lagom.elasticsearch.script.Script
-import org.taymyr.lagom.elasticsearch.search.dsl.query.Order
 import org.taymyr.lagom.elasticsearch.search.dsl.query.Query
+import org.taymyr.lagom.elasticsearch.search.dsl.query.Sort
 import org.taymyr.lagom.elasticsearch.search.dsl.query.aggregation.Aggregation
 import org.taymyr.lagom.elasticsearch.search.dsl.query.highlight.Highlight
 import org.taymyr.lagom.elasticsearch.search.dsl.query.script.ScriptField
@@ -24,7 +24,7 @@ data class SearchRequest @JvmOverloads constructor(
     @JsonProperty("post_filter")
     val postFilter: Query? = null,
     val suggest: Map<String, Suggest>? = null,
-    val sort: List<Order>? = null,
+    val sort: List<Sort>? = null,
     @JsonProperty("min_score")
     val minScore: Double? = null,
     @JsonProperty("search_after")
@@ -42,7 +42,7 @@ data class SearchRequest @JvmOverloads constructor(
         private var aggs: MutableMap<String, Aggregation> = mutableMapOf()
         private var postFilter: Query? = null
         private var suggest: MutableMap<String, Suggest> = mutableMapOf()
-        private var sort: MutableList<Order> = mutableListOf()
+        private var sort: MutableList<Sort> = mutableListOf()
         private var minScore: Double? = null
         private var searchAfter: MutableList<Any> = mutableListOf()
         private var source: SourceFilter<*>? = null
@@ -57,8 +57,8 @@ data class SearchRequest @JvmOverloads constructor(
         fun postFilter(postFilter: Query) = apply { this.postFilter = postFilter }
         fun suggest(suggest: Map<String, Suggest>) = apply { this.suggest.putAll(suggest) }
         fun suggest(name: String, suggest: Suggest) = apply { this.suggest[name] = suggest }
-        fun sort(vararg sort: Order) = apply { this.sort.addAll(sort) }
-        fun sort(sort: List<Order>) = apply { this.sort.addAll(sort) }
+        fun sort(vararg sort: Sort) = apply { this.sort.addAll(sort) }
+        fun sort(sort: List<Sort>) = apply { this.sort.addAll(sort) }
         fun minScore(minScore: Double) = apply { this.minScore = minScore }
         fun searchAfter(vararg searchAfter: Any) = apply { this.searchAfter.addAll(searchAfter) }
         fun searchAfter(searchAfter: List<Any>) = apply { this.searchAfter.addAll(searchAfter) }
