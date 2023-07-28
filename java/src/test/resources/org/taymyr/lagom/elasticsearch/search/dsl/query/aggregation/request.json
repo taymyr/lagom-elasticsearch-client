@@ -55,6 +55,33 @@
           ]
         }
       }
+    },
+    "globalAggregation": {
+      "global": {},
+      "aggs": {
+        "rangeAggregation": {
+          "range": {
+            "field": "price1",
+            "keyed": false,
+            "ranges": [
+              { "from": 0, "to": 100 }
+            ]
+          },
+          "aggs": {
+            "agg_stats": {
+              "stats": {
+                "field": "price1"
+              }
+            },
+            "price1StatsMissing": {
+              "stats": {
+                "field": "price1"
+              },
+              "missing": 0
+            }
+          }
+        }
+      }
     }
   },
   "query": {

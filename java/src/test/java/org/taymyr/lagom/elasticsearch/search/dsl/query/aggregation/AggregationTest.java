@@ -6,6 +6,8 @@ import org.taymyr.lagom.elasticsearch.search.dsl.SearchRequest;
 import org.taymyr.lagom.elasticsearch.search.dsl.query.Order;
 import org.taymyr.lagom.elasticsearch.search.dsl.query.term.IdsQuery;
 
+import java.math.BigDecimal;
+
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.taymyr.lagom.elasticsearch.Helpers.resourceAsString;
@@ -39,6 +41,24 @@ class AggregationTest {
                                 .agg("agg1", TermsAggregation.builder().field("field1").build())
                                 .agg("agg2", TermsAggregation.builder().field("field2").build())
                         ).build()
+                )
+                .agg(
+                    "globalAggregation",
+                    GlobalAggregation.builder()
+                        .agg(
+                            "rangeAggregation",
+                            RangeAggregation.builder()
+                                .field("price1")
+                                .keyed(false)
+                                .range(0, 100)
+                                .stats()
+                                .agg(
+                                    "price1StatsMissing",
+                                    StatsAggregation.statsAggregation("price1", BigDecimal.ZERO)
+                                )
+                                .build()
+                        )
+                        .build()
                 )
                 .build();
         String actual = serializeRequest(request, SearchRequest.class);
