@@ -11,7 +11,6 @@ allprojects {
     version = projectVersion
     repositories {
         mavenCentral()
-        jcenter()
     }
 }
 

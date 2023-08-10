@@ -22,7 +22,7 @@ val lagomVersion = project.properties["lagomVersion"] as String? ?: Versions.lag
 val scalaBinaryVersion = project.properties["scalaBinaryVersion"] as String? ?: Versions.scalaBinary
 
 plugins {
-    kotlin("jvm") version "1.3.50"
+    kotlin("jvm") version "1.7.10"
     id("org.jetbrains.dokka") version "0.10.0"
     id("org.jlleitschuh.gradle.ktlint") version "9.1.0"
     `maven-publish`
@@ -42,19 +42,19 @@ val compileTestJava: JavaCompile by tasks
 compileTestJava.options.compilerArgs.add("-parameters")
 
 dependencies {
-    compile(kotlin("stdlib-jdk8"))
-    compile(kotlin("reflect"))
-    compile("com.fasterxml.jackson.module", "jackson-module-kotlin", Versions.jackson)
-    compile("com.fasterxml.jackson.datatype", "jackson-datatype-jsr310", Versions.jackson)
+    implementation(kotlin("stdlib-jdk8"))
+    implementation(kotlin("reflect"))
+    implementation("com.fasterxml.jackson.module", "jackson-module-kotlin", Versions.jackson)
+    implementation("com.fasterxml.jackson.datatype", "jackson-datatype-jsr310", Versions.jackson)
     compileOnly("com.lightbend.lagom", "lagom-javadsl-server_$scalaBinaryVersion", lagomVersion)
 
-    testCompile("org.junit.jupiter", "junit-jupiter-api", Versions.junit5)
-    testCompile("org.junit.jupiter", "junit-jupiter-params", Versions.junit5)
-    testRuntime("org.junit.jupiter", "junit-jupiter-engine", Versions.junit5)
-    testCompile("org.assertj", "assertj-core", Versions.assertj)
-    testCompile("net.javacrumbs.json-unit", "json-unit-assertj", Versions.`json-unit`)
-    testCompile("com.lightbend.lagom", "lagom-javadsl-integration-client_$scalaBinaryVersion", lagomVersion)
-    testCompile("com.lightbend.lagom", "lagom-logback_$scalaBinaryVersion", lagomVersion)
+    testImplementation("org.junit.jupiter", "junit-jupiter-api", Versions.junit5)
+    testImplementation("org.junit.jupiter", "junit-jupiter-params", Versions.junit5)
+    testImplementation("org.junit.jupiter", "junit-jupiter-engine", Versions.junit5)
+    testImplementation("org.assertj", "assertj-core", Versions.assertj)
+    testImplementation("net.javacrumbs.json-unit", "json-unit-assertj", Versions.`json-unit`)
+    testImplementation("com.lightbend.lagom", "lagom-javadsl-integration-client_$scalaBinaryVersion", lagomVersion)
+    testImplementation("com.lightbend.lagom", "lagom-logback_$scalaBinaryVersion", lagomVersion)
     testImplementation("org.testcontainers", "testcontainers", Versions.testcontainers)
     testImplementation("org.testcontainers", "junit-jupiter", Versions.testcontainers)
     testImplementation("org.testcontainers", "elasticsearch", Versions.testcontainers)
@@ -86,13 +86,13 @@ tasks.jacocoTestReport {
 }
 
 val sourcesJar by tasks.creating(Jar::class) {
-    classifier = "sources"
+    archiveClassifier.set("sources")
     from(sourceSets.main.get().allSource)
 }
 
 val dokkaJar by tasks.creating(Jar::class) {
     group = JavaBasePlugin.DOCUMENTATION_GROUP
-    classifier = "javadoc"
+    archiveClassifier.set("javadoc")
     from(tasks.dokka)
 }
 
