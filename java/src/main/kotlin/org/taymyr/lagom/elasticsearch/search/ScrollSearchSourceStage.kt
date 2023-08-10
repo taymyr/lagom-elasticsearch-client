@@ -35,13 +35,16 @@ class ScrollSearchSourceStage<T : SearchResult<*>>(
             private lateinit var nextRequest: SearchRequest
 
             init {
-                setHandler(out, object : AbstractOutHandler() {
-                    override fun onPull() {
-                        if (!queue.isEmpty()) {
-                            push(out, queue.poll())
+                setHandler(
+                    out,
+                    object : AbstractOutHandler() {
+                        override fun onPull() {
+                            if (!queue.isEmpty()) {
+                                push(out, queue.poll())
+                            }
                         }
                     }
-                })
+                )
             }
 
             private fun searchAfter(r: SearchRequest) {

@@ -1,3 +1,4 @@
+import org.jetbrains.dokka.Platform.jvm
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 import java.net.URL
@@ -7,7 +8,7 @@ val isReleaseVersion = !version.toString().endsWith("-SNAPSHOT")
 object Versions {
     const val scalaBinary = "2.12" // "2.11" "2.13"
     const val lagom = "1.5.5" // "1.4.15" "1.6.2"
-    const val ktlint = "0.33.0"
+    const val ktlint = "0.43.2"
     const val `kotlin-logging` = "1.6.22"
     const val junit5 = "5.8.2"
     const val `json-unit` = "2.7.0"
@@ -23,8 +24,8 @@ val scalaBinaryVersion = project.properties["scalaBinaryVersion"] as String? ?: 
 
 plugins {
     kotlin("jvm") version "1.7.10"
-    id("org.jetbrains.dokka") version "0.10.0"
-    id("org.jlleitschuh.gradle.ktlint") version "9.1.0"
+    id("org.jetbrains.dokka") version "1.7.10"
+    id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
     `maven-publish`
     signing
     jacoco
@@ -81,7 +82,7 @@ jacoco {
 }
 tasks.jacocoTestReport {
     reports {
-        xml.isEnabled = true
+        xml.required.set(true)
     }
 }
 
@@ -93,20 +94,20 @@ val sourcesJar by tasks.creating(Jar::class) {
 val dokkaJar by tasks.creating(Jar::class) {
     group = JavaBasePlugin.DOCUMENTATION_GROUP
     archiveClassifier.set("javadoc")
-    from(tasks.dokka)
+    from(tasks.dokkaJavadoc)
 }
 
-tasks.dokka {
-    outputFormat = "javadoc"
-    outputDirectory = "$buildDir/javadoc"
-    configuration {
-        jdkVersion = 8
-        reportUndocumented = true
-        platform = "jvm"
-        externalDocumentationLink {
-            url = URL("https://www.lagomframework.com/documentation/1.5.x/java/api/")
-            // TODO: remove after fix https://github.com/Kotlin/dokka/issues/514
-            packageListUrl = URL("https://www.lagomframework.com/documentation/1.5.x/java/api/package-list")
+tasks.dokkaJavadoc.configure {
+    outputDirectory.set(buildDir.resolve("javadoc"))
+    dokkaSourceSets {
+        configureEach {
+            jdkVersion.set(8)
+            reportUndocumented.set(true)
+            platform.set(jvm)
+            externalDocumentationLink {
+                url.set(URL("https://www.lagomframework.com/documentation/1.6.x/java/api/"))
+            }
+            displayName.set("JVM")
         }
     }
 }

@@ -44,7 +44,8 @@ data class MappingProperty @JvmOverloads constructor(
             fields = fields,
             contexts = if (contexts.isEmpty()) null else contexts,
             dynamic = dynamic,
-            copyTo = copyTo)
+            copyTo = copyTo
+        )
     }
 
     companion object {
