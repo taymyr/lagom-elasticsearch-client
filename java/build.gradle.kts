@@ -152,6 +152,7 @@ publishing {
 }
 
 signing {
+    useGpgCmd()
     isRequired = isReleaseVersion
     sign(publishing.publications["maven"])
 }
