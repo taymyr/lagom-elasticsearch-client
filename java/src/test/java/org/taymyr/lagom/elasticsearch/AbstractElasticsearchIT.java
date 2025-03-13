@@ -14,6 +14,7 @@ import org.taymyr.lagom.elasticsearch.search.ElasticSearch;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 import play.api.Configuration;
 import scala.collection.immutable.Map$;
 
@@ -31,7 +32,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 @Testcontainers
 public class AbstractElasticsearchIT {
 
-    static final String ELASTIC_VERSION = "7.16.2";
+    static final String ELASTIC_VERSION = "7.17.28";
 
     protected static Config config;
     protected static ActorSystem actorSystem;
@@ -42,7 +43,10 @@ public class AbstractElasticsearchIT {
     protected static ElasticDocument elasticDocument;
 
     @Container
-    protected static final ElasticsearchContainer elastic = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:" + ELASTIC_VERSION);
+    protected static final ElasticsearchContainer elastic = new ElasticsearchContainer(
+        DockerImageName.parse("elasticsearch:"  + ELASTIC_VERSION)
+            .asCompatibleSubstituteFor("docker.elastic.co/elasticsearch/elasticsearch:" + ELASTIC_VERSION)
+    );
 
     @BeforeAll
     static void beforeAll() throws URISyntaxException {

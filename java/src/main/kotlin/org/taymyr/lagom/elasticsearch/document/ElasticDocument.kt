@@ -30,61 +30,61 @@ interface ElasticDocument : ElasticService {
      * Add document to index.
      * See also [Elasticsearch Docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html)
      */
-    fun indexWithId(index: String, type: String, id: String): ServiceCall<ByteString, IndexResult>
+    fun indexWithId(index: String, id: String): ServiceCall<ByteString, IndexResult>
 
     /**
      * Retrieve document with meta from index.
      * See also [Elasticsearch Docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html)
      */
-    fun get(index: String, type: String, id: String): ServiceCall<NotUsed, ByteString>
+    fun get(index: String, id: String): ServiceCall<NotUsed, ByteString>
 
     /**
      * Retrieve document (only source) from index.
      * See also [Elasticsearch Docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html#_source)
      */
-    fun getSource(index: String, type: String, id: String): ServiceCall<NotUsed, ByteString>
+    fun getSource(index: String, id: String): ServiceCall<NotUsed, ByteString>
 
     /**
      * Check the document exists on index.
      * See also [Elasticsearch Docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html#docs-get)
      */
-    fun exists(index: String, type: String, id: String): ServiceCall<NotUsed, Done>
+    fun exists(index: String, id: String): ServiceCall<NotUsed, Done>
 
     /**
      * Check the document source exists on index.
      * See also [Elasticsearch Docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html#_source)
      */
-    fun existsSource(index: String, type: String, id: String): ServiceCall<NotUsed, Done>
+    fun existsSource(index: String, id: String): ServiceCall<NotUsed, Done>
 
     /**
      * Executing bulk requests.
      * See also [Elasticsearch Docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html)
      */
-    fun bulk(index: String, type: String): ServiceCall<BulkRequest, BulkResult>
+    fun bulk(index: String): ServiceCall<BulkRequest, BulkResult>
 
     /**
      * Executes update document requests.
      * See also [Elasticsearch Docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html)
      */
-    fun update(index: String, type: String, id: String): ServiceCall<ByteString, UpdateResult>
+    fun update(index: String, id: String): ServiceCall<ByteString, UpdateResult>
 
     /**
      * Executes delete document requests.
      * See also [Elasticsearch Docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-delete.html)
      */
-    fun delete(index: String, type: String, id: String): ServiceCall<NotUsed, DeleteResult>
+    fun delete(index: String, id: String): ServiceCall<NotUsed, DeleteResult>
 
     @JvmDefault
     override fun descriptor(): Descriptor {
         return named("elastic-document").withCalls(
-            restCall<ByteString, IndexResult>(PUT, "/:index/:type/:id", ElasticDocument::indexWithId.javaMethod),
-            restCall<NotUsed, ByteString>(GET, "/:index/:type/:id", ElasticDocument::get.javaMethod),
-            restCall<NotUsed, Done>(HEAD, "/:index/:type/:id", ElasticDocument::exists.javaMethod),
-            restCall<NotUsed, ByteString>(GET, "/:index/:type/:id/_source", ElasticDocument::getSource.javaMethod),
-            restCall<NotUsed, Done>(HEAD, "/:index/:type/:id/_source", ElasticDocument::existsSource.javaMethod),
-            restCall<BulkRequest, BulkResult>(POST, "/:index/:type/_bulk", ElasticDocument::bulk.javaMethod),
-            restCall<ByteString, UpdateResult>(POST, "/:index/:type/:id/_update", ElasticDocument::update.javaMethod),
-            restCall<NotUsed, DeleteResult>(DELETE, "/:index/:type/:id", ElasticDocument::delete.javaMethod)
+            restCall<ByteString, IndexResult>(PUT, "/:index/_doc/:id", ElasticDocument::indexWithId.javaMethod),
+            restCall<NotUsed, ByteString>(GET, "/:index/_doc/:id", ElasticDocument::get.javaMethod),
+            restCall<NotUsed, Done>(HEAD, "/:index/_doc/:id", ElasticDocument::exists.javaMethod),
+            restCall<NotUsed, ByteString>(GET, "/:index/_source/:id", ElasticDocument::getSource.javaMethod),
+            restCall<NotUsed, Done>(HEAD, "/:index/_source/:id", ElasticDocument::existsSource.javaMethod),
+            restCall<BulkRequest, BulkResult>(POST, "/:index/_bulk", ElasticDocument::bulk.javaMethod),
+            restCall<ByteString, UpdateResult>(POST, "/:index/_update/:id", ElasticDocument::update.javaMethod),
+            restCall<NotUsed, DeleteResult>(DELETE, "/:index/_doc/:id", ElasticDocument::delete.javaMethod)
         )
             .withSerializerFactory(ElasticSerializerFactory(objectMapper()))
     }

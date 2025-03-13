@@ -36,31 +36,31 @@ class ElasticDocumentIT extends AbstractElasticsearchIT {
     }
 
     private void indexDocument() throws InterruptedException, ExecutionException, TimeoutException {
-        IndexResult result = eventually(invoke(elasticDocument.indexWithId("test", "sample", "1"),
+        IndexResult result = eventually(invoke(elasticDocument.indexWithId("test", "1"),
                 new TestDocument("user", "message")));
         assertThat(result.getIndex()).isEqualTo("test");
-        assertThat(result.getType()).isEqualTo("sample");
+        assertThat(result.getType()).isEqualTo("_doc");
     }
 
     private void getDocument() throws InterruptedException, ExecutionException, TimeoutException {
-        IndexedTestDocument result = eventually(invoke(elasticDocument.get("test", "sample", "1"), IndexedTestDocument.class));
+        IndexedTestDocument result = eventually(invoke(elasticDocument.get("test", "1"), IndexedTestDocument.class));
         assertThat(result.getIndex()).isEqualTo("test");
-        assertThat(result.getType()).isEqualTo("sample");
+        assertThat(result.getType()).isEqualTo("_doc");
         assertThat(result.getId()).isEqualTo("1");
         assertThat(result.getSource().getUser()).isEqualTo("user.bulkUpdate");
         assertThat(result.getSource().getMessage()).isEqualTo("message");
     }
 
     private void getSource() throws InterruptedException, ExecutionException, TimeoutException {
-        TestDocument result = eventually(invoke(elasticDocument.getSource("test", "sample", "1"), TestDocument.class));
+        TestDocument result = eventually(invoke(elasticDocument.getSource("test", "1"), TestDocument.class));
         assertThat(result.getUser()).isEqualTo("user.update");
         assertThat(result.getMessage()).isEqualTo("message");
     }
 
     private void checkExists() throws InterruptedException, ExecutionException, TimeoutException {
-        Done result = eventually(elasticDocument.exists("test", "sample", "1").invoke());
+        Done result = eventually(elasticDocument.exists("test", "1").invoke());
         assertThat(result).isEqualTo(Done.getInstance());
-        result = eventually(elasticDocument.existsSource("test", "sample", "1").invoke());
+        result = eventually(elasticDocument.existsSource("test",  "1").invoke());
         assertThat(result).isEqualTo(Done.getInstance());
     }
 
@@ -68,31 +68,31 @@ class ElasticDocumentIT extends AbstractElasticsearchIT {
         BulkRequest request = BulkRequest.of(
                 new BulkUpdate("1", new IndexedTestDocument(new TestDocument("user.bulkUpdate", "message")))
         );
-        BulkResult result = eventually(elasticDocument.bulk("test", "sample").invoke(request));
+        BulkResult result = eventually(elasticDocument.bulk("test").invoke(request));
         assertThat(result.isErrors()).isFalse();
         assertThat(result.getItems()).hasSize(1);
         assertThat(result.getItems().get(0).getStatus()).isEqualTo(200);
         assertThat(result.getItems().get(0).getResult()).isEqualTo("updated");
         assertThat(result.getItems().get(0).getError()).isNull();
         assertThat(result.getItems().get(0).getIndex()).isEqualTo("test");
-        assertThat(result.getItems().get(0).getType()).isEqualTo("sample");
+        assertThat(result.getItems().get(0).getType()).isEqualTo("_doc");
         assertThat(result.getItems().get(0).getId()).isEqualTo("1");
     }
 
     private void update() throws InterruptedException, ExecutionException, TimeoutException {
         TestDocument doc = new TestDocument("user.update", "message");
         UpdateRequest updateRequest = DocUpdateRequest.builder().doc(doc).build();
-        UpdateResult result = eventually(invoke(elasticDocument.update("test", "sample", "1"), updateRequest));
+        UpdateResult result = eventually(invoke(elasticDocument.update("test", "1"), updateRequest));
         assertThat(result.getIndex()).isEqualTo("test");
-        assertThat(result.getType()).isEqualTo("sample");
+        assertThat(result.getType()).isEqualTo("_doc");
         assertThat(result.getId()).isEqualTo("1");
         assertThat(result.getResult()).isEqualTo("updated");
     }
 
     private void delete() throws InterruptedException, ExecutionException, TimeoutException {
-        DeleteResult result = eventually(elasticDocument.delete("test", "sample", "1").invoke());
+        DeleteResult result = eventually(elasticDocument.delete("test", "1").invoke());
         assertThat(result.getIndex()).isEqualTo("test");
-        assertThat(result.getType()).isEqualTo("sample");
+        assertThat(result.getType()).isEqualTo("_doc");
         assertThat(result.getId()).isEqualTo("1");
         assertThat(result.getResult()).isEqualTo("deleted");
     }

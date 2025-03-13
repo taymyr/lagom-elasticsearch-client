@@ -13,16 +13,15 @@ import org.taymyr.lagom.elasticsearch.search.dsl.SearchResult
 import org.taymyr.lagom.elasticsearch.search.dsl.query.Order
 import java.util.LinkedList
 import java.util.Queue
+import java.util.concurrent.CompletionStage
+import java.util.function.Function
 
 /**
  * The [GraphStage] stage of scrolling search results.
  */
 class ScrollSearchSourceStage<T : SearchResult<*>>(
-    val index: String,
-    val type: String,
-    val request: SearchRequest,
-    val resultClass: Class<T>,
-    val client: ElasticSearch
+    private val request: SearchRequest,
+    private val searchAction: Function<SearchRequest, CompletionStage<T>>
 ) : GraphStage<SourceShape<T>>() {
     private val out = Outlet.create<T>("ScrollSearchSourceStage.out")
     private val shape = SourceShape(out)
@@ -48,7 +47,7 @@ class ScrollSearchSourceStage<T : SearchResult<*>>(
             }
 
             private fun searchAfter(r: SearchRequest) {
-                client.search(index, type).invoke(r, resultClass).whenComplete { result, throwable ->
+                searchAction.apply(r).whenComplete { result, throwable ->
                     if (throwable != null) {
                         searchFailureCallback.invoke(throwable)
                     } else {
@@ -94,7 +93,18 @@ class ScrollSearchSourceStage<T : SearchResult<*>>(
          * Creates a [Source] of scrolling search results.
          */
         @JvmStatic
-        fun <T : SearchResult<*>> scrollSearchSource(index: String, docType: String, request: SearchRequest, resultClass: Class<T>, client: ElasticSearch) =
-            Source.fromGraph(ScrollSearchSourceStage(index, docType, request, resultClass, client))
+        fun <T : SearchResult<*>> scrollSearchSource(index: String, request: SearchRequest, resultClass: Class<T>, client: ElasticSearch) =
+            Source.fromGraph(
+                ScrollSearchSourceStage(request) { client.search(index).invoke(it, resultClass) }
+            )
+
+        /**
+         * Creates a [Source] of scrolling search results.
+         */
+        @JvmStatic
+        fun <T : SearchResult<*>> scrollSearchSource(request: SearchRequest, searchAction: Function<SearchRequest, CompletionStage<T>>) =
+            Source.fromGraph(
+                ScrollSearchSourceStage(request, searchAction)
+            )
     }
 }

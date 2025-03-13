@@ -16,7 +16,7 @@ object Versions {
     const val jacoco = "0.8.2"
     const val jackson = "2.9.7"
     const val elasticsearch = "7.16.2"
-    const val testcontainers = "1.18.3"
+    const val testcontainers = "1.20.0"
 }
 
 val lagomVersion = project.properties["lagomVersion"] as String? ?: Versions.lagom

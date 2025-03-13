@@ -8,7 +8,7 @@ open class Document<T> @JvmOverloads constructor(
     @get:JsonProperty("_index")
     var index: String = "",
     @get:JsonProperty("_type")
-    var type: String = "",
+    var type: String? = "",
     @get:JsonProperty("_id")
     var id: String = "",
     @get:JsonProperty("_version")
