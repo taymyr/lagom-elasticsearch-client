@@ -25,7 +25,7 @@ data class BulkResult(
         @get:JsonProperty("_index")
         open val index: String,
         @get:JsonProperty("_type")
-        open val type: String,
+        open val type: String?,
         @get:JsonProperty("_id")
         open val id: String,
         open val status: Long = -1,
@@ -37,7 +37,7 @@ data class BulkResult(
 
     data class BulkCreateResult(
         override val index: String,
-        override val type: String,
+        override val type: String?,
         override val id: String,
         override val status: Long,
         override val result: String?,
@@ -46,7 +46,7 @@ data class BulkResult(
 
     data class BulkIndexResult(
         override val index: String,
-        override val type: String,
+        override val type: String?,
         override val id: String,
         override val status: Long,
         override val result: String?,
@@ -55,7 +55,7 @@ data class BulkResult(
 
     data class BulkUpdateResult(
         override val index: String,
-        override val type: String,
+        override val type: String?,
         override val id: String,
         override val status: Long,
         override val result: String?,
@@ -64,7 +64,7 @@ data class BulkResult(
 
     data class BulkDeleteResult(
         override val index: String,
-        override val type: String,
+        override val type: String?,
         override val id: String,
         override val status: Long,
         override val result: String?,

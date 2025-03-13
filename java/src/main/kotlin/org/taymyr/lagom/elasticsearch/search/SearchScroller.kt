@@ -14,9 +14,8 @@ import java.util.concurrent.CompletionStage
  */
 @Deprecated("It is recommended to use ScrollSearchSource instead")
 class SearchScroller(
-    val elasticSearch: ElasticSearch,
-    val index: String,
-    val type: String
+    private val elasticSearch: ElasticSearch,
+    private val index: String
 ) {
     fun <DocType, ResultType : SearchResult<out DocType>> searchAfter(
         request: SearchRequest,
@@ -37,7 +36,7 @@ class SearchScroller(
         cf: CompletableFuture<List<DocType>>,
         accum: PSequence<DocType>
     ) {
-        elasticSearch.search(index, type).invoke(request, resultType).whenComplete { result, throwable ->
+        elasticSearch.search(index).invoke(request, resultType).whenComplete { result, throwable ->
             if (result != null) {
                 if (result.sources.isNullOrEmpty()) {
                     cf.complete(accum)

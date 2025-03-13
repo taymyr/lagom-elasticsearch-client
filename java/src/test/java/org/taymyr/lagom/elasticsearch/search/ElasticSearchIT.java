@@ -46,10 +46,10 @@ class ElasticSearchIT extends AbstractElasticsearchIT {
     }
 
     void createDocument() throws InterruptedException, ExecutionException, TimeoutException {
-        IndexResult result = eventually(invoke(elasticDocument.indexWithId("test", "sample", "1"),
+        IndexResult result = eventually(invoke(elasticDocument.indexWithId("test", "1"),
                 new TestDocument("user", "message")));
         assertThat(result.getIndex()).isEqualTo("test");
-        assertThat(result.getType()).isEqualTo("sample");
+        assertThat(result.getType()).isEqualTo("_doc");
     }
 
     void check(TestDocumentResult result) {
@@ -63,9 +63,9 @@ class ElasticSearchIT extends AbstractElasticsearchIT {
 
     void searchById() throws InterruptedException, ExecutionException, TimeoutException {
         SearchRequest searchRequest = new SearchRequest(IdsQuery.of("1"));
-        check(eventually(invoke(elasticSearch.search(asList("test"), asList("sample")), searchRequest, TestDocumentResult.class)));
         check(eventually(invoke(elasticSearch.search(asList("test")), searchRequest, TestDocumentResult.class)));
-        check(eventually(invoke(elasticSearch.search("test", "sample"), searchRequest, TestDocumentResult.class)));
+        check(eventually(invoke(elasticSearch.search(asList("test")), searchRequest, TestDocumentResult.class)));
+        check(eventually(invoke(elasticSearch.search("test"), searchRequest, TestDocumentResult.class)));
         check(eventually(invoke(elasticSearch.search("test"), searchRequest, TestDocumentResult.class)));
         assertThat(eventually(elasticSearch.count("test").invoke(searchRequest)).getCount()).isEqualTo(1);
     }
@@ -73,7 +73,6 @@ class ElasticSearchIT extends AbstractElasticsearchIT {
     @Test
     void testScrollingSearch() throws Throwable {
         String indexName = "search-scroller-idx";
-        String type = "_doc";
         elasticIndices.create(indexName).invoke(new CreateIndex(
             new Settings(1, 1),
             new Mapping(
@@ -87,7 +86,7 @@ class ElasticSearchIT extends AbstractElasticsearchIT {
         int latestId = 12000;
         IntStream.range(firstId, latestId + 1).forEach(i -> {
             try {
-                eventually(invoke(elasticDocument.indexWithId(indexName, type, String.valueOf(i)),
+                eventually(invoke(elasticDocument.indexWithId(indexName, String.valueOf(i)),
                     new TestDocument("user" + i, "message" + i)));
             } catch (Throwable e) {
                 throw  new RuntimeException(e);
@@ -103,7 +102,7 @@ class ElasticSearchIT extends AbstractElasticsearchIT {
         foundDocs = loggingTimings(
             "Search using " + SearchScroller.class.getName(),
             () -> eventually(
-                new SearchScroller(elasticSearch, indexName, type).searchAfter(searchRequest, TestDocumentResult.class),
+                new SearchScroller(elasticSearch, indexName).searchAfter(searchRequest, TestDocumentResult.class),
                 Duration.of(30, SECONDS)
             )
         );
@@ -116,7 +115,7 @@ class ElasticSearchIT extends AbstractElasticsearchIT {
         foundDocs = loggingTimings(
             "Search using " + ScrollSearchSourceStage.class.getName(),
             () -> eventually(
-                scrollSearchSource(indexName, type, searchRequest, TestDocumentResult.class, elasticSearch)
+                scrollSearchSource(searchRequest, request -> invoke(elasticSearch.search(indexName), request, TestDocumentResult.class))
                     .mapAsyncUnordered(2, d ->
                         CompletableFuture.supplyAsync(() -> {
                             try {
