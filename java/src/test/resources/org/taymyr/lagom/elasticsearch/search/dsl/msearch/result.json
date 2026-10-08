@@ -1,0 +1,41 @@
+{
+  "took": 5,
+  "responses": [
+    {
+      "took": 2,
+      "timed_out": false,
+      "_shards": { "total": 1, "successful": 1, "skipped": 0, "failed": 0 },
+      "hits": {
+        "total": { "value": 2, "relation": "eq" },
+        "max_score": 1.0,
+        "hits": [
+          { "_index": "test1", "_type": "_doc", "_id": "1", "_score": 1.0, "_source": { "user": "user1", "message": "message1" } },
+          { "_index": "test1", "_type": "_doc", "_id": "2", "_score": 1.0, "_source": { "user": "user2", "message": "message2" } }
+        ]
+      },
+      "status": 200
+    },
+    {
+      "took": 1,
+      "timed_out": false,
+      "_shards": { "total": 1, "successful": 1, "skipped": 0, "failed": 0 },
+      "hits": {
+        "total": { "value": 0, "relation": "eq" },
+        "max_score": null,
+        "hits": []
+      },
+      "status": 200
+    },
+    {
+      "error": {
+        "root_cause": [
+          { "type": "index_not_found_exception", "reason": "no such index [test-missing]", "index": "test-missing" }
+        ],
+        "type": "index_not_found_exception",
+        "reason": "no such index [test-missing]",
+        "index": "test-missing"
+      },
+      "status": 404
+    }
+  ]
+}

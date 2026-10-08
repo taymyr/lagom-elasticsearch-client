@@ -13,6 +13,7 @@ import com.lightbend.lagom.javadsl.api.deser.StrictMessageSerializer
 import com.lightbend.lagom.javadsl.jackson.JacksonSerializerFactory
 import org.taymyr.lagom.elasticsearch.document.dsl.bulk.BulkRequest
 import org.taymyr.lagom.elasticsearch.search.dsl.SearchResult
+import org.taymyr.lagom.elasticsearch.search.dsl.msearch.MultiSearchRequest
 import java.lang.reflect.Type
 
 /**
@@ -23,6 +24,7 @@ class ElasticSerializerFactory(val mapper: ObjectMapper = MAPPER) : JacksonSeria
     override fun <MessageEntity : Any?> messageSerializerFor(type: Type?): StrictMessageSerializer<MessageEntity> {
         return when (type) {
             BulkRequest::class.javaObjectType -> BulkRequestSerializer(mapper)
+            MultiSearchRequest::class.javaObjectType -> MultiSearchRequestSerializer(mapper)
             ByteString::class.javaObjectType -> ByteStringMessageSerializer()
             is Class<*> ->
                 if (SearchResult::class.java.isAssignableFrom(type)) SearchResultSerializer(mapper, type)
