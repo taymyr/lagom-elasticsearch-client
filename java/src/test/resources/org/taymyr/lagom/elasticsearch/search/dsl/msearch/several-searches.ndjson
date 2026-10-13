@@ -1,0 +1,4 @@
+{"index":["test1"]}
+{"query":{"match_all":{}}}
+{"index":["test2"]}
+{"query":{"match_all":{}},"from":10,"size":20}

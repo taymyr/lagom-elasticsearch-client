@@ -1,0 +1,2 @@
+{"index":["test1","test2"],"routing":"route","preference":"_local","request_cache":true}
+{"query":{"match_all":{}}}
