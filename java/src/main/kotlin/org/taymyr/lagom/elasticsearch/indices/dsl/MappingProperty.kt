@@ -13,7 +13,9 @@ data class MappingProperty @JvmOverloads constructor(
     val fields: Map<String, MappingProperty>? = null,
     val contexts: List<Context>? = null,
     val dynamic: DynamicType? = null,
-    @JsonProperty("copy_to") val copyTo: List<String>? = null
+    @JsonProperty("copy_to") val copyTo: List<String>? = null,
+    @JsonProperty("search_analyzer") val searchAnalyzer: String? = null,
+    val index: Boolean? = null
 ) {
 
     class Builder {
@@ -25,6 +27,8 @@ data class MappingProperty @JvmOverloads constructor(
         private val contexts: MutableList<Context> = mutableListOf()
         private var dynamic: DynamicType? = null
         private var copyTo: List<String>? = null
+        private var searchAnalyzer: String? = null
+        private var index: Boolean? = null
 
         fun type(type: DataType) = apply { this.type = type }
         fun format(format: String) = apply { this.format = format }
@@ -35,6 +39,8 @@ data class MappingProperty @JvmOverloads constructor(
         fun dynamic(dynamic: DynamicType) = apply { this.dynamic = dynamic }
         fun copyTo(copyTo: String) = apply { this.copyTo = listOf(copyTo) }
         fun copyTo(copyTo: List<String>) = apply { this.copyTo = copyTo }
+        fun searchAnalyzer(searchAnalyzer: String) = apply { this.searchAnalyzer = searchAnalyzer }
+        fun index(index: Boolean) = apply { this.index = index }
 
         fun build() = MappingProperty(
             type = type ?: error("Field 'type' can not be null"),
@@ -44,7 +50,9 @@ data class MappingProperty @JvmOverloads constructor(
             fields = fields,
             contexts = if (contexts.isEmpty()) null else contexts,
             dynamic = dynamic,
-            copyTo = copyTo
+            copyTo = copyTo,
+            searchAnalyzer = searchAnalyzer,
+            index = index
         )
     }
 
@@ -69,6 +77,12 @@ data class MappingProperty @JvmOverloads constructor(
         val DOUBLE = MappingProperty(DataType.DOUBLE)
         @JvmField
         val COMPLETION = MappingProperty(DataType.COMPLETION)
+        @JvmField
+        val FLOAT = MappingProperty(DataType.FLOAT)
+        @JvmField
+        val BYTE = MappingProperty(DataType.BYTE)
+        @JvmField
+        val SHORT = MappingProperty(DataType.SHORT)
 
         @JvmStatic
         fun builder() = MappingProperty.Builder()

@@ -1,0 +1,58 @@
+{
+  "settings": {
+    "index": {
+      "refresh_interval": "1s",
+      "max_result_window": 20000
+    },
+    "analysis": {
+      "analyzer": {
+        "lowercase_analyzer": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase"
+          ]
+        },
+        "stop_analyzer": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase",
+            "stop"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "dynamic": "strict",
+    "properties": {
+      "id": {
+        "type": "keyword"
+      },
+      "name": {
+        "type": "text",
+        "analyzer": "lowercase_analyzer",
+        "search_analyzer": "stop_analyzer",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          }
+        }
+      },
+      "price": {
+        "type": "float"
+      },
+      "quantity": {
+        "type": "short"
+      },
+      "priority": {
+        "type": "byte"
+      },
+      "url": {
+        "type": "keyword",
+        "index": false
+      }
+    }
+  }
+}

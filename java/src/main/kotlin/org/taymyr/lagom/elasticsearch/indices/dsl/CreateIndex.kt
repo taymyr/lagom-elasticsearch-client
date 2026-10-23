@@ -10,7 +10,8 @@ class CreateIndex @JvmOverloads constructor(
     data class Settings @JvmOverloads constructor(
         @JsonProperty("number_of_shards") val numberOfShards: Int?,
         @JsonProperty("number_of_replicas") val numberOfReplicas: Int?,
-        val analysis: Analysis? = null
+        val analysis: Analysis? = null,
+        val index: Map<String, Any?>? = null
     )
 
     data class Analysis @JvmOverloads constructor(
