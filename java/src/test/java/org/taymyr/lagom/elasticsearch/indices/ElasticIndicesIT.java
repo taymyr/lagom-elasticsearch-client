@@ -16,6 +16,8 @@ import java.util.concurrent.TimeoutException;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.taymyr.lagom.elasticsearch.Helpers.deserializeResponse;
+import static org.taymyr.lagom.elasticsearch.Helpers.resourceAsString;
 
 class ElasticIndicesIT extends AbstractElasticsearchIT {
 
@@ -26,6 +28,13 @@ class ElasticIndicesIT extends AbstractElasticsearchIT {
         checkExists();
         getIndices();
         deleteIndices();
+    }
+
+    @Test
+    @DisplayName("Indices service descriptor should create index with index settings")
+    void shouldCreateIndexWithIndexSettings() throws InterruptedException, ExecutionException, TimeoutException {
+        createIndexWithSettings();
+        deleteIndexWithSettings();
     }
 
     private void createIndices() throws InterruptedException, ExecutionException, TimeoutException {
@@ -60,6 +69,22 @@ class ElasticIndicesIT extends AbstractElasticsearchIT {
         DeleteIndicesResult result = eventually(elasticIndices.delete("index-1").invoke());
         assertThat(result.getAcknowledged()).isTrue();
         result = eventually(elasticIndices.delete(singletonList("index-2")).invoke());
+        assertThat(result.getAcknowledged()).isTrue();
+    }
+
+    private void createIndexWithSettings() throws InterruptedException, ExecutionException, TimeoutException {
+        CreateIndex request = deserializeResponse(
+                resourceAsString("org/taymyr/lagom/elasticsearch/indices/dsl/create_index_settings.json"),
+                CreateIndex.class
+        );
+        CreateIndexResult result = eventually(elasticIndices.create("index-3").invoke(request));
+        assertThat(result.getAcknowledged()).isTrue();
+        assertThat(result.getShardsAcknowledged()).isTrue();
+        assertThat(result.getIndex()).isEqualTo("index-3");
+    }
+
+    private void deleteIndexWithSettings() throws InterruptedException, ExecutionException, TimeoutException {
+        DeleteIndicesResult result = eventually(elasticIndices.delete("index-3").invoke());
         assertThat(result.getAcknowledged()).isTrue();
     }
 }

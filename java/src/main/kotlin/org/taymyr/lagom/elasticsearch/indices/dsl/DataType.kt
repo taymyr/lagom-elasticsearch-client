@@ -15,5 +15,8 @@ enum class DataType(@JsonValue val title: String) {
     INTEGER("integer"),
     BOOLEAN("boolean"),
     DOUBLE("double"),
-    COMPLETION("completion")
+    COMPLETION("completion"),
+    FLOAT("float"),
+    BYTE("byte"),
+    SHORT("short")
 }

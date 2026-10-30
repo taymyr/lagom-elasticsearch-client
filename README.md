@@ -46,6 +46,18 @@ instead of
 elasticDocument.getSource("test", "sample", "1").invoke()
 ```
 
+### Creating an index from JSON
+
+`CreateIndex` can be read from JSON with a copy of the library mapper. Custom `Filter` subclasses must be
+registered by their `type` (see `Filter` KDoc), `custom` analyzers are supported out of the box:
+
+```java
+ObjectMapper mapper = ElasticSerializerFactory.getMAPPER().copy();
+mapper.registerSubtypes(new NamedType(EdgeNGramFilter.class, "edge_ngram"));
+CreateIndex request = mapper.readValue(json, CreateIndex.class);
+elasticIndices.create("my-index").invoke(request);
+```
+
 ### Adding the dependency
 
 All **released** artifacts are available in the [Maven central repository](https://search.maven.org/search?q=a:lagom-elasticsearch-client-java_2.12%20AND%20g:org.taymyr.lagom).
